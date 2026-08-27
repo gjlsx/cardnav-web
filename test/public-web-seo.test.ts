@@ -27,22 +27,21 @@ import { indexNowKey } from '../src/site.js';
 import { localizePath, switchLocalePath } from '../src/i18n/paths.js';
 import { quickPlanGatewayPath, quickPlanSearchPath, quickPlanSearchSeoPath, quickPlanSearchTermForOfficialPriceSlug, quickPlanSearchTerms } from '../src/shop-plan-search.js';
 
-process.env.DATABASE_URL ??= 'postgres://postgres:cardnav@localhost:5432/cardnav';
-process.env.PUBLIC_SITE_URL = 'https://cardnav.xyz';
+process.env.PUBLIC_SITE_URL = 'https://ai.lovemoney.live';
 
 const publicWebRoot = path.resolve('.');
 
 test('cardnav-web sitemap, text sitemap and llms include every public SEO route', () => {
   const routes = getPublicSeoRoutesForAllLocales();
-  const sitemapXml = buildSitemapXml('https://cardnav.xyz', routes);
-  const sitemapTxt = buildSitemapTxt('https://cardnav.xyz', routes);
-  const llmsTxt = buildLlmsTxt('https://cardnav.xyz', routes);
+  const sitemapXml = buildSitemapXml('https://ai.lovemoney.live', routes);
+  const sitemapTxt = buildSitemapTxt('https://ai.lovemoney.live', routes);
+  const llmsTxt = buildLlmsTxt('https://ai.lovemoney.live', routes);
 
-  assert.match(llmsTxt, /CardNav \/ 卡网大全/);
+  assert.match(llmsTxt, /AI LoveMoney \/ AI LoveMoney/);
   assert.match(llmsTxt, /does not authorize model-training/);
 
   for (const route of routes) {
-    const expectedUrl = new URL(route.pathname, 'https://cardnav.xyz/').toString();
+    const expectedUrl = new URL(route.pathname, 'https://ai.lovemoney.live/').toString();
     const expectedXmlUrl = expectedUrl.replace(/&/g, '&amp;');
     assert.match(sitemapXml, new RegExp(`<loc>${expectedXmlUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</loc>`));
     assert.match(sitemapTxt, new RegExp(`^${expectedUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'm'));
@@ -52,25 +51,25 @@ test('cardnav-web sitemap, text sitemap and llms include every public SEO route'
   const locs = [...sitemapXml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1]);
   assert.equal(new Set(locs).size, locs.length);
   assert.match(sitemapXml, /xmlns:xhtml="http:\/\/www\.w3\.org\/1999\/xhtml"/);
-  assert.match(sitemapXml, /<loc>https:\/\/cardnav\.xyz\/en<\/loc>/);
-  assert.match(sitemapXml, /<loc>https:\/\/cardnav\.xyz\/ru\/privacy<\/loc>/);
-  assert.match(sitemapXml, /<loc>https:\/\/cardnav\.xyz\/llm-gateway<\/loc>/);
-  assert.match(sitemapXml, /<loc>https:\/\/cardnav\.xyz\/en\/llm-gateway<\/loc>/);
-  assert.match(sitemapXml, /<loc>https:\/\/cardnav\.xyz\/shops<\/loc>/);
-  assert.match(sitemapXml, /<loc>https:\/\/cardnav\.xyz\/en\/shops<\/loc>/);
+  assert.match(sitemapXml, /<loc>https:\/\/ai\.lovemoney\.live\/en<\/loc>/);
+  assert.match(sitemapXml, /<loc>https:\/\/ai\.lovemoney\.live\/ru\/privacy<\/loc>/);
+  assert.match(sitemapXml, /<loc>https:\/\/ai\.lovemoney\.live\/llm-gateway<\/loc>/);
+  assert.match(sitemapXml, /<loc>https:\/\/ai\.lovemoney\.live\/en\/llm-gateway<\/loc>/);
+  assert.match(sitemapXml, /<loc>https:\/\/ai\.lovemoney\.live\/shops<\/loc>/);
+  assert.match(sitemapXml, /<loc>https:\/\/ai\.lovemoney\.live\/en\/shops<\/loc>/);
   assert.doesNotMatch(sitemapXml, /relay/);
   assert.doesNotMatch(sitemapTxt, /relay/);
   assert.doesNotMatch(llmsTxt, /relay/);
-  assert.match(sitemapXml, /<xhtml:link rel="alternate" hreflang="zh-CN" href="https:\/\/cardnav\.xyz\/" \/>/);
-  assert.match(sitemapXml, /<xhtml:link rel="alternate" hreflang="en" href="https:\/\/cardnav\.xyz\/en" \/>/);
-  assert.match(sitemapXml, /<xhtml:link rel="alternate" hreflang="ru" href="https:\/\/cardnav\.xyz\/ru" \/>/);
-  assert.match(sitemapXml, /<xhtml:link rel="alternate" hreflang="x-default" href="https:\/\/cardnav\.xyz\/" \/>/);
-  assert.match(llmsTxt, /https:\/\/cardnav\.xyz\/en\): AI gateway sites/);
-  assert.match(llmsTxt, /https:\/\/cardnav\.xyz\/ru\): AI-шлюзы/);
+  assert.match(sitemapXml, /<xhtml:link rel="alternate" hreflang="zh-CN" href="https:\/\/ai\.lovemoney\.live\/" \/>/);
+  assert.match(sitemapXml, /<xhtml:link rel="alternate" hreflang="en" href="https:\/\/ai\.lovemoney\.live\/en" \/>/);
+  assert.match(sitemapXml, /<xhtml:link rel="alternate" hreflang="ru" href="https:\/\/ai\.lovemoney\.live\/ru" \/>/);
+  assert.match(sitemapXml, /<xhtml:link rel="alternate" hreflang="x-default" href="https:\/\/ai\.lovemoney\.live\/" \/>/);
+  assert.match(llmsTxt, /https:\/\/ai\.lovemoney\.live\/en\): AI gateway sites/);
+  assert.match(llmsTxt, /https:\/\/ai\.lovemoney\.live\/ru\): AI-шлюзы/);
 });
 
 test('cardnav-web sitemap index points crawlers to split sitemap files', () => {
-  const sitemapIndex = buildSitemapIndexXml('https://cardnav.xyz', [
+  const sitemapIndex = buildSitemapIndexXml('https://ai.lovemoney.live', [
     { pathname: '/sitemap-static.xml' },
     { pathname: '/sitemap-guide.xml' },
     { pathname: '/sitemap-official-price.xml' },
@@ -81,13 +80,13 @@ test('cardnav-web sitemap index points crawlers to split sitemap files', () => {
   ]);
 
   assert.match(sitemapIndex, /<sitemapindex xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9">/);
-  assert.match(sitemapIndex, /<loc>https:\/\/cardnav\.xyz\/sitemap-static\.xml<\/loc>/);
-  assert.match(sitemapIndex, /<loc>https:\/\/cardnav\.xyz\/sitemap-guide\.xml<\/loc>/);
-  assert.match(sitemapIndex, /<loc>https:\/\/cardnav\.xyz\/sitemap-official-price\.xml<\/loc>/);
-  assert.match(sitemapIndex, /<loc>https:\/\/cardnav\.xyz\/sitemap-leaderboard\.xml<\/loc>/);
-  assert.match(sitemapIndex, /<loc>https:\/\/cardnav\.xyz\/sitemap-gateway-sites\.xml<\/loc>/);
-  assert.match(sitemapIndex, /<loc>https:\/\/cardnav\.xyz\/sitemap-gateway-models\.xml<\/loc>/);
-  assert.match(sitemapIndex, /<loc>https:\/\/cardnav\.xyz\/sitemap-shops\.xml<\/loc>/);
+  assert.match(sitemapIndex, /<loc>https:\/\/ai\.lovemoney\.live\/sitemap-static\.xml<\/loc>/);
+  assert.match(sitemapIndex, /<loc>https:\/\/ai\.lovemoney\.live\/sitemap-guide\.xml<\/loc>/);
+  assert.match(sitemapIndex, /<loc>https:\/\/ai\.lovemoney\.live\/sitemap-official-price\.xml<\/loc>/);
+  assert.match(sitemapIndex, /<loc>https:\/\/ai\.lovemoney\.live\/sitemap-leaderboard\.xml<\/loc>/);
+  assert.match(sitemapIndex, /<loc>https:\/\/ai\.lovemoney\.live\/sitemap-gateway-sites\.xml<\/loc>/);
+  assert.match(sitemapIndex, /<loc>https:\/\/ai\.lovemoney\.live\/sitemap-gateway-models\.xml<\/loc>/);
+  assert.match(sitemapIndex, /<loc>https:\/\/ai\.lovemoney\.live\/sitemap-shops\.xml<\/loc>/);
 });
 
 test('gateway model sitemap includes only higher-value model pages', () => {
@@ -121,7 +120,7 @@ test('gateway model sitemap includes only higher-value model pages', () => {
     },
   ]);
 
-  const sitemapXml = buildSitemapXml('https://cardnav.xyz', routes);
+  const sitemapXml = buildSitemapXml('https://ai.lovemoney.live', routes);
   assert.equal(routes.length, 1);
   assert.match(sitemapXml, /\/llm-gateway\/models\/gpt-5/);
   assert.doesNotMatch(sitemapXml, /one-site-model/);
@@ -133,17 +132,17 @@ test('gateway model sitemap includes only higher-value model pages', () => {
 
 test('cardnav-web sitemap includes hidden quick plan SEO slug pages', () => {
   const routes = getPublicSeoRoutesForAllLocales();
-  const sitemapXml = buildSitemapXml('https://cardnav.xyz', routes);
-  const sitemapTxt = buildSitemapTxt('https://cardnav.xyz', routes);
-  const llmsTxt = buildLlmsTxt('https://cardnav.xyz', routes);
+  const sitemapXml = buildSitemapXml('https://ai.lovemoney.live', routes);
+  const sitemapTxt = buildSitemapTxt('https://ai.lovemoney.live', routes);
+  const llmsTxt = buildLlmsTxt('https://ai.lovemoney.live', routes);
   const plusTerm = quickPlanSearchTerms.find(term => term.label === 'GPT Plus');
   assert.ok(plusTerm);
 
   const expectedPath = quickPlanSearchSeoPath(plusTerm);
   const searchPath = quickPlanSearchPath(plusTerm);
-  const expectedUrl = new URL(expectedPath, 'https://cardnav.xyz/').toString();
-  const expectedEnglishUrl = new URL(`/en${expectedPath}`, 'https://cardnav.xyz/').toString();
-  const searchUrl = new URL(searchPath, 'https://cardnav.xyz/').toString();
+  const expectedUrl = new URL(expectedPath, 'https://ai.lovemoney.live/').toString();
+  const expectedEnglishUrl = new URL(`/en${expectedPath}`, 'https://ai.lovemoney.live/').toString();
+  const searchUrl = new URL(searchPath, 'https://ai.lovemoney.live/').toString();
 
   assert.match(sitemapXml, new RegExp(`<loc>${expectedUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</loc>`));
   assert.match(sitemapXml, new RegExp(`hreflang="en" href="${expectedEnglishUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`));
@@ -204,31 +203,31 @@ test('cardnav-web sitemap ignores duplicate and invalid dynamic routes', () => {
       changefreq: 'daily',
     },
   ]);
-  const sitemapXml = buildSitemapXml('https://cardnav.xyz', routes);
-  const sitemapTxt = buildSitemapTxt('https://cardnav.xyz', routes);
+  const sitemapXml = buildSitemapXml('https://ai.lovemoney.live', routes);
+  const sitemapTxt = buildSitemapTxt('https://ai.lovemoney.live', routes);
 
   const locs = [...sitemapXml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1]);
-  assert.deepEqual(locs, ['https://cardnav.xyz/official-price/chatgpt-plus']);
-  assert.match(sitemapXml, /<xhtml:link rel="alternate" hreflang="zh-CN" href="https:\/\/cardnav\.xyz\/official-price\/chatgpt-plus" \/>/);
-  assert.match(sitemapXml, /<xhtml:link rel="alternate" hreflang="x-default" href="https:\/\/cardnav\.xyz\/official-price\/chatgpt-plus" \/>/);
-  assert.doesNotMatch(sitemapXml, /hreflang="en" href="https:\/\/cardnav\.xyz\/en\/official-price\/chatgpt-plus"/);
-  assert.doesNotMatch(sitemapXml, /hreflang="ru" href="https:\/\/cardnav\.xyz\/ru\/official-price\/chatgpt-plus"/);
-  assert.equal(sitemapTxt, 'https://cardnav.xyz/official-price/chatgpt-plus\n');
+  assert.deepEqual(locs, ['https://ai.lovemoney.live/official-price/chatgpt-plus']);
+  assert.match(sitemapXml, /<xhtml:link rel="alternate" hreflang="zh-CN" href="https:\/\/ai\.lovemoney\.live\/official-price\/chatgpt-plus" \/>/);
+  assert.match(sitemapXml, /<xhtml:link rel="alternate" hreflang="x-default" href="https:\/\/ai\.lovemoney\.live\/official-price\/chatgpt-plus" \/>/);
+  assert.doesNotMatch(sitemapXml, /hreflang="en" href="https:\/\/ai\.lovemoney\.live\/en\/official-price\/chatgpt-plus"/);
+  assert.doesNotMatch(sitemapXml, /hreflang="ru" href="https:\/\/ai\.lovemoney\.live\/ru\/official-price\/chatgpt-plus"/);
+  assert.equal(sitemapTxt, 'https://ai.lovemoney.live/official-price/chatgpt-plus\n');
 });
 
 test('cardnav-web robots allows indexing but blocks known model-training crawlers', () => {
-  const robotsTxt = buildRobotsTxt('https://cardnav.xyz');
+  const robotsTxt = buildRobotsTxt('https://ai.lovemoney.live');
 
   assert.match(robotsTxt, /User-agent: \*/);
   assert.match(robotsTxt, /Allow: \//);
-  assert.match(robotsTxt, /Sitemap: https:\/\/cardnav\.xyz\/sitemap\.xml/);
-  assert.doesNotMatch(robotsTxt, /Sitemap: https:\/\/cardnav\.xyz\/sitemap-static\.xml/);
-  assert.doesNotMatch(robotsTxt, /Sitemap: https:\/\/cardnav\.xyz\/sitemap-guide\.xml/);
-  assert.doesNotMatch(robotsTxt, /Sitemap: https:\/\/cardnav\.xyz\/sitemap-official-price\.xml/);
-  assert.doesNotMatch(robotsTxt, /Sitemap: https:\/\/cardnav\.xyz\/sitemap-leaderboard\.xml/);
-  assert.doesNotMatch(robotsTxt, /Sitemap: https:\/\/cardnav\.xyz\/sitemap-gateway-sites\.xml/);
-  assert.doesNotMatch(robotsTxt, /Sitemap: https:\/\/cardnav\.xyz\/sitemap-gateway-models\.xml/);
-  assert.doesNotMatch(robotsTxt, /Sitemap: https:\/\/cardnav\.xyz\/sitemap\.txt/);
+  assert.match(robotsTxt, /Sitemap: https:\/\/ai\.lovemoney\.live\/sitemap\.xml/);
+  assert.doesNotMatch(robotsTxt, /Sitemap: https:\/\/ai\.lovemoney\.live\/sitemap-static\.xml/);
+  assert.doesNotMatch(robotsTxt, /Sitemap: https:\/\/ai\.lovemoney\.live\/sitemap-guide\.xml/);
+  assert.doesNotMatch(robotsTxt, /Sitemap: https:\/\/ai\.lovemoney\.live\/sitemap-official-price\.xml/);
+  assert.doesNotMatch(robotsTxt, /Sitemap: https:\/\/ai\.lovemoney\.live\/sitemap-leaderboard\.xml/);
+  assert.doesNotMatch(robotsTxt, /Sitemap: https:\/\/ai\.lovemoney\.live\/sitemap-gateway-sites\.xml/);
+  assert.doesNotMatch(robotsTxt, /Sitemap: https:\/\/ai\.lovemoney\.live\/sitemap-gateway-models\.xml/);
+  assert.doesNotMatch(robotsTxt, /Sitemap: https:\/\/ai\.lovemoney\.live\/sitemap\.txt/);
 
   for (const userAgent of trainingCrawlerUserAgents) {
     assert.match(robotsTxt, new RegExp(`User-agent: ${userAgent.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\nDisallow: /`));
@@ -249,7 +248,7 @@ test('cardnav-web serves its own Open Graph image assets', async () => {
 
 test('seo context keeps the configured Open Graph image format', () => {
   const seo = buildSeoContext({
-    baseUrl: 'https://cardnav.xyz',
+    baseUrl: 'https://ai.lovemoney.live',
     pathname: '/shops',
     title: '卡网商品',
     description: '商品页。',
@@ -262,9 +261,9 @@ test('seo context keeps the configured Open Graph image format', () => {
 
 test('seo context includes Organization structured data', () => {
   const seo = buildSeoContext({
-    baseUrl: 'https://cardnav.xyz',
+    baseUrl: 'https://ai.lovemoney.live',
     pathname: '/',
-    title: '卡网大全',
+    title: 'AI LoveMoney',
     description: '首页。',
     imagePath: '/og-cardnav.png',
     type: 'website',
@@ -273,7 +272,7 @@ test('seo context includes Organization structured data', () => {
   const graph = (seo.jsonLd as { '@graph': Array<Record<string, unknown>> })['@graph'];
   const organizationNode = graph.find(node => node['@type'] === 'Organization');
   assert.ok(organizationNode);
-  assert.equal(organizationNode.name, '卡网大全');
+  assert.equal(organizationNode.name, 'AI LoveMoney');
   assert.match(String(organizationNode.logo), /\/favicon\.webp$/);
 });
 
@@ -315,7 +314,7 @@ test('homepage official price matcher keeps preferred plan order', () => {
 
 test('shops list schema avoids Product nodes that require real reviews', () => {
   const seo = buildSeoContext({
-    baseUrl: 'https://cardnav.xyz',
+    baseUrl: 'https://ai.lovemoney.live',
     pathname: '/shops',
     title: '卡网商品',
     description: '商品页。',
@@ -338,21 +337,21 @@ test('shops list schema avoids Product nodes that require real reviews', () => {
 test('non-database public SEO routes build canonical metadata', () => {
   for (const route of getPublicSeoRoutes()) {
     const seo = buildSeoContext({
-      baseUrl: 'https://cardnav.xyz',
+      baseUrl: 'https://ai.lovemoney.live',
       pathname: route.pathname,
       title: route.title,
       description: route.description,
       imagePath: '/og-cardnav.png',
       type: route.pathname === '/' ? 'website' : 'webpage',
     });
-    assert.equal(seo.canonicalUrl, new URL(route.pathname, 'https://cardnav.xyz/').toString(), route.pathname);
+    assert.equal(seo.canonicalUrl, new URL(route.pathname, 'https://ai.lovemoney.live/').toString(), route.pathname);
     assert.equal(seo.robots, 'index,follow', route.pathname);
     assert.equal(seo.description, route.description, route.pathname);
     assert.match(seo.ogImageUrl, /\/og-cardnav\.png$/, route.pathname);
   }
 
   const englishSeo = buildSeoContext({
-    baseUrl: 'https://cardnav.xyz',
+    baseUrl: 'https://ai.lovemoney.live',
     pathname: '/about',
     title: 'About CardNav',
     description: 'About CardNav.',
@@ -360,13 +359,13 @@ test('non-database public SEO routes build canonical metadata', () => {
     type: 'webpage',
     locale: 'en',
   });
-  assert.equal(englishSeo.canonicalUrl, 'https://cardnav.xyz/en/about');
+  assert.equal(englishSeo.canonicalUrl, 'https://ai.lovemoney.live/en/about');
   assert.equal(englishSeo.description, 'About CardNav.');
 });
 
 test('noindex pages keep links followable', () => {
   const seo = buildSeoContext({
-    baseUrl: 'https://cardnav.xyz',
+    baseUrl: 'https://ai.lovemoney.live',
     pathname: '/llm-gateway/models/low-value-model',
     title: 'low-value-model gateway support',
     description: 'Gateway support.',
@@ -380,9 +379,9 @@ test('noindex pages keep links followable', () => {
 
 test('homepage website schema includes SearchAction', () => {
   const seo = buildSeoContext({
-    baseUrl: 'https://cardnav.xyz',
+    baseUrl: 'https://ai.lovemoney.live',
     pathname: '/',
-    title: '卡网大全',
+    title: 'AI LoveMoney',
     description: '导航站点。',
     imagePath: '/og-cardnav.png',
     type: 'website',
@@ -398,7 +397,7 @@ test('homepage website schema includes SearchAction', () => {
 
 test('detail pages can include breadcrumb structured data', () => {
   const seo = buildSeoContext({
-    baseUrl: 'https://cardnav.xyz',
+    baseUrl: 'https://ai.lovemoney.live',
     pathname: '/shops/gpt-plus',
     title: 'GPT Plus 相关商品搜索结果',
     description: '相关搜索结果。',
@@ -418,7 +417,7 @@ test('detail pages can include breadcrumb structured data', () => {
 
 test('shops query pages should use noindex while keeping canonical /shops', () => {
   const seo = buildSeoContext({
-    baseUrl: 'https://cardnav.xyz',
+    baseUrl: 'https://ai.lovemoney.live',
     pathname: '/shops',
     title: '卡网商品',
     description: '商品搜索结果。',
@@ -428,11 +427,11 @@ test('shops query pages should use noindex while keeping canonical /shops', () =
   });
 
   assert.equal(seo.robots, 'noindex,follow');
-  assert.equal(seo.canonicalUrl, 'https://cardnav.xyz/shops');
+  assert.equal(seo.canonicalUrl, 'https://ai.lovemoney.live/shops');
   assert.equal(seo.ogLocale, 'zh_CN');
   assert.equal(seo.ogImageWidth, 1200);
   assert.equal(seo.ogImageHeight, 630);
-  assert.equal(seo.ogSiteName, '卡网大全');
+  assert.equal(seo.ogSiteName, 'AI LoveMoney');
 });
 
 test('quick plan search SEO metadata uses slug canonical and alternates', () => {
@@ -440,7 +439,7 @@ test('quick plan search SEO metadata uses slug canonical and alternates', () => 
   assert.ok(plusTerm);
   const pathname = quickPlanSearchSeoPath(plusTerm);
   const seo = buildSeoContext({
-    baseUrl: 'https://cardnav.xyz',
+    baseUrl: 'https://ai.lovemoney.live',
     pathname,
     title: 'GPT Plus 相关商品搜索结果',
     description: '相关搜索结果。',
@@ -448,14 +447,14 @@ test('quick plan search SEO metadata uses slug canonical and alternates', () => 
     type: 'website',
   });
 
-  assert.equal(seo.canonicalUrl, new URL(pathname, 'https://cardnav.xyz/').toString());
+  assert.equal(seo.canonicalUrl, new URL(pathname, 'https://ai.lovemoney.live/').toString());
   assert.equal(seo.xDefaultUrl, seo.canonicalUrl);
   assert.deepEqual(
     seo.alternateUrls.map(item => item.url),
     [
-      new URL(pathname, 'https://cardnav.xyz/').toString(),
-      new URL(`/en${pathname}`, 'https://cardnav.xyz/').toString(),
-      new URL(`/ru${pathname}`, 'https://cardnav.xyz/').toString(),
+      new URL(pathname, 'https://ai.lovemoney.live/').toString(),
+      new URL(`/en${pathname}`, 'https://ai.lovemoney.live/').toString(),
+      new URL(`/ru${pathname}`, 'https://ai.lovemoney.live/').toString(),
     ],
   );
 });
@@ -469,7 +468,7 @@ test('localized routes preserve dotted model ids without treating them as assets
   assert.equal(localizePath('/assets/payment-icons/alipay.svg', 'en'), '/assets/payment-icons/alipay.svg');
 
   const seo = buildSeoContext({
-    baseUrl: 'https://cardnav.xyz',
+    baseUrl: 'https://ai.lovemoney.live',
     pathname: modelPath,
     title: 'gpt-5.5 gateway support',
     description: 'Gateway support.',
@@ -478,13 +477,13 @@ test('localized routes preserve dotted model ids without treating them as assets
     locale: 'en',
   });
 
-  assert.equal(seo.canonicalUrl, 'https://cardnav.xyz/en/llm-gateway/models/gpt-5.5');
+  assert.equal(seo.canonicalUrl, 'https://ai.lovemoney.live/en/llm-gateway/models/gpt-5.5');
   assert.deepEqual(
     seo.alternateUrls.map(item => item.url),
     [
-      'https://cardnav.xyz/llm-gateway/models/gpt-5.5',
-      'https://cardnav.xyz/en/llm-gateway/models/gpt-5.5',
-      'https://cardnav.xyz/ru/llm-gateway/models/gpt-5.5',
+      'https://ai.lovemoney.live/llm-gateway/models/gpt-5.5',
+      'https://ai.lovemoney.live/en/llm-gateway/models/gpt-5.5',
+      'https://ai.lovemoney.live/ru/llm-gateway/models/gpt-5.5',
     ],
   );
 });

@@ -11,9 +11,10 @@ const storeSource = fs.readFileSync(path.resolve('src/store.ts'), 'utf8');
 test('public shop reads and interactions require online card shops', () => {
   assert.match(storeSource, /FROM shop_sites\s+WHERE status = 'online'\s+AND type = 'cardShop'/);
   assert.match(storeSource, /INNER JOIN shop_sites ON shop_sites\.id = shop_products\.site_id\s+WHERE shop_sites\.status = 'online'\s+AND shop_sites\.type = 'cardShop'/);
-  assert.match(storeSource, /COUNT\(\*\) FILTER \(WHERE status = 'online' AND type = 'cardShop'\)/);
-  assert.match(storeSource, /UPDATE shop_products[\s\S]+?shop_sites\.status = 'online'[\s\S]+?shop_sites\.type = 'cardShop'/);
-  assert.match(storeSource, /FROM shop_search_terms[\s\S]+?shop_search_terms\.result_count > 0/);
+  assert.match(storeSource, /SELECT COUNT\(\*\) FROM shop_products INNER JOIN shop_sites ON shop_sites\.id = shop_products\.site_id WHERE shop_sites\.status = 'online' AND shop_sites\.type = 'cardShop'/);
+  assert.match(storeSource, /SELECT shop_products\.id FROM shop_products INNER JOIN shop_sites[\s\S]+?shop_sites\.status = 'online'[\s\S]+?shop_sites\.type = 'cardShop'/);
+  assert.match(storeSource, /UPDATE shop_products SET click_count = click_count \+ 1 WHERE id = \?/);
+  assert.match(storeSource, /SELECT term FROM shop_search_terms WHERE total_count > 0 AND result_count > 0/);
 });
 
 test('public gateway sites expose sponsor marker and pin sponsors before score sorting', () => {
@@ -21,11 +22,9 @@ test('public gateway sites expose sponsor marker and pin sponsors before score s
   assert.match(storeSource, /ORDER BY gateway_sites\.sponsor DESC, gateway_sites\.score DESC/);
 });
 
-test('public shop products expose sponsor marker and prepare sponsored pins', () => {
+test('public shop products expose sponsor marker and prioritize sponsored products', () => {
   assert.match(storeSource, /shop_sites\.sponsor AS site_sponsor/);
-  assert.match(storeSource, /sponsor_candidates AS/);
-  assert.match(storeSource, /sponsor_site_product_rank <= 5/);
-  assert.match(storeSource, /LIMIT 10/);
+  assert.match(storeSource, /ORDER BY shop_sites\.sponsor DESC, shop_products\.score DESC/);
 });
 
 test('public gateway detail does not truncate model price rows', () => {

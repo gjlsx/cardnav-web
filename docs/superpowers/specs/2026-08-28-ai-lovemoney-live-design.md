@@ -7,7 +7,7 @@
 ## 范围与品牌规则
 
 - 网站、三语内容、SEO、robots、sitemap、结构化数据、环境变量示例和 README 统一使用 `ai.lovemoney.live`。
-- 删除 CardNav/“卡网大全”及其旧域名、旧 Telegram、项目 GitHub、旧 X 账号等自有品牌信息。
+- 删除旧品牌名称、旧域名、旧 Telegram、项目 GitHub、旧 X 账号等自有品牌信息。
 - GitHub 按钮完全删除；Telegram、X 与 QQ 仅保留可替换的空链接图标占位。公告只显示纯文字，不能含跳转链接。
 - 首页公共 Hero 区域（需求截图标记为 clear area 的整块区域）删除。
 - 赞助商区域只显示图片；图片不得是链接，不显示商家名称、说明、套餐或价格。
@@ -31,5 +31,5 @@
 
 - `npm test`、`npm run typecheck`、`npm run build` 均通过。
 - 本机 MySQL 可初始化，应用不再依赖 PostgreSQL。
-- 浏览器从首页检查：无旧域名/“卡网大全”、无 GitHub 按钮、无 Hero、公告为文字、Telegram/X/QQ 占位均不可跳转、赞助商仅有图片。
+- 浏览器从首页检查：无旧品牌或旧域名、无 GitHub 按钮、无 Hero、公告为文字、Telegram/X/QQ 占位均不可跳转、赞助商仅有图片。
 - 生产环境使用 `http://ai.lovemoney.live/` 验证 HTTP 200、页面渲染和浏览器控制台无新增错误；同时确认 LikeShop 三个既有端口继续响应。

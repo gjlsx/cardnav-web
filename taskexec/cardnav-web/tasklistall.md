@@ -4,3 +4,4 @@
 |---|---|---|---|---|---|
 | tasklist08280357.md | 2608280357 | wind | archived | docs/backuptask/ | ai.lovemoney.live 重品牌、MySQL 迁移与 VPS 发布 |
 | tasklist08280627.md | 2608280627 | wind | archived | docs/backuptask/ | MySQL runtime review remediation |
+| tasklist08280652.md | 2608280652 | wind | active | ./ | 公开参考样例数据、展示与本地采集方案 |

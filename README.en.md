@@ -123,7 +123,11 @@ By default, the project reads `.env` from the current directory.
 ### Environment Variables
 
 ```dotenv
-DATABASE_URL=postgres://user:password@host:5432/cardnav
+MYSQL_HOST=127.0.0.1
+MYSQL_PORT=3306
+MYSQL_USER=root
+MYSQL_PASSWORD=
+MYSQL_DATABASE=ailovemoney
 PORT=3101
 PUBLIC_SITE_URL=https://ai.lovemoney.live
 ABUSEIPDB_API_KEY=
@@ -167,4 +171,5 @@ Issues and Pull Requests are welcome for:
 AI LoveMoney's software code is open sourced under the [GNU Affero General Public License v3.0](./LICENSE).
 
 The `AI LoveMoney` and `AI LoveMoney` names, Logo, domain, visual brand, online production data, merchant data, product data, search data, guide content, screenshots, and public page copy are not licensed together with the software code. Before forking, secondary development, or deploying a public service, please read the [Data and Content License](./DATA_LICENSE.md) and [Brand and Trademark Policy](./TRADEMARKS.md), and avoid making users believe your service is the official website.
+
 

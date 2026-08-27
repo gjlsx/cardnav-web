@@ -123,7 +123,11 @@ npm run dev
 ### Переменные окружения
 
 ```dotenv
-DATABASE_URL=postgres://user:password@host:5432/cardnav
+MYSQL_HOST=127.0.0.1
+MYSQL_PORT=3306
+MYSQL_USER=root
+MYSQL_PASSWORD=
+MYSQL_DATABASE=ailovemoney
 PORT=3101
 PUBLIC_SITE_URL=https://ai.lovemoney.live
 ABUSEIPDB_API_KEY=
@@ -167,4 +171,5 @@ Issues и Pull Requests приветствуются для:
 Программный код AI LoveMoney открыт по лицензии [GNU Affero General Public License v3.0](./LICENSE).
 
 Названия `AI LoveMoney` и `AI LoveMoney`, Logo, домен, визуальный бренд, production-данные, данные продавцов, данные товаров, поисковые данные, содержание руководств, скриншоты и публичные тексты страниц не лицензируются вместе с программным кодом. Перед fork, доработкой или развертыванием публичного сервиса прочитайте [Data and Content License](./DATA_LICENSE.md) и [Brand and Trademark Policy](./TRADEMARKS.md), а также не допускайте, чтобы пользователи приняли ваш сервис за официальный сайт.
+
 

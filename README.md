@@ -123,7 +123,11 @@ npm run dev
 ### 环境变量
 
 ```dotenv
-DATABASE_URL=postgres://user:password@host:5432/cardnav
+MYSQL_HOST=127.0.0.1
+MYSQL_PORT=3306
+MYSQL_USER=root
+MYSQL_PASSWORD=
+MYSQL_DATABASE=ailovemoney
 PORT=3101
 PUBLIC_SITE_URL=https://ai.lovemoney.live
 ABUSEIPDB_API_KEY=
@@ -167,4 +171,5 @@ cardnav-web/
 AI LoveMoney (AI LoveMoney) 的软件代码使用 [GNU Affero General Public License v3.0](./LICENSE) 开源。
 
 `AI LoveMoney`、`AI LoveMoney` 名称、Logo、域名、视觉品牌、线上生产数据、商家数据、商品数据、搜索数据、指南内容、截图和公开页面文案不随软件代码授权。Fork、二次开发或部署公开服务时，请阅读 [数据与内容授权](./DATA_LICENSE.md) 和 [品牌与商标政策](./TRADEMARKS.md)，并避免让用户误认为你的服务是官方网站。
+
 

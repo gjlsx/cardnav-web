@@ -147,7 +147,7 @@ pnpm run typecheck
 ## 当前生产部署
 
 公开站点：`https://ai.lovemoney.live/`  
-应用以 Astro standalone Node 跑在服务器回环地址 `127.0.0.1:3101`，Apache 对 `ai.lovemoney.live` 做 80/443 反向代理。数据库是服务器本地 MySQL/MariaDB `ailovemoney`。LikeShop 的 `8086/8090/8095` 入口保持独立，不走本站点目录。
+应用以 Astro standalone Node 跑在服务器回环地址 `127.0.0.1:3101`，Apache **80 和 443 只服务** `ai.lovemoney.live`。数据库是服务器本地 MySQL/MariaDB `ailovemoney`。LikeShop 只走 `8086/8090/8095`，不再占用 80。
 
 - 发布目录：`/www/wwwroot/ai.lovemoney.live`
 - 进程：`ai-lovemoney.service`（systemd，开机自启）

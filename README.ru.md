@@ -147,7 +147,7 @@ pnpm run typecheck
 ## Текущий production-деплой
 
 Публичный сайт: `https://ai.lovemoney.live/`  
-Приложение — Astro standalone Node на `127.0.0.1:3101`. Apache проксирует `ai.lovemoney.live` на портах 80 и 443. База — локальный MySQL/MariaDB `ailovemoney` на сервере. LikeShop на `8086/8090/8095` остается отдельным vhost и каталогом.
+Приложение — Astro standalone Node на `127.0.0.1:3101`. Порты Apache 80 и 443 обслуживают только `ai.lovemoney.live`. База — локальный MySQL/MariaDB `ailovemoney` на сервере. LikeShop остается на `8086/8090/8095` и больше не занимает порт 80.
 
 - Каталог релиза: `/www/wwwroot/ai.lovemoney.live`
 - Процесс: `ai-lovemoney.service` (systemd, автозапуск)

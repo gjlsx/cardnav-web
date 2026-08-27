@@ -147,7 +147,7 @@ pnpm run typecheck
 ## Current production deployment
 
 Public site: `https://ai.lovemoney.live/`  
-The app is an Astro standalone Node process on `127.0.0.1:3101`. Apache reverse-proxies `ai.lovemoney.live` on ports 80 and 443. The database is server-local MySQL/MariaDB `ailovemoney`. LikeShop on `8086/8090/8095` stays on its own vhost and directory.
+The app is an Astro standalone Node process on `127.0.0.1:3101`. Apache ports 80 and 443 serve only `ai.lovemoney.live`. The database is server-local MySQL/MariaDB `ailovemoney`. LikeShop stays on `8086/8090/8095` and no longer uses port 80.
 
 - Release directory: `/www/wwwroot/ai.lovemoney.live`
 - Process: `ai-lovemoney.service` (systemd, enabled)

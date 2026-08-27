@@ -41,7 +41,7 @@ The deployment task must verify `public_snapshot_entries` counts before switchin
 
 - App directory: `/www/wwwroot/ai.lovemoney.live`
 - systemd unit: `ai-lovemoney.service` (Node listens on `127.0.0.1:3101`)
-- Apache vhost: `/etc/apache2/sites-available/ai.lovemoney.live.conf` (`*:80` and `*:443`)
+- Apache vhost: `/etc/apache2/sites-available/ai.lovemoney.live.conf` (`*:80` and `*:443` only; port 80 is not used by LikeShop)
 - Let's Encrypt webroot: `/var/www/letsencrypt`
 - Rollback copies: `/www/wwwroot/ai.lovemoney.live-backups`
 - Do not edit LikeShop vhosts for `8086/8090/8095`

@@ -6,7 +6,7 @@ next: practical-prep
 ---
 # 2. Choose an AI subscription usage method
 
-> This article is provided by **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> This article is provided by **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 Common paths for using top foreign large models can roughly be divided into five categories. There is no absolute good or bad among them. The key is what you care about more: convenience, saving money, stability, privacy, or long-term controllability.
 

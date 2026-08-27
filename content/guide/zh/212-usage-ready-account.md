@@ -6,7 +6,7 @@ next: usage-third-party-top-up
 ---
 # 2.2 AI 大模型成品账号购买与登录
 
-> 本文由 **卡网大全 [cardnav.xyz](https://cardnav.xyz)** 提供。
+> 本文由 **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)** 提供。
 
 购买成品账号是很多新手最容易理解的一种方式：商家已经注册并开通好订阅，你拿到账号、密码或凭证后直接登录官方网页或客户端使用。它的优势是快，问题也主要集中在账号来源、售后周期、登录环境和凭证格式上。
 

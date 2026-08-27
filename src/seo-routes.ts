@@ -397,7 +397,7 @@ export function buildLlmsTxt(baseUrlInput: string, routes = getPublicSeoRoutes()
     .map(route => `- [${route.title}](${resolvePublicUrl(baseUrl, route.pathname)}): ${route.description}`)
     .join('\n');
   return [
-    `# CardNav / ${messages.site.name}`,
+    `# AI LoveMoney / ${messages.site.name}`,
     '',
     messages.seo.llmsDescription,
     '',

@@ -1,4 +1,4 @@
-# CardNav 向导 Markdown 渲染说明
+# AI LoveMoney 向导 Markdown 渲染说明
 
 本文说明 `content/guide/` 下的向导 Markdown 如何渲染，方便后续新增或维护 Guide 文章。
 
@@ -111,8 +111,8 @@ type GuideCardAttrs = {
 
 链接打开规则：
 
-- 站内链接本页打开，包括 `/guide/...`、`/shops`、`#anchor` 和 `https://cardnav.xyz/...`
-- 完整 URL 且不是 `cardnav.xyz` 的链接新页面打开，并自动添加 `target="_blank"` 和 `rel="noopener noreferrer"`
+- 站内链接本页打开，包括 `/guide/...`、`/shops`、`#anchor` 和 `https://ai.lovemoney.live/...`
+- 完整 URL 且不是 `ai.lovemoney.live` 的链接新页面打开，并自动添加 `target="_blank"` 和 `rel="noopener noreferrer"`
 - 卡片段落最后一行跳转链接和正文 Markdown 链接遵守同一套规则
 
 `icon` 只支持内置图标名，未知值不会渲染。当前可用值包括：

@@ -1,5 +1,5 @@
 /**
- * 文件说明: 定义 CardNav 公开站点支持的语言、默认语言和语言展示信息。
+ * 文件说明: 定义 AI LoveMoney 公开站点支持的语言、默认语言和语言展示信息。
  */
 
 export const supportedLocales = ['zh', 'en', 'ru'] as const;

@@ -5,7 +5,7 @@ parent: practical-prep
 ---
 # 3.1 Понимание card-shop и безопасная покупка
 
-> Эта статья предоставлена **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> Эта статья предоставлена **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 При покупке AI-аккаунтов, пополнения через третьих лиц или разных виртуальных товаров вы часто встретите сайты, которые называют «card-shop» или «card issuing shop».
 

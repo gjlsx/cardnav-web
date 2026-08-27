@@ -5,7 +5,7 @@ parent: network-env-overview
 ---
 # 云服务器推荐
 
-> 本文由 **卡网大全 [cardnav.xyz](https://cardnav.xyz)** 提供。
+> 本文由 **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)** 提供。
 
 如果你准备自建节点、运行反向代理程序，或者希望拥有更可控的网络环境，那么你通常需要一台自己的云服务器。对于个人或几个人的小规模使用场景，很多时候 `1C1G` 就已经够用了。
 

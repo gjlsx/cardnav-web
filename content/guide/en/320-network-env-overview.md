@@ -5,7 +5,7 @@ parent: practical-prep
 ---
 # 3.2 Network environment and host preparation
 
-> This article is provided by **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> This article is provided by **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 When practically registering for overseas AI services such as ChatGPT and Claude, or binding foreign payment cards, the network environment and IP purity often determine your success rate. If your IP history is polluted or widely and frequently risk-controlled, you can easily face the awkward situation of "registration immediately leads to account ban" or "payment is rejected."
 

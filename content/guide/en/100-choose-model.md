@@ -6,7 +6,7 @@ next: choose-usage-method
 ---
 # 1. Choose the AI large model you want to use
 
-> This article is provided by **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> This article is provided by **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 There are many large models, but for most users, the first thing to decide is not "which model is strongest," but "whether you want top capability, or a low barrier and low cost." Different goals correspond to completely different preparation work.
 
@@ -19,7 +19,7 @@ If your goal is to pursue the industry's strongest general and programming capab
 ### 1. Usage barrier
 - **Network and verification**: You need a stable overseas IP and a real phone number for account registration.
 - **Payment risk control**: Official website subscriptions often encounter payment rejection, and you need to use overseas app store gift cards to complete payment.
-- **Capability comparison**: If you need to view the latest differences in model capabilities, you can first refer to the [large model capability leaderboard](https://cardnav.xyz/model-leaderboard).
+- **Capability comparison**: If you need to view the latest differences in model capabilities, you can first refer to the [large model capability leaderboard](https://ai.lovemoney.live/model-leaderboard).
 
 ### 2. Who it suits
 - **More suitable for**: Users who seek cutting-edge programming development, general logical reasoning, and a mature ecosystem experience

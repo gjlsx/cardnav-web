@@ -1,6 +1,6 @@
 ![](assets/banner.webp)
 
-<h1 align="center">CardNav</h1>
+<h1 align="center">AI LoveMoney</h1>
 
 <p align="center">
   <a href="README.md">中文</a> ·
@@ -13,14 +13,14 @@
 </p>
 
 <p align="center">
-  <a href="https://cardnav.xyz">
-    <img src="https://img.shields.io/badge/Website-cardnav.xyz-2563eb?style=flat-square&logo=data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAHhlWElmTU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAAAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAABIAAAAAQAAAEgAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAAABigAwAEAAAAAQAAABgAAAAA0bpBmgAAAAlwSFlzAAALEwAACxMBAJqcGAAAA8xJREFUSA21VVtsFFUY%2Fua27e6sGijYK6217aY0gtm0FCQBoyY%2BqE%2FWpqFcVAKx8c0XfVAS%2B4RGC0kxMSQkllKg2lZMY0yICngDbUMkpFBbSqh1LWrt0uteujNz%2FM%2BZne1utysBwp%2FMnDPnv3z%2F7fwjMSLcR5Lvo21hWl0KEDMMjI0FEIlGIUlxLo9R7J2DVC2eBK%2Buo6S4KJVBXykAZ777Ee%2B3HMLwtRHEYgYZlWy7yWppGBI4QFaWCxtr%2FHj37TfhqyhLaEhODc7%2F3I%2FGV5swPT2Dgrxc6F6dhBxrTgjOyvVTSxcM3sLEZBBVlT58fvIT5JMNQRzANE3WsHMvezD3Ubbn9TdY4M9xNjs7d0fP1cEh9sxzdUxfVcI%2BOPgRNyuIh8fIa%2BZ%2F4mlWULaeDVwdtDl38W4%2F%2FhlbWehje8lJh0QNDNOEaVrQVBXZWdl2aHfx3vHS89i6uQaW6iHHRQntIvNMOx1DyML0l4MGei4bUBUJTZs0VBdl7miu8vU1E30BDb%2BOF2EuYqFnJ%2BDNSukip6C26xcDFtrOLwCahLMjMfTu9qDq4eVBuHOnhw0c%2BCZKnjI86VOhu8g60fIaxFA5RwM8LuD6vwwNx8K4EbS4ThoFphj6fzegkDxvLn%2BhmshIRgBhha7CllIFNWsUDARMNHREcHPGTqGDEphmqGsP4wdKUelKGS%2F6XdhUojjszBEICXLYR2k5sT0bpatl9N8w0HgijGDIBvljykLd0RD66HzNKhkd293oedmNunWL9%2Ff%2FI6B4oxRFBSl37nAjf4WEc0Mx7OkK49K4hXryXBjPkdC9y42NxbbnIr3xGG4DQFLxjNSS8vFGD3IekNF7xcCzh%2BfxC%2BW9iNLStcsDzr90eQDvNO%2FHp91f3D5FolstCWZSyp8qV9C2zQ2vS8LErIXChxRh3PF84Mpv2P9hK071fpUOIPqf2k2KX4gcXUJ5row88jiZXlir4nC9GzXFKroo38kF1TQNuscjBp%2BjI6qhKAoURYZBEzRKY5rTa3S5dtdqdrs60vG14XEV9fSkQgPhSJhusAVZXuSInZcmZ0V5GWbn5tD68RHc%2FOtvRMIhWAshRGmdD6U%2FkSVnQ8Mj6OjsFiPhsarKhEuJcf3ThT40vtIkQArz86DrHhKK326%2BOLWIH4lvZ0%2Fsyclb%2BGdiAmtpXJ%2FqbEuM6wQAh%2Fz27Pd4r6UVQ8PXwQdgkj5nLxKvk5hm8SMC5z%2BcDdV%2BNO97C5W%2B8oRsCgA%2FXYjFMDo6ZtfCmYAJ8cwb%2FsssfaQ4TSANIE3iHg8Wy32PhjKp%2Fwc46vDtLUqx1QAAAABJRU5ErkJggg%3D%3D" alt="CardNav website" />
+  <a href="https://ai.lovemoney.live">
+    <img src="https://img.shields.io/badge/Website-ai.lovemoney.live-2563eb?style=flat-square&logo=data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAHhlWElmTU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAAAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAABIAAAAAQAAAEgAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAAABigAwAEAAAAAQAAABgAAAAA0bpBmgAAAAlwSFlzAAALEwAACxMBAJqcGAAAA8xJREFUSA21VVtsFFUY%2Fua27e6sGijYK6217aY0gtm0FCQBoyY%2BqE%2FWpqFcVAKx8c0XfVAS%2B4RGC0kxMSQkllKg2lZMY0yICngDbUMkpFBbSqh1LWrt0uteujNz%2FM%2BZne1utysBwp%2FMnDPnv3z%2F7fwjMSLcR5Lvo21hWl0KEDMMjI0FEIlGIUlxLo9R7J2DVC2eBK%2Buo6S4KJVBXykAZ777Ee%2B3HMLwtRHEYgYZlWy7yWppGBI4QFaWCxtr%2FHj37TfhqyhLaEhODc7%2F3I%2FGV5swPT2Dgrxc6F6dhBxrTgjOyvVTSxcM3sLEZBBVlT58fvIT5JMNQRzANE3WsHMvezD3Ubbn9TdY4M9xNjs7d0fP1cEh9sxzdUxfVcI%2BOPgRNyuIh8fIa%2BZ%2F4mlWULaeDVwdtDl38W4%2F%2FhlbWehje8lJh0QNDNOEaVrQVBXZWdl2aHfx3vHS89i6uQaW6iHHRQntIvNMOx1DyML0l4MGei4bUBUJTZs0VBdl7miu8vU1E30BDb%2BOF2EuYqFnJ%2BDNSukip6C26xcDFtrOLwCahLMjMfTu9qDq4eVBuHOnhw0c%2BCZKnjI86VOhu8g60fIaxFA5RwM8LuD6vwwNx8K4EbS4ThoFphj6fzegkDxvLn%2BhmshIRgBhha7CllIFNWsUDARMNHREcHPGTqGDEphmqGsP4wdKUelKGS%2F6XdhUojjszBEICXLYR2k5sT0bpatl9N8w0HgijGDIBvljykLd0RD66HzNKhkd293oedmNunWL9%2Ff%2FI6B4oxRFBSl37nAjf4WEc0Mx7OkK49K4hXryXBjPkdC9y42NxbbnIr3xGG4DQFLxjNSS8vFGD3IekNF7xcCzh%2BfxC%2BW9iNLStcsDzr90eQDvNO%2FHp91f3D5FolstCWZSyp8qV9C2zQ2vS8LErIXChxRh3PF84Mpv2P9hK071fpUOIPqf2k2KX4gcXUJ5row88jiZXlir4nC9GzXFKroo38kF1TQNuscjBp%2BjI6qhKAoURYZBEzRKY5rTa3S5dtdqdrs60vG14XEV9fSkQgPhSJhusAVZXuSInZcmZ0V5GWbn5tD68RHc%2FOtvRMIhWAshRGmdD6U%2FkSVnQ8Mj6OjsFiPhsarKhEuJcf3ThT40vtIkQArz86DrHhKK326%2BOLWIH4lvZ0%2Fsyclb%2BGdiAmtpXJ%2FqbEuM6wQAh%2Fz27Pd4r6UVQ8PXwQdgkj5nLxKvk5hm8SMC5z%2BcDdV%2BNO97C5W%2B8oRsCgA%2FXYjFMDo6ZtfCmYAJ8cwb%2FsssfaQ4TSANIE3iHg8Wy32PhjKp%2Fwc46vDtLUqx1QAAAABJRU5ErkJggg%3D%3D" alt="AI LoveMoney website" />
   </a>
-  <a href="https://t.me/cardnav_xyz_group">
+  <a href="">
     <img src="https://img.shields.io/badge/Telegram-Group-26a5e4?style=flat-square&logo=telegram&logoColor=white" alt="Telegram group" />
   </a>
-  <a href="https://x.com/CharlesLee8266">
-    <img src="https://img.shields.io/badge/X-%40CharlesLee8266-000000?style=flat-square&logo=x&logoColor=white" alt="X @CharlesLee8266" />
+  <a href="">
+    <img src="https://img.shields.io/badge/X-placeholder-000000?style=flat-square&logo=x&logoColor=white" alt="X placeholder" />
   </a>
 </p>
 
@@ -41,9 +41,9 @@
 
 ## Обзор
 
-CardNav собирает AI-аккаунты, официальные подписки, gateway-сервисы, card shop продавцов, рейтинги моделей, руководства и практические инструменты в одной публичной точке входа, чтобы пользователи быстрее выбирали, сравнивали, искали и принимали более осознанные решения перед покупкой.
+AI LoveMoney собирает AI-аккаунты, официальные подписки, gateway-сервисы, card shop продавцов, рейтинги моделей, руководства и практические инструменты в одной публичной точке входа, чтобы пользователи быстрее выбирали, сравнивали, искали и принимали более осознанные решения перед покупкой.
 
-Подробнее о задумке CardNav и о том, почему он появился, читайте на странице [О CardNav](content/pages/ru/about.md).
+Подробнее о задумке AI LoveMoney и о том, почему он появился, читайте на странице [О AI LoveMoney](content/pages/ru/about.md).
 
 ## Возможности в одном месте
 
@@ -67,7 +67,7 @@ CardNav собирает AI-аккаунты, официальные подпи�
 
 ## Как пользоваться
 
-CardNav не пытается вывалить все сразу, а расставляет шаги в более понятном порядке:
+AI LoveMoney не пытается вывалить все сразу, а расставляет шаги в более понятном порядке:
 
 1. Сначала посмотрите рейтинги моделей и поймите, какие модели подходят под разные задачи
 2. Затем сравните цены официальных подписок и региональные различия
@@ -78,11 +78,11 @@ CardNav не пытается вывалить все сразу, а расст�
 
 ## Руководства
 
-[Руководства](https://cardnav.xyz/guide) — это маршрут CardNav для новых пользователей. Это не разрозненный набор инструкций, а системный путь: сначала выбрать модель, затем способ использования, потом подготовить сеть и платежи, и наконец разобраться с повседневным риск-контролем.
+[Руководства](https://ai.lovemoney.live/guide) — это маршрут AI LoveMoney для новых пользователей. Это не разрозненный набор инструкций, а системный путь: сначала выбрать модель, затем способ использования, потом подготовить сеть и платежи, и наконец разобраться с повседневным риск-контролем.
 
-Ниже приведены исходные Markdown-документы руководств. Для лучшей верстки и удобства чтения рекомендуется читать их на [официальном сайте](https://cardnav.xyz/guide).
+Ниже приведены исходные Markdown-документы руководств. Для лучшей верстки и удобства чтения рекомендуется читать их на [официальном сайте](https://ai.lovemoney.live/guide).
 
-Правила рендеринга карточек, frontmatter и внутренних ссылок для Markdown-руководств описаны в [правилах рендеринга Markdown-руководств CardNav](content/guide/README.md).
+Правила рендеринга карточек, frontmatter и внутренних ссылок для Markdown-руководств описаны в [правилах рендеринга Markdown-руководств AI LoveMoney](content/guide/README.md).
 
 | Руководство | Описание |
 | --- | --- |
@@ -125,7 +125,7 @@ npm run dev
 ```dotenv
 DATABASE_URL=postgres://user:password@host:5432/cardnav
 PORT=3101
-PUBLIC_SITE_URL=https://cardnav.xyz
+PUBLIC_SITE_URL=https://ai.lovemoney.live
 ABUSEIPDB_API_KEY=
 GREYNOISE_API_KEY=
 ```
@@ -164,6 +164,7 @@ Issues и Pull Requests приветствуются для:
 
 ## Лицензия
 
-Программный код CardNav открыт по лицензии [GNU Affero General Public License v3.0](./LICENSE).
+Программный код AI LoveMoney открыт по лицензии [GNU Affero General Public License v3.0](./LICENSE).
 
-Названия `CardNav` и `卡网大全`, Logo, домен, визуальный бренд, production-данные, данные продавцов, данные товаров, поисковые данные, содержание руководств, скриншоты и публичные тексты страниц не лицензируются вместе с программным кодом. Перед fork, доработкой или развертыванием публичного сервиса прочитайте [Data and Content License](./DATA_LICENSE.md) и [Brand and Trademark Policy](./TRADEMARKS.md), а также не допускайте, чтобы пользователи приняли ваш сервис за официальный сайт.
+Названия `AI LoveMoney` и `AI LoveMoney`, Logo, домен, визуальный бренд, production-данные, данные продавцов, данные товаров, поисковые данные, содержание руководств, скриншоты и публичные тексты страниц не лицензируются вместе с программным кодом. Перед fork, доработкой или развертыванием публичного сервиса прочитайте [Data and Content License](./DATA_LICENSE.md) и [Brand and Trademark Policy](./TRADEMARKS.md), а также не допускайте, чтобы пользователи приняли ваш сервис за официальный сайт.
+

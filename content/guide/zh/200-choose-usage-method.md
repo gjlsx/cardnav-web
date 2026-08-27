@@ -6,7 +6,7 @@ next: practical-prep
 ---
 # 二、选择 AI 订阅使用方式
 
-> 本文由 **卡网大全 [cardnav.xyz](https://cardnav.xyz)** 提供。
+> 本文由 **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)** 提供。
 
 想用上顶级国外大模型，常见路径大致可以分成五类。它们没有绝对的好坏，关键在于你更在意哪件事：省心、省钱、稳定、隐私，还是长期可控。
 

@@ -5,7 +5,7 @@ parent: start-here
 ---
 # 四、AI 订阅使用期间的风控与日常避坑
 
-> 本文由 **卡网大全 [cardnav.xyz](https://cardnav.xyz)** 提供。
+> 本文由 **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)** 提供。
 
 注册账号和绑定支付卡片往往只是第一步。在日常使用海外大模型的网页端或服务期间，平台通常都会持续做风控审查。如果某些行为被系统识别为异常，即便是正常付费订阅的账号，也可能面临封号、强制验证或支付受限。
 

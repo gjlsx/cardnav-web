@@ -6,7 +6,7 @@ next: payment-app-store
 ---
 # 订阅价格地区差异
 
-> 本文由 **卡网大全 [cardnav.xyz](https://cardnav.xyz)** 提供。
+> 本文由 **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)** 提供。
 
 同一个订阅套餐，在不同国家和地区的定价可能差很多，所以很多人会先去找“最便宜的区”。这件事本身没有错，但只看价格通常会踩坑，因为低价地区往往也伴随更严格的风控、更多的地区限制，或者后续更复杂的支付要求。
 
@@ -20,5 +20,5 @@ next: payment-app-store
 
 如果你的目标是省心而不是极限省钱，通常更值得优先考虑支付链路更成熟、风控相对更容易处理的地区，而不是一味追最低价。
 
-需要获取最新地区价格对比，可以查看本站数据 [官方订阅比价](https://cardnav.xyz/official-price)
+需要获取最新地区价格对比，可以查看本站数据 [官方订阅比价](https://ai.lovemoney.live/official-price)
 

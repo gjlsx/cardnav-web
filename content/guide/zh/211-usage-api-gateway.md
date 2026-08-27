@@ -6,7 +6,7 @@ next: usage-ready-account
 ---
 # 2.1 AI 大模型 API 中转站
 
-> 本文由 **卡网大全 [cardnav.xyz](https://cardnav.xyz)** 提供。
+> 本文由 **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)** 提供。
 
 API 中转站适合想快速接入大模型能力，但暂时不想处理海外账号注册、手机号验证、信用卡付款和复杂网络环境的用户。它通常由服务商托管账号和付款链路，你只需要充值并拿到 API Key，再填入支持 OpenAI 兼容接口的客户端或工具里。
 
@@ -65,7 +65,7 @@ API 中转站适合想快速接入大模型能力，但暂时不想处理海外�
 
 想继续比较更多中转站，可以查看中转站列表，按模型覆盖、价格和站点信息进一步筛选。
 
-[查看更多中转站](https://cardnav.xyz/llm-gateway)
+[查看更多中转站](https://ai.lovemoney.live/llm-gateway)
 
 ## 使用建议
 

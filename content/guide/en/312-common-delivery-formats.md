@@ -5,7 +5,7 @@ parent: merchant-overview
 ---
 # Common account delivery format explanation
 
-> This article is provided by **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> This article is provided by **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 Although many merchants sell items all called "accounts," the actual delivered content is not the same. Some are account information that can be used directly for web login, while others are JSON configurations for gateway panels, import tools, or scripts. Confirming the delivery format before ordering helps reduce understanding gaps and usage risks.
 

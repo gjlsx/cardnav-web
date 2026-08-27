@@ -6,7 +6,7 @@ next: usage-self-hosted-gateway
 ---
 # 2.4 AI 大模型官方订阅充值
 
-> 本文由 **卡网大全 [cardnav.xyz](https://cardnav.xyz)** 提供。
+> 本文由 **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)** 提供。
 
 自行注册和充值是最麻烦，但也最可控的一条路。你需要自己处理海外网络、手机号验证、地区一致性和支付通道，但账号、邮箱、付款方式和长期使用记录都掌握在自己手里。
 

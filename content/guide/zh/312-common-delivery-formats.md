@@ -5,7 +5,7 @@ parent: merchant-overview
 ---
 # 常见账号发货格式说明
 
-> 本文由 **卡网大全 [cardnav.xyz](https://cardnav.xyz)** 提供。
+> 本文由 **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)** 提供。
 
 很多商家售卖的虽然都被称为“账号”，但实际交付内容并不相同。有些是可直接用于网页登录的账号信息，有些则是供中转面板、导入工具或脚本使用的 JSON 配置。下单前先确认发货格式，有助于减少理解偏差和使用风险。
 

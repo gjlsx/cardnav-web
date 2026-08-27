@@ -5,7 +5,7 @@ parent: merchant-overview
 ---
 # How to choose a reliable merchant
 
-> This article is provided by **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> This article is provided by **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 When buying AI accounts, subscription accounts, or other virtual goods, the scariest thing is not paying a little more, but paying and then being unable to find anyone, having no one handle problems, or seeing the merchant quickly disappear. To judge whether a merchant is reliable, you can focus on the following points.
 
@@ -81,10 +81,10 @@ More reliable merchants usually satisfy several of the following at the same tim
 
 Cheap prices are certainly important, but do not only look at cheapness. Many times, what truly determines the experience is after-sales. When sudden risk control such as account bans occurs, being able to contact the merchant for resolution or compensation is the biggest protection.
 
-## Fast screening method: come to CardNav to see merchants and products
+## Fast screening method: come to AI LoveMoney to see merchants and products
 
-If you do not want to browse sites one by one, you can directly view merchants and products already organized for you on [CardNav](https://cardnav.xyz/). Our sorting rules and feedback handling methods are as follows:
+If you do not want to browse sites one by one, you can directly view merchants and products already organized for you on [AI LoveMoney](https://ai.lovemoney.live/). Our sorting rules and feedback handling methods are as follows:
 
 - **Dynamic information sorting**: The algorithm dynamically ranks products according to indicators such as stock, stability, and popularity, trying to show relatively better and more worry-free choices first.
-- **Community joint supervision**: Because all merchants are independent third parties, we cannot directly manage their transactions. If you encounter after-sales problems, you are welcome to give feedback in the official [Telegram discussion group](https://t.me/cardnav_xyz_group).
+- **Community joint supervision**: Because all merchants are independent third parties, we cannot directly manage their transactions. If you encounter after-sales problems, you are welcome to give feedback in the official [Telegram discussion group]().
 - **Problem merchants removed**: Although transaction safety needs to be evaluated and borne by everyone themselves, for merchants repeatedly reported by users with solid evidence, we will firmly remove them and never include them again.

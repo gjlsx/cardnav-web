@@ -6,7 +6,7 @@ next: practical-prep
 ---
 # 2.5 自建 AI 大模型中转站
 
-> 本文由 **卡网大全 [cardnav.xyz](https://cardnav.xyz)** 提供。
+> 本文由 **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)** 提供。
 
 自建中转站通常适合有技术基础的人。你自己购买官方额度或准备可用账号，再用反代理、中转程序或内部中转站把模型能力分发给团队、朋友或自己的多个工具使用。
 

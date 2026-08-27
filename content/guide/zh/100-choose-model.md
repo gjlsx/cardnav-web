@@ -6,7 +6,7 @@ next: choose-usage-method
 ---
 # 一、选择你想使用的 AI 大模型
 
-> 本文由 **卡网大全 [cardnav.xyz](https://cardnav.xyz)** 提供。
+> 本文由 **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)** 提供。
 
 大模型很多，但对大多数用户来说，真正需要先决定的不是“哪个模型最强”，而是“你要的是顶级能力，还是低门槛和低成本”。选择不同目标，对应的准备工作也完全不同。
 
@@ -19,7 +19,7 @@ next: choose-usage-method
 ### 1. 使用门槛
 - **网络与验证**：需要稳定的海外 IP 和真实的手机号进行账号注册。
 - **支付风控**：官网订阅常遇拒付，需配合海外应用商店礼品卡完成支付。
-- **能力对比**：如果需要查看最新模型能力差异，可先参考 [大模型能力排行榜](https://cardnav.xyz/model-leaderboard)。
+- **能力对比**：如果需要查看最新模型能力差异，可先参考 [大模型能力排行榜](https://ai.lovemoney.live/model-leaderboard)。
 
 ### 2. 适合谁
 - **更适合**：寻求最前沿的编程开发、通用逻辑推理及成熟生态体验的用户

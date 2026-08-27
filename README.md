@@ -1,6 +1,6 @@
 ![](assets/banner.webp)
 
-<h1 align="center">卡网大全 · CardNav</h1>
+<h1 align="center">AI LoveMoney · AI LoveMoney</h1>
 
 <p align="center">
   <strong>中文</strong> ·
@@ -13,14 +13,14 @@
 </p>
 
 <p align="center">
-  <a href="https://cardnav.xyz">
-    <img src="https://img.shields.io/badge/Website-cardnav.xyz-2563eb?style=flat-square&logo=data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAHhlWElmTU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAAAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAABIAAAAAQAAAEgAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAAABigAwAEAAAAAQAAABgAAAAA0bpBmgAAAAlwSFlzAAALEwAACxMBAJqcGAAAA8xJREFUSA21VVtsFFUY%2Fua27e6sGijYK6217aY0gtm0FCQBoyY%2BqE%2FWpqFcVAKx8c0XfVAS%2B4RGC0kxMSQkllKg2lZMY0yICngDbUMkpFBbSqh1LWrt0uteujNz%2FM%2BZne1utysBwp%2FMnDPnv3z%2F7fwjMSLcR5Lvo21hWl0KEDMMjI0FEIlGIUlxLo9R7J2DVC2eBK%2Buo6S4KJVBXykAZ777Ee%2B3HMLwtRHEYgYZlWy7yWppGBI4QFaWCxtr%2FHj37TfhqyhLaEhODc7%2F3I%2FGV5swPT2Dgrxc6F6dhBxrTgjOyvVTSxcM3sLEZBBVlT58fvIT5JMNQRzANE3WsHMvezD3Ubbn9TdY4M9xNjs7d0fP1cEh9sxzdUxfVcI%2BOPgRNyuIh8fIa%2BZ%2F4mlWULaeDVwdtDl38W4%2F%2FhlbWehje8lJh0QNDNOEaVrQVBXZWdl2aHfx3vHS89i6uQaW6iHHRQntIvNMOx1DyML0l4MGei4bUBUJTZs0VBdl7miu8vU1E30BDb%2BOF2EuYqFnJ%2BDNSukip6C26xcDFtrOLwCahLMjMfTu9qDq4eVBuHOnhw0c%2BCZKnjI86VOhu8g60fIaxFA5RwM8LuD6vwwNx8K4EbS4ThoFphj6fzegkDxvLn%2BhmshIRgBhha7CllIFNWsUDARMNHREcHPGTqGDEphmqGsP4wdKUelKGS%2F6XdhUojjszBEICXLYR2k5sT0bpatl9N8w0HgijGDIBvljykLd0RD66HzNKhkd293oedmNunWL9%2Ff%2FI6B4oxRFBSl37nAjf4WEc0Mx7OkK49K4hXryXBjPkdC9y42NxbbnIr3xGG4DQFLxjNSS8vFGD3IekNF7xcCzh%2BfxC%2BW9iNLStcsDzr90eQDvNO%2FHp91f3D5FolstCWZSyp8qV9C2zQ2vS8LErIXChxRh3PF84Mpv2P9hK071fpUOIPqf2k2KX4gcXUJ5row88jiZXlir4nC9GzXFKroo38kF1TQNuscjBp%2BjI6qhKAoURYZBEzRKY5rTa3S5dtdqdrs60vG14XEV9fSkQgPhSJhusAVZXuSInZcmZ0V5GWbn5tD68RHc%2FOtvRMIhWAshRGmdD6U%2FkSVnQ8Mj6OjsFiPhsarKhEuJcf3ThT40vtIkQArz86DrHhKK326%2BOLWIH4lvZ0%2Fsyclb%2BGdiAmtpXJ%2FqbEuM6wQAh%2Fz27Pd4r6UVQ8PXwQdgkj5nLxKvk5hm8SMC5z%2BcDdV%2BNO97C5W%2B8oRsCgA%2FXYjFMDo6ZtfCmYAJ8cwb%2FsssfaQ4TSANIE3iHg8Wy32PhjKp%2Fwc46vDtLUqx1QAAAABJRU5ErkJggg%3D%3D" alt="卡网大全官网" />
+  <a href="https://ai.lovemoney.live">
+    <img src="https://img.shields.io/badge/Website-ai.lovemoney.live-2563eb?style=flat-square&logo=data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAHhlWElmTU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAAAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAABIAAAAAQAAAEgAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAAABigAwAEAAAAAQAAABgAAAAA0bpBmgAAAAlwSFlzAAALEwAACxMBAJqcGAAAA8xJREFUSA21VVtsFFUY%2Fua27e6sGijYK6217aY0gtm0FCQBoyY%2BqE%2FWpqFcVAKx8c0XfVAS%2B4RGC0kxMSQkllKg2lZMY0yICngDbUMkpFBbSqh1LWrt0uteujNz%2FM%2BZne1utysBwp%2FMnDPnv3z%2F7fwjMSLcR5Lvo21hWl0KEDMMjI0FEIlGIUlxLo9R7J2DVC2eBK%2Buo6S4KJVBXykAZ777Ee%2B3HMLwtRHEYgYZlWy7yWppGBI4QFaWCxtr%2FHj37TfhqyhLaEhODc7%2F3I%2FGV5swPT2Dgrxc6F6dhBxrTgjOyvVTSxcM3sLEZBBVlT58fvIT5JMNQRzANE3WsHMvezD3Ubbn9TdY4M9xNjs7d0fP1cEh9sxzdUxfVcI%2BOPgRNyuIh8fIa%2BZ%2F4mlWULaeDVwdtDl38W4%2F%2FhlbWehje8lJh0QNDNOEaVrQVBXZWdl2aHfx3vHS89i6uQaW6iHHRQntIvNMOx1DyML0l4MGei4bUBUJTZs0VBdl7miu8vU1E30BDb%2BOF2EuYqFnJ%2BDNSukip6C26xcDFtrOLwCahLMjMfTu9qDq4eVBuHOnhw0c%2BCZKnjI86VOhu8g60fIaxFA5RwM8LuD6vwwNx8K4EbS4ThoFphj6fzegkDxvLn%2BhmshIRgBhha7CllIFNWsUDARMNHREcHPGTqGDEphmqGsP4wdKUelKGS%2F6XdhUojjszBEICXLYR2k5sT0bpatl9N8w0HgijGDIBvljykLd0RD66HzNKhkd293oedmNunWL9%2Ff%2FI6B4oxRFBSl37nAjf4WEc0Mx7OkK49K4hXryXBjPkdC9y42NxbbnIr3xGG4DQFLxjNSS8vFGD3IekNF7xcCzh%2BfxC%2BW9iNLStcsDzr90eQDvNO%2FHp91f3D5FolstCWZSyp8qV9C2zQ2vS8LErIXChxRh3PF84Mpv2P9hK071fpUOIPqf2k2KX4gcXUJ5row88jiZXlir4nC9GzXFKroo38kF1TQNuscjBp%2BjI6qhKAoURYZBEzRKY5rTa3S5dtdqdrs60vG14XEV9fSkQgPhSJhusAVZXuSInZcmZ0V5GWbn5tD68RHc%2FOtvRMIhWAshRGmdD6U%2FkSVnQ8Mj6OjsFiPhsarKhEuJcf3ThT40vtIkQArz86DrHhKK326%2BOLWIH4lvZ0%2Fsyclb%2BGdiAmtpXJ%2FqbEuM6wQAh%2Fz27Pd4r6UVQ8PXwQdgkj5nLxKvk5hm8SMC5z%2BcDdV%2BNO97C5W%2B8oRsCgA%2FXYjFMDo6ZtfCmYAJ8cwb%2FsssfaQ4TSANIE3iHg8Wy32PhjKp%2Fwc46vDtLUqx1QAAAABJRU5ErkJggg%3D%3D" alt="AI LoveMoney官网" />
   </a>
-  <a href="https://t.me/cardnav_xyz_group">
+  <a href="">
     <img src="https://img.shields.io/badge/Telegram-%E7%BE%A4%E7%BB%84-26a5e4?style=flat-square&logo=telegram&logoColor=white" alt="Telegram 群组" />
   </a>
-  <a href="https://x.com/CharlesLee8266">
-    <img src="https://img.shields.io/badge/X-%40CharlesLee8266-000000?style=flat-square&logo=x&logoColor=white" alt="X @CharlesLee8266" />
+  <a href="">
+    <img src="https://img.shields.io/badge/X-placeholder-000000?style=flat-square&logo=x&logoColor=white" alt="X placeholder" />
   </a>
 </p>
 
@@ -41,9 +41,9 @@
 
 ## 产品简介
 
-卡网大全把 AI 大模型账号、官方订阅、中转站、卡网商家、模型排行、使用指南和实用工具放在同一个公开入口里，帮助用户更快完成选型、比价、搜索和购买前判断。
+AI LoveMoney把 AI 大模型账号、官方订阅、中转站、卡网商家、模型排行、使用指南和实用工具放在同一个公开入口里，帮助用户更快完成选型、比价、搜索和购买前判断。
 
-想了解卡网大全背后的故事，可以阅读 [关于卡网大全](https://cardnav.xyz/about)。
+想了解AI LoveMoney背后的故事，可以阅读 [关于AI LoveMoney](https://ai.lovemoney.live/about)。
 
 ## 一站式能力
 
@@ -67,7 +67,7 @@
 
 ## 使用方式
 
-卡网大全不是把所有东西都塞给你，而是尽量把顺序排清楚一点：
+AI LoveMoney不是把所有东西都塞给你，而是尽量把顺序排清楚一点：
 
 1. 先看模型排行榜，知道不同任务下大概该看谁
 2. 再看官方订阅比价，弄明白不同地区的价格差异
@@ -78,11 +78,11 @@
 
 ## 使用向导
 
-[向导](https://cardnav.xyz/guide) 是卡网大全给新手用户准备的使用路径。它不是零散教程集合，而是按“先选模型、再选使用方式、再补齐网络与支付准备、最后处理日常风控”的顺序，系统性的把容易混在一起的问题拆开讲清楚。
+[向导](https://ai.lovemoney.live/guide) 是AI LoveMoney给新手用户准备的使用路径。它不是零散教程集合，而是按“先选模型、再选使用方式、再补齐网络与支付准备、最后处理日常风控”的顺序，系统性的把容易混在一起的问题拆开讲清楚。
 
-以下为向导内容的 Markdown 原始文档，推荐直接在 [官网](https://cardnav.xyz/guide) 阅读，以获得最佳排版与浏览体验。
+以下为向导内容的 Markdown 原始文档，推荐直接在 [官网](https://ai.lovemoney.live/guide) 阅读，以获得最佳排版与浏览体验。
 
-向导 Markdown 的卡片、frontmatter 和站内链接渲染规则见 [卡网大全向导 Markdown 渲染说明](content/guide/README.md)。
+向导 Markdown 的卡片、frontmatter 和站内链接渲染规则见 [AI LoveMoney向导 Markdown 渲染说明](content/guide/README.md)。
 
 | 向导 | 说明 |
 | --- | --- |
@@ -125,7 +125,7 @@ npm run dev
 ```dotenv
 DATABASE_URL=postgres://user:password@host:5432/cardnav
 PORT=3101
-PUBLIC_SITE_URL=https://cardnav.xyz
+PUBLIC_SITE_URL=https://ai.lovemoney.live
 ABUSEIPDB_API_KEY=
 GREYNOISE_API_KEY=
 ```
@@ -164,6 +164,7 @@ cardnav-web/
 
 ## License
 
-卡网大全 (CardNav) 的软件代码使用 [GNU Affero General Public License v3.0](./LICENSE) 开源。
+AI LoveMoney (AI LoveMoney) 的软件代码使用 [GNU Affero General Public License v3.0](./LICENSE) 开源。
 
-`CardNav`、`卡网大全` 名称、Logo、域名、视觉品牌、线上生产数据、商家数据、商品数据、搜索数据、指南内容、截图和公开页面文案不随软件代码授权。Fork、二次开发或部署公开服务时，请阅读 [数据与内容授权](./DATA_LICENSE.md) 和 [品牌与商标政策](./TRADEMARKS.md)，并避免让用户误认为你的服务是官方网站。
+`AI LoveMoney`、`AI LoveMoney` 名称、Logo、域名、视觉品牌、线上生产数据、商家数据、商品数据、搜索数据、指南内容、截图和公开页面文案不随软件代码授权。Fork、二次开发或部署公开服务时，请阅读 [数据与内容授权](./DATA_LICENSE.md) 和 [品牌与商标政策](./TRADEMARKS.md)，并避免让用户误认为你的服务是官方网站。
+

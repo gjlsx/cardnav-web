@@ -5,7 +5,7 @@ parent: network-env-overview
 ---
 # VPN and proxy access
 
-> This article is provided by **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> This article is provided by **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 If the target model restricts direct access from your region, then VPN or other proxy methods are basically the unavoidable first step. The problem many people encounter is not "whether there is a ladder," but "whether the current IP is stable, clean enough, and matches the later registration region."
 

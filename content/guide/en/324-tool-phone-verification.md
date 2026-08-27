@@ -5,7 +5,7 @@ parent: network-env-overview
 ---
 # Overseas phone number verification
 
-> This article is provided by **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> This article is provided by **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 The phone number problem is often underestimated. Many people only focus on "whether the first verification code can be received," but the truly troublesome part is later secondary verification. If the platform asks you to verify the original number again weeks or months later, and you used a one-time SMS receiving number at the time, the account may get stuck there.
 

@@ -5,7 +5,7 @@ parent: start-here
 ---
 # 4. Risk control and daily pitfall avoidance during AI subscription use
 
-> This article is provided by **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> This article is provided by **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 Registering an account and binding a payment card are often only the first step. During daily use of overseas large model web services or services, platforms usually continue to perform risk-control review. If certain behaviors are identified by the system as abnormal, even normally paid subscription accounts may face account bans, forced verification, or payment restrictions.
 

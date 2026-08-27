@@ -6,7 +6,7 @@ next: usage-ready-account
 ---
 # 2.1 AI large model API gateway site
 
-> This article is provided by **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> This article is provided by **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 API gateway sites suit users who want to quickly connect to large model capabilities but temporarily do not want to handle overseas account registration, phone number verification, credit card payment, and complex network environments. They are usually operated by service providers that host accounts and payment chains. You only need to top up and obtain an API Key, then enter it into a client or tool that supports OpenAI-compatible interfaces.
 

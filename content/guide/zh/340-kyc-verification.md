@@ -6,7 +6,7 @@ next: daily-usage-risk
 ---
 # 3.4 认识 KYC 风控
 
-> 本文由 **卡网大全 [cardnav.xyz](https://cardnav.xyz)** 提供。
+> 本文由 **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)** 提供。
 
 订阅海外大模型（特别是 Claude）或充值海外虚拟卡时，你常会遇到一个强力风控卡点——**KYC 身份验证**。对缺乏海外身份的普通用户来说，这道防线基本是无解的。
 

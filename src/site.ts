@@ -3,12 +3,12 @@
  */
 import 'dotenv/config';
 
-export const publicSiteUrl = process.env.PUBLIC_SITE_URL || 'https://cardnav.xyz';
+export const publicSiteUrl = process.env.PUBLIC_SITE_URL || 'https://ai.lovemoney.live';
 export const defaultSeoImagePath = '/og-cardnav.webp';
-export const indexNowKey = process.env.INDEXNOW_KEY || 'cardnavxyzindexnow2026';
-export const telegramGroupUrl = 'https://t.me/cardnav_xyz_group';
-export const githubRepoUrl = 'https://github.com/charleslee8266/cardnav-web';
-export const xProfileUrl = 'https://x.com/CharlesLee8266';
+export const indexNowKey = process.env.INDEXNOW_KEY || 'ailovemoneyindexnow2026';
+export const telegramGroupUrl = '';
+export const xProfileUrl = '';
+export const qqGroupUrl = '';
 
 export const headerAdTagEnabled = ['1', 'true', 'yes', 'on'].includes(
   String(process.env.HEADER_AD_TAG_ENABLED || '').trim().toLowerCase(),

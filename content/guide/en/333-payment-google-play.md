@@ -6,7 +6,7 @@ next: kyc-verification
 ---
 # Google Play Store payment
 
-> This article is provided by **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> This article is provided by **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 If you do not have an Apple device, using an Android phone and Google Play is also an alternative for avoiding direct card-binding rejection.
 

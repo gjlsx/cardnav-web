@@ -6,7 +6,7 @@ next: payment-google-play
 ---
 # App Store 支付
 
-> 本文由 **卡网大全 [cardnav.xyz](https://cardnav.xyz)** 提供。
+> 本文由 **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)** 提供。
 
 通过苹果应用商店进行支付是最常用的方式之一。由于苹果应用商店的审核和账单扣款由苹果官方托管，AI 工具本身（如 ChatGPT、Claude）无法对您的实际付款卡进行风控，因此是避开拒付和风控的绝佳路径。
 

@@ -5,7 +5,7 @@ parent: network-env-overview
 ---
 # IP 纯净度检查
 
-> 本文由 **卡网大全 [cardnav.xyz](https://cardnav.xyz)** 提供。
+> 本文由 **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)** 提供。
 
 很多用户会把“梯子能连上”误认为“这个 IP 可以安全注册和使用”。现实里，平台的风控通常会综合考虑 IP 历史、滥用记录、代理痕迹和地区可信度，所以在关键操作前先检查 IP，至少能帮你排掉一部分明显有问题的出口。
 
@@ -20,4 +20,4 @@ IP 检查不能保证绝对安全，因为没有人知道平台完整的风控�
 - **登录出现异常时**：当遇到频繁人机验证、甚至登录报错时，应及时检测当前 IP 的被污染情况。
 - **付款订阅操作前**：在绑定银行卡付款前，需确保 IP 地区和卡片归属地高度匹配且无高欺诈分。
 
-直接使用检测工具：[IP 纯净度检测](https://cardnav.xyz/tools/ip-purity)
+直接使用检测工具：[IP 纯净度检测](https://ai.lovemoney.live/tools/ip-purity)

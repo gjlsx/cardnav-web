@@ -5,7 +5,7 @@ parent: practical-prep
 ---
 # 3.2 网络环境与主机准备
 
-> 本文由 **卡网大全 [cardnav.xyz](https://cardnav.xyz)** 提供。
+> 本文由 **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)** 提供。
 
 在实操注册海外 AI 服务（如 ChatGPT、Claude）或者绑定国外支付卡时，网络环境和 IP 的纯净度往往决定了你的成功率。如果你的 IP 历史被污染或者被大范围高频风控，极易面临“注册即封号”或“付款被拒”的窘境。
 

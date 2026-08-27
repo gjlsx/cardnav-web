@@ -6,7 +6,7 @@ next: usage-self-hosted-gateway
 ---
 # 2.4 AI large model official subscription top-up
 
-> This article is provided by **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> This article is provided by **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 Registering and topping up by yourself is the most troublesome path, but also the most controllable one. You need to handle overseas network, phone number verification, regional consistency, and payment channels yourself, but the account, email, payment method, and long-term usage records are all in your own hands.
 

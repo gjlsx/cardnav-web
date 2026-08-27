@@ -1,5 +1,5 @@
 /**
- * 文件说明: 维护 CardNav 公开站点英文界面文案。
+ * 文件说明: 维护 AI LoveMoney 公开站点英文界面文案。
  */
 import type { Messages } from './zh.js';
 
@@ -98,11 +98,11 @@ const ipPurityRuntime = {
 
 export const enMessages: Messages = {
   site: {
-    name: 'CardNav',
-    domain: 'cardnav.xyz',
+    name: 'AI LoveMoney',
+    domain: 'ai.lovemoney.live',
     tagline: 'One-stop navigation for AI model account access',
     heroDescription:
-      'Not sure where to buy AI accounts at a lower price from more reliable sources? CardNav brings together AI gateway sites, third-party shops, official subscription price comparisons, plus model rankings, guides, and practical tools to help you avoid traps and spend less.',
+      'Not sure where to buy AI accounts at a lower price from more reliable sources? AI LoveMoney brings together AI gateway sites, third-party shops, official subscription price comparisons, plus model rankings, guides, and practical tools to help you avoid traps and spend less.',
   },
   nav: {
     openMenu: 'Open menu',
@@ -151,14 +151,14 @@ export const enMessages: Messages = {
     loadMoreProducts: 'Load more products',
   },
   external: {
-    telegramGroup: 'Telegram group',
-    githubRepo: 'GitHub repository',
-    xProfile: 'X @CharlesLee8266',
+    telegramGroup: 'Telegram',
+    xProfile: 'X',
+    qqGroup: 'QQ group',
     chatgptSession: 'ChatGPT Session endpoint',
   },
   announcement: {
     label: 'Announcement',
-    message: 'The CardNav Telegram group is now open, share feature suggestions, product ideas, data questions, usage feedback, and business inquiries with us.',
+    message: 'Follow this site for the latest content and announcements.',
     close: 'Close announcement',
   },
   analytics: {
@@ -194,13 +194,13 @@ export const enMessages: Messages = {
     displaySummary: 'Showing {rendered} / {total}',
   },
   seo: {
-    titleSuffix: 'CardNav',
-    websiteName: 'CardNav',
-    llmsDescription: 'CardNav is a public navigation site that aggregates AI account merchants, API gateways, products, stock status, prices, submission entry points, and pre-purchase guidance.',
-    crawlerPolicy: 'Public pages may be used for search indexing, citation, answer grounding, and user-requested retrieval. CardNav does not authorize model-training or bulk dataset crawling; see robots.txt for crawler-specific rules.',
+    titleSuffix: 'AI LoveMoney',
+    websiteName: 'AI LoveMoney',
+    llmsDescription: 'AI LoveMoney is a public navigation site that aggregates AI account merchants, API gateways, products, stock status, prices, submission entry points, and pre-purchase guidance.',
+    crawlerPolicy: 'Public pages may be used for search indexing, citation, answer grounding, and user-requested retrieval. AI LoveMoney does not authorize model-training or bulk dataset crawling; see robots.txt for crawler-specific rules.',
   },
   home: {
-    seoTitle: 'CardNav - One-stop navigation for AI model account access',
+    seoTitle: 'AI LoveMoney - One-stop navigation for AI model account access',
     seoDescription:
       'AI gateway sites, third-party AI shops, official subscription price comparisons, model rankings, guides, and practical tools for GPT, Claude, Gemini, Cursor, Grok, and more.',
     guideTitle: 'Not sure where to start? Open the guide',
@@ -272,14 +272,14 @@ export const enMessages: Messages = {
     seoTitle: 'AI shops',
     seoDescription: 'Browse third-party AI merchants and products with keyword, category, price, stock, merchant, and refresh-time filters.',
     searchResultsTitle: '{term} related product search results',
-    searchResultsDescription: 'Browse CardNav product search results related to {term}, then filter by price, stock, merchant, and category. Results are matched from product titles, categories, and merchant information; please check product details before buying.',
+    searchResultsDescription: 'Browse AI LoveMoney product search results related to {term}, then filter by price, stock, merchant, and category. Results are matched from product titles, categories, and merchant information; please check product details before buying.',
     title: 'AI shop products',
     description: 'Browse third-party AI merchants and products, then filter by price, stock, merchant, and refresh time to find better purchase entry points.',
     note: 'Prices are for reference only. Final prices are determined by each platform.',
     submitMerchant: 'Submit merchant',
     urlLabel: 'URL',
     guideTitle: 'Before you buy: how to choose a reliable merchant',
-    guideDescription: 'CardNav only organizes public information. Judge merchant reliability yourself. Open the guide to learn how to evaluate merchants by products, payment methods, contact channels, community activity, inventory updates, and more.',
+    guideDescription: 'AI LoveMoney only organizes public information. Judge merchant reliability yourself. Open the guide to learn how to evaluate merchants by products, payment methods, contact channels, community activity, inventory updates, and more.',
     hotProductsTitle: 'Hot products',
     searchPlaceholder: 'Search products. Separate keywords with spaces. Advanced search is available in the info button on the right.',
     advancedSearchLabel: 'Advanced search help',
@@ -310,7 +310,7 @@ export const enMessages: Messages = {
     productScoreHelpLabel: 'Product score help',
     productScoreTip: 'Product score is a precomputed reference metric for sorting and filtering. It can reflect search interest, clicks, stock status, and merchant signals used for public display. It does not mean the product is reliable; please check details before buying.',
     merchantScoreHelpLabel: 'Merchant score help',
-    merchantScoreTip: 'Merchant score is calculated by CardNav with a proprietary algorithm across multiple signals. It is only a filtering reference and does not mean the merchant is reliable. Please evaluate the merchant yourself before buying.',
+    merchantScoreTip: 'Merchant score is calculated by AI LoveMoney with a proprietary algorithm across multiple signals. It is only a filtering reference and does not mean the merchant is reliable. Please evaluate the merchant yourself before buying.',
     sortTitleSuffix: 'sort',
     clickSort: 'Click to sort',
     productFavorite: 'Favorite product',
@@ -326,7 +326,7 @@ export const enMessages: Messages = {
     closeSubmitDialog: 'Close submit merchant dialog',
     closeSubmitBackdrop: 'Close submit merchant backdrop',
     cooperationTitle: 'Partnership exposure',
-    cooperationDescription: 'Merchants interested in partnership can get more exposure on CardNav, such as sponsored placements, featured display, or additional recommendation entry points; ',
+    cooperationDescription: 'Merchants interested in partnership can get more exposure on AI LoveMoney, such as sponsored placements, featured display, or additional recommendation entry points; ',
     cooperationDetails: 'view details',
     cooperationSentenceEnd: '.',
     script: {
@@ -374,7 +374,7 @@ export const enMessages: Messages = {
     modelRecords: 'Model records',
     tableHint: 'The list shows only model and price summaries. Check the detail page and the platform itself for exact prices, availability, and billing rules.',
     gatewayScoreHelpLabel: 'Gateway score help',
-    gatewayScoreTip: 'Gateway score is calculated by CardNav across multiple signals, including manual curation, model coverage, price records, availability, and response performance. Use it as a filtering reference.',
+    gatewayScoreTip: 'Gateway score is calculated by AI LoveMoney across multiple signals, including manual curation, model coverage, price records, availability, and response performance. Use it as a filtering reference.',
     siteName: 'Site',
     siteType: 'Type',
     rank: 'Rank',
@@ -497,7 +497,7 @@ export const enMessages: Messages = {
       title: 'Outlook quick mail fetch',
       description: 'Search Outlook mail through IMAP OAuth2 and Graph API, useful for temporary lookup and retrieval.',
     },
-    externalRisk: 'This tool is provided by an external website, not CardNav. Use it at your own risk.',
+    externalRisk: 'This tool is provided by an external website, not AI LoveMoney. Use it at your own risk.',
   },
   sessionConverter: {
     seoTitle: 'ChatGPT Session converter',
@@ -590,7 +590,7 @@ export const enMessages: Messages = {
     becomeSponsor: 'Become a sponsor',
     partnershipLinkLabel: 'How to partner',
     sponsorLabel: 'Partner',
-    sponsorDescription: 'Partner listings have received an initial review by CardNav. Please assess reliability yourself. Merchants found to engage in deception will be removed immediately.',
+    sponsorDescription: 'Partner listings have received an initial review by AI LoveMoney. Please assess reliability yourself. Merchants found to engage in deception will be removed immediately.',
   },
   submit: {
     success: 'Submitted successfully',

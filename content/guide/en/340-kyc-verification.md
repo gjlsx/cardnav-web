@@ -6,7 +6,7 @@ next: daily-usage-risk
 ---
 # 3.4 Understand KYC risk control
 
-> This article is provided by **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> This article is provided by **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 When subscribing to overseas large models, especially Claude, or topping up overseas virtual cards, you will often encounter a strong risk-control checkpoint: **KYC identity verification**. For ordinary users who lack overseas identity, this defense line is basically unsolvable.
 

@@ -5,7 +5,7 @@ parent: network-env-overview
 ---
 # IP purity check
 
-> This article is provided by **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> This article is provided by **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 Many users mistakenly treat "the proxy can connect" as "this IP can safely register and be used." In reality, platform risk control usually considers IP history, abuse records, proxy traces, and regional credibility together, so checking the IP before key operations can at least help you exclude some exits with obvious problems.
 
@@ -20,4 +20,4 @@ Suitable times to do an IP check:
 - **When login anomalies appear**: When frequent human verification or even login errors occur, you should promptly check whether the current IP is polluted.
 - **Before payment subscription operations**: Before binding a bank card for payment, make sure the IP region highly matches the card's issuing location and has no high-fraud score.
 
-Use the detection tool directly: [IP purity check](https://cardnav.xyz/tools/ip-purity)
+Use the detection tool directly: [IP purity check](https://ai.lovemoney.live/tools/ip-purity)

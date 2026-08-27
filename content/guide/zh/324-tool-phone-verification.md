@@ -5,7 +5,7 @@ parent: network-env-overview
 ---
 # 国外手机号验证
 
-> 本文由 **卡网大全 [cardnav.xyz](https://cardnav.xyz)** 提供。
+> 本文由 **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)** 提供。
 
 手机号问题常被低估。很多人只关注“能不能收到第一次验证码”，但真正麻烦的是后续二次验证。如果平台在几周或几个月后再次要求你验证原号码，而你当时用的是一次性接码号，账号就可能卡在那里。
 

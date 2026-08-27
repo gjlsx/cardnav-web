@@ -6,7 +6,7 @@ next: usage-third-party-top-up
 ---
 # 2.2 AI large model ready-made account purchase and login
 
-> This article is provided by **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> This article is provided by **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 Buying a ready-made account is one of the easiest methods for many beginners to understand: the merchant has already registered and activated the subscription, and after you receive the account, password, or credential, you directly log in to the official web page or client. Its advantage is speed, while the problems mainly concentrate on account source, after-sales period, login environment, and credential format.
 

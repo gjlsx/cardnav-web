@@ -5,7 +5,7 @@ parent: network-env-overview
 ---
 # Cloud server recommendations
 
-> This article is provided by **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> This article is provided by **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 If you plan to self-host a node, run a reverse proxy program, or want a more controllable network environment, you usually need your own cloud server. For personal or small-scale use by a few people, `1C1G` is often already enough.
 

@@ -5,7 +5,7 @@ next: choose-model
 ---
 # 开始向导
 
-> 本文由 **卡网大全 [cardnav.xyz](https://cardnav.xyz)** 提供。
+> 本文由 **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)** 提供。
 
 如果你准备使用 ChatGPT、Claude、Gemini、Grok、Cursor 等 AI 产品，特别是来自一些受限制的国家和地区，在注册账号或开通订阅的过程中，经常会遇到很多问题，例如账号、网络、手机号、支付方式和价格。
 

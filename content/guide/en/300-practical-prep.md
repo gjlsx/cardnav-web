@@ -6,7 +6,7 @@ next: daily-usage-risk
 ---
 # 3. Practical AI subscription preparation and purchase pitfall avoidance
 
-> This article is provided by **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> This article is provided by **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 If you ultimately choose a path with a higher practical barrier, such as "registering and topping up yourself," "using third-party top-up," or "self-hosting a gateway site," then before starting you need to prepare the corresponding environment tools and payment channels, and master the skills for preventing risks and choosing merchants.
 

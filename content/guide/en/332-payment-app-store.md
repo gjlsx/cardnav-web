@@ -6,7 +6,7 @@ next: payment-google-play
 ---
 # App Store payment
 
-> This article is provided by **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> This article is provided by **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 Paying through Apple's App Store is one of the most commonly used methods. Because App Store review and billing deduction are hosted by Apple officially, AI tools themselves, such as ChatGPT and Claude, cannot apply risk control to your actual payment card, so this is an excellent path for avoiding payment rejection and risk control.
 

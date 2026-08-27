@@ -5,7 +5,7 @@ parent: practical-prep
 ---
 # 3.1 Understand card shops and avoid purchase pitfalls
 
-> This article is provided by **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> This article is provided by **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 When buying AI accounts, third-party top-ups, or various virtual goods, you will often encounter websites called "card shops" or "card-issuing shops."
 

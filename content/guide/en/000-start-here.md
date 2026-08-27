@@ -5,7 +5,7 @@ next: choose-model
 ---
 # Start here
 
-> This article is provided by **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> This article is provided by **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 If you are preparing to use AI products such as ChatGPT, Claude, Gemini, Grok, Cursor, and more, especially from some restricted countries and regions, you will often run into many questions while registering an account or starting a subscription, such as accounts, networks, phone numbers, payment methods, and prices.
 

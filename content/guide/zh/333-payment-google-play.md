@@ -6,7 +6,7 @@ next: kyc-verification
 ---
 # Google Play Store 支付
 
-> 本文由 **卡网大全 [cardnav.xyz](https://cardnav.xyz)** 提供。
+> 本文由 **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)** 提供。
 
 如果您没有苹果设备，使用安卓手机和 Google Play 也是一种避开直接绑卡拒付的备选方案。
 

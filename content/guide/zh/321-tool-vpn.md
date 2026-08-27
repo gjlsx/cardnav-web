@@ -5,7 +5,7 @@ parent: network-env-overview
 ---
 # 科学上网与 VPN
 
-> 本文由 **卡网大全 [cardnav.xyz](https://cardnav.xyz)** 提供。
+> 本文由 **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)** 提供。
 
 如果目标模型限制了你所在地区的直接访问，那么 VPN 或其他代理方式基本是绕不开的第一步。很多人遇到的问题，不是“有没有梯子”，而是“当前 IP 是否稳定、是否足够干净、是否和后续注册地区匹配”。
 

@@ -5,7 +5,7 @@ parent: practical-prep
 ---
 # 3.1 认识卡网与选购避坑
 
-> 本文由 **卡网大全 [cardnav.xyz](https://cardnav.xyz)** 提供。
+> 本文由 **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)** 提供。
 
 在购买 AI 账号、第三方代充、或者各种虚拟商品时，你常会遇到各种被称为“卡网”或“发卡网”的网站。
 

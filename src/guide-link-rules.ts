@@ -1,7 +1,7 @@
 /**
  * 文件说明: 维护 Guide Markdown 链接到网页链接的转换规则，供渲染逻辑和测试复用。
  */
-export const cardnavSiteOrigin = 'https://cardnav.xyz';
+export const cardnavSiteOrigin = 'https://ai.lovemoney.live';
 
 export function rewriteGuideMarkdownLinks(markdown: string, slugByFileName: Map<string, string>) {
   return markdown.replace(/\]\((\.\/[^)#]+\.md)(#[^)]+)?\)/gu, (_match, relativePath: string, hash = '') => {

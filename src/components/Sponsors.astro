@@ -6,48 +6,24 @@ import { getVisibleSponsors } from '../sponsors.js';
 
 const t = Astro.locals.messages;
 const sponsors = getVisibleSponsors(Astro.locals.locale);
-const partnershipUrl = Astro.locals.localizePath('/partnership');
 ---
 
 {sponsors.length > 0 && <section class="sponsor-section" aria-labelledby="sponsors-title">
   <div class="sponsor-header">
     <h2 id="sponsors-title" class="sponsor-title">{t.sponsors.title}</h2>
-    <a href={partnershipUrl} data-umami-event="sponsor-lead-click" data-umami-event-url={partnershipUrl} data-umami-event-name={t.sponsors.becomeSponsor} class="sponsor-join-link">{t.sponsors.becomeSponsor}</a>
   </div>
   <ul class="sponsor-grid">
     {sponsors.map(sponsor => (
       <li class="sponsor-grid-item">
         <article class="sponsor-card">
-          <a href={sponsor.url} target="_blank" rel="nofollow sponsored noopener noreferrer" data-umami-event="sponsor-click" data-umami-event-url={sponsor.url} class:list={[sponsor.template === 'grid' ? 'sponsor-plan-main-link' : 'sponsor-main-link', 'group']}>
-            <span
-              class="sponsor-logo-frame"
-              style={sponsor.image.padding || sponsor.image.backgroundColor
-                ? `--sponsor-padding: ${sponsor.image.padding ?? '0'}; --sponsor-background-color: ${sponsor.image.backgroundColor ?? 'white'};`
-                : undefined}
-            >
-              <img src={sponsor.image.src} alt={sponsor.image.alt} loading="lazy" class="sponsor-logo" data-scale-mode={sponsor.image.scaleMode} />
-            </span>
-            {sponsor.template === 'grid'
-              ? (
-                <span class="sponsor-plan-title">
-                  <span class="sponsor-plan-name">{sponsor.title}</span>
-                  <span class="sponsor-plan-price">{sponsor.description}</span>
-                </span>
-              )
-              : (
-                <>
-                  <span class="sponsor-name">{sponsor.title}</span>
-                  <span class="sponsor-copy">{sponsor.description}</span>
-                </>
-              )}
-          </a>
-          {sponsor.template === 'grid' && sponsor.links.length > 0 && (
-            <div class="sponsor-plan-grid">
-              {sponsor.links.map(link => (
-                <a href={link.url} target="_blank" rel="nofollow sponsored noopener noreferrer" data-umami-event="sponsor-click" data-umami-event-url={link.url} class="sponsor-plan-link" style={link.color ? `--sponsor-link-color: ${link.color};` : undefined}>{link.text}</a>
-              ))}
-            </div>
-          )}
+          <span
+            class="sponsor-logo-frame"
+            style={sponsor.image.padding || sponsor.image.backgroundColor
+              ? `--sponsor-padding: ${sponsor.image.padding ?? '0'}; --sponsor-background-color: ${sponsor.image.backgroundColor ?? 'white'};`
+              : undefined}
+          >
+            <img src={sponsor.image.src} alt={sponsor.image.alt} loading="lazy" class="sponsor-logo" data-scale-mode={sponsor.image.scaleMode} />
+          </span>
         </article>
       </li>
     ))}

@@ -1,5 +1,5 @@
 /**
- * 文件说明: 维护 CardNav 公开站点简体中文界面文案和可复用导航常量。
+ * 文件说明: 维护 AI LoveMoney 公开站点简体中文界面文案和可复用导航常量。
  */
 
 const ipPurityRuntime = {
@@ -97,8 +97,8 @@ const ipPurityRuntime = {
 
 export const zhMessages = {
   site: {
-    name: '卡网大全',
-    domain: 'cardnav.xyz',
+    name: 'AI LoveMoney',
+    domain: 'ai.lovemoney.live',
     tagline: '一站式 AI 大模型账号购买导航',
     heroDescription:
       '不知道 AI 账号去哪买便宜又靠谱？这里聚合 AI 中转站、卡网、官方订阅比价，还有模型排行、使用指南、实用工具，帮你少踩坑，少花钱。',
@@ -150,14 +150,14 @@ export const zhMessages = {
     loadMoreProducts: '加载更多商品',
   },
   external: {
-    telegramGroup: 'Telegram 群组',
-    githubRepo: 'GitHub 仓库',
-    xProfile: 'X @CharlesLee8266',
+    telegramGroup: 'Telegram',
+    xProfile: 'X',
+    qqGroup: 'QQ群',
     chatgptSession: 'ChatGPT Session 获取入口',
   },
   announcement: {
     label: '公告',
-    message: '卡网大全电报交流群已开放，欢迎进群交流功能建议、产品想法、数据问题、使用反馈和商务合作',
+    message: '欢迎关注本站最新内容与公告。',
     close: '关闭公告',
   },
   analytics: {
@@ -193,13 +193,13 @@ export const zhMessages = {
     displaySummary: '当前显示 {rendered} / {total} 个',
   },
   seo: {
-    titleSuffix: '卡网大全',
-    websiteName: '卡网大全',
-    llmsDescription: '卡网大全是一个中文公开导航站点，聚合 AI 账号商家、API 中转站、商品、库存状态、价格、提交入口和购买前判断内容。',
-    crawlerPolicy: 'Public pages may be used for search indexing, citation, answer grounding, and user-requested retrieval. 卡网大全 does not authorize model-training or bulk dataset crawling; see robots.txt for crawler-specific rules.',
+    titleSuffix: 'AI LoveMoney',
+    websiteName: 'AI LoveMoney',
+    llmsDescription: 'AI LoveMoney是一个中文公开导航站点，聚合 AI 账号商家、API 中转站、商品、库存状态、价格、提交入口和购买前判断内容。',
+    crawlerPolicy: 'Public pages may be used for search indexing, citation, answer grounding, and user-requested retrieval. AI LoveMoney does not authorize model-training or bulk dataset crawling; see robots.txt for crawler-specific rules.',
   },
   home: {
-    seoTitle: '卡网大全 - 一站式 AI 大模型账号购买导航',
+    seoTitle: 'AI LoveMoney - 一站式 AI 大模型账号购买导航',
     seoDescription:
       '聚合 AI 中转站、卡网、官方订阅比价，还有模型排行、使用指南、实用工具，帮你少踩坑，少花钱。GPT，Claude，Gemini，Cursor，Grok 应有尽有。',
     guideTitle: '不知道如何开始？点击进入向导',
@@ -219,7 +219,7 @@ export const zhMessages = {
     hotProductsTitle: '热门 AI 卡网商品',
     hotProductsDescription: '全网第三方 AI 卡网商家与商品搜索',
     searchPlaceholder: '搜索商品、商家关键词',
-    pathEyebrow: '卡网大全',
+    pathEyebrow: 'AI LoveMoney',
     pathTitle: 'AI 订阅、账号和 API 入口导航',
     pathDescription: '把官方订阅价格、API 中转站、第三方卡网商品、模型排行榜和购买向导放在一起，帮你少开几个页面，先把选择看清楚。',
     officialPathBadge: '官方订阅',
@@ -278,7 +278,7 @@ export const zhMessages = {
     submitMerchant: '提交商家',
     urlLabel: '网址',
     guideTitle: '购前必看：如何挑选靠谱商家',
-    guideDescription: '卡网大全仅整理公开信息，商家是否可靠请自行判断。点击查看如何从商品、支付方式、联系方式、社群活跃度和库存更新等维度判断商家。',
+    guideDescription: 'AI LoveMoney仅整理公开信息，商家是否可靠请自行判断。点击查看如何从商品、支付方式、联系方式、社群活跃度和库存更新等维度判断商家。',
     hotProductsTitle: '热门商品',
     searchPlaceholder: '搜索商品，多个关键词用空格隔开，支持高级搜索，详见右侧说明',
     advancedSearchLabel: '高级搜索说明',
@@ -325,7 +325,7 @@ export const zhMessages = {
     closeSubmitDialog: '关闭提交商家弹窗',
     closeSubmitBackdrop: '关闭提交商家弹窗背景',
     cooperationTitle: '合作曝光',
-    cooperationDescription: '商家如有合作意向，可以在卡网大全获得更高曝光，例如赞助位、重点展示或更多入口推荐，点击',
+    cooperationDescription: '商家如有合作意向，可以在AI LoveMoney获得更高曝光，例如赞助位、重点展示或更多入口推荐，点击',
     cooperationDetails: '查看详情',
     cooperationSentenceEnd: '。',
     script: {
@@ -589,7 +589,7 @@ export const zhMessages = {
     becomeSponsor: '成为赞助商',
     partnershipLinkLabel: '如何合作',
     sponsorLabel: '合作商家',
-    sponsorDescription: '合作商家表示卡网大全已经对商家进行了初步审核，但仍需用户自行识别可靠性。如果商家存在欺骗行为会立即下架。',
+    sponsorDescription: '合作商家表示AI LoveMoney已经对商家进行了初步审核，但仍需用户自行识别可靠性。如果商家存在欺骗行为会立即下架。',
   },
   submit: {
     success: '提交成功',

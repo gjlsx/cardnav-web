@@ -1,15 +1,15 @@
 ---
 title: Privacy Policy
-description: CardNav privacy policy covering analytics, submitted information, third-party links, contact methods, and data use.
+description: AI LoveMoney privacy policy covering analytics, submitted information, third-party links, contact methods, and data use.
 ---
 
 # Privacy Policy
 
-CardNav values user privacy. This page explains what information we may collect on the public site, how it may be used, and what to keep in mind when visiting third-party links.
+AI LoveMoney values user privacy. This page explains what information we may collect on the public site, how it may be used, and what to keep in mind when visiting third-party links.
 
 ### Information We May Collect
 
-When you visit CardNav, servers and analytics tools may record basic access data such as visit time, page path, referrer, device and browser information, and rough IP network information. This helps us understand page visits, troubleshoot issues, and improve the site experience.
+When you visit AI LoveMoney, servers and analytics tools may record basic access data such as visit time, page path, referrer, device and browser information, and rough IP network information. This helps us understand page visits, troubleshoot issues, and improve the site experience.
 
 When you submit a merchant site URL or contact us through Telegram, we receive the URL, message content, and account information shown by the corresponding platform that you voluntarily provide. This information is used to process submissions, communicate about partnerships, and maintain site content.
 
@@ -19,7 +19,7 @@ We use collected information to maintain site operation, analyze visit trends, i
 
 ### Third-Party Services And Links
 
-CardNav pages may include third-party merchant links, Telegram links, GitHub links, website analytics scripts, or advertising and partnership content. When you visit a third-party website, that third party's own privacy policy and terms of service apply. CardNav cannot control how third parties collect or use your information.
+AI LoveMoney pages may include third-party merchant links, Telegram links, GitHub links, website analytics scripts, or advertising and partnership content. When you visit a third-party website, that third party's own privacy policy and terms of service apply. AI LoveMoney cannot control how third parties collect or use your information.
 
 ### Information Sharing
 

@@ -6,7 +6,7 @@ next: daily-usage-risk
 ---
 # 三、AI 订阅实操准备与选购避坑
 
-> 本文由 **卡网大全 [cardnav.xyz](https://cardnav.xyz)** 提供。
+> 本文由 **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)** 提供。
 
 如果你最终选择了“自行注册与充值”、“使用第三方代充”或“自建中转站”等实操门槛较高的路径，那么在动手前你需要配齐相应的环境工具、支付通道，并掌握防范风险和挑选商家的技巧。
 

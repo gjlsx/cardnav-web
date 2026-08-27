@@ -6,7 +6,7 @@ next: usage-self-register
 ---
 # 2.3 Third-party top-up for your own AI large model account
 
-> This article is provided by **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> This article is provided by **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 Third-party top-up means: the account is still held by you, and the merchant uses its own payment channel to help you activate or renew the official subscription. Compared with buying a ready-made account, it better preserves personal history and account assets, but it also depends more on the merchant's payment source, operation method, and after-sales credibility.
 
@@ -52,7 +52,7 @@ Third-party top-up means: the account is still held by you, and the merchant use
 ## Practical steps
 
 1. First confirm that your account itself can log in normally, and that the email, secondary verification, and recovery methods are all in your own hands.
-2. Filter shops that provide top-up services on the [CardNav homepage](https://cardnav.xyz/) or merchant list.
+2. Filter shops that provide top-up services on the [AI LoveMoney homepage](https://ai.lovemoney.live/) or merchant list.
 3. Before purchasing, confirm the top-up method: whether a temporary password is required, whether a payment link is required, whether it is operated remotely, how long after-sales lasts, and how failure is handled.
 4. Prioritize merchants with clear explanations, stable contact methods, active communities, and explicit after-sales rules.
 5. After the top-up is completed, immediately check the subscription status, expiration time, and billing records.

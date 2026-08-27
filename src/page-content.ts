@@ -32,7 +32,7 @@ function renderPageMarkdown(markdown: string) {
   const rendered = markdownRenderer
     .render(markdown)
     .replace(
-      /<a href="(https:\/\/cardnav\.xyz\/(?:llm-gateway|shops))">/gu,
+      /<a href="(https:\/\/ai\.lovemoney\.live\/(?:llm-gateway|shops))">/gu,
       '<a href="$1" target="_blank" rel="noopener noreferrer">',
     );
   return rendered;

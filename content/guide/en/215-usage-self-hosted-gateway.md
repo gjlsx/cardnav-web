@@ -6,7 +6,7 @@ next: practical-prep
 ---
 # 2.5 Self-hosted AI large model gateway site
 
-> This article is provided by **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> This article is provided by **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 A self-hosted gateway site is usually suitable for people with technical foundations. You purchase official quota or prepare usable accounts yourself, then use a reverse proxy, gateway program, or internal gateway to distribute model capability to a team, friends, or your own multiple tools.
 

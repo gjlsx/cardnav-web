@@ -6,7 +6,7 @@ next: kyc-verification
 ---
 # Оплата через Google Play Store
 
-> Эта статья предоставлена **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> Эта статья предоставлена **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 Если у вас нет устройства Apple, Android-телефон и Google Play тоже являются альтернативой для обхода отказа при прямой привязке карты.
 

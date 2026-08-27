@@ -6,7 +6,7 @@ next: region-pricing-differences
 ---
 # 3.3 国际支付与价差
 
-> 本文由 **卡网大全 [cardnav.xyz](https://cardnav.xyz)** 提供。
+> 本文由 **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)** 提供。
 
 支付失败往往不是因为“你没有 Visa 或 MasterCard”这么简单。很多平台在高风控场景下，会同时看支付卡的地区、账号地区、IP 地区和购买渠道，任何一项不匹配，都可能触发拒付。
 

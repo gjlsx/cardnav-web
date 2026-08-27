@@ -6,7 +6,7 @@ next: region-pricing-differences
 ---
 # 3.3 International payments and price differences
 
-> This article is provided by **CardNav [cardnav.xyz](https://cardnav.xyz)**.
+> This article is provided by **AI LoveMoney [ai.lovemoney.live](https://ai.lovemoney.live)**.
 
 Payment failure is often not as simple as "you do not have Visa or MasterCard." In high-risk-control scenarios, many platforms look at the payment card's region, account region, IP region, and purchase channel at the same time. Any mismatch can trigger payment rejection.
 

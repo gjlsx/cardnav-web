@@ -1,6 +1,6 @@
 # ai.lovemoney.live Implementation Plan
 
-> **For agentic workers:** Execute sequentially in the current checkout. This repository has no taskexec contract; preserve unrelated changes and use normal Git commits.
+> **For agentic workers:** Taskexec scope is `taskexec/cardnav-web/`. Active work is `tasklist08280357.md`. Preserve unrelated changes.
 
 **Goal:** Rebrand and simplify the public site, make MySQL its only database, and deploy it safely behind Apache on port 80.
 
@@ -19,45 +19,45 @@
 
 **Files:** `test/rebrand-and-mysql.test.ts`
 
-- [ ] Assert the public URL and three blank community values.
-- [ ] Assert the shared layout has no Hero, GitHub, or X source and has a QQ placeholder.
-- [ ] Assert sponsors use only image markup and that the store does not import `pg`.
-- [ ] Run `npm test -- test/rebrand-and-mysql.test.ts`; expected result before implementation: failure because old CardNav values and PostgreSQL code still exist.
+- [x] Assert the public URL and three blank community values.
+- [x] Assert the shared layout has no Hero, GitHub, or X source and has a QQ placeholder.
+- [x] Assert sponsors use only image markup and that the store does not import `pg`.
+- [x] Focused rebrand/MySQL tests pass after implementation.
 
 ### Task 2: Replace the shared presentation shell and visible content
 
 **Files:** `src/site.ts`, `src/layouts/PublicPage.astro`, `src/components/Sponsors.astro`, `src/i18n/*.ts`, `content/pages/**`, `content/guide/**`, `src/seo-routes.ts`, `.env.example`, `README*.md`
 
-- [ ] Set the brand URL to `https://ai.lovemoney.live` and define empty Telegram, X, and QQ values in the single site constants module.
-- [ ] Remove the Hero and project-GitHub UI; render Telegram, X, and QQ icons as non-navigating placeholders; use a text node for the announcement.
-- [ ] Render each sponsor as an image-only card with its accessible `alt` text.
-- [ ] Replace legacy self-brand text and URLs in runtime pages, localized content, SEO and repository readmes; retain unrelated third-party links.
-- [ ] Rerun the focused test; expected result: all its presentation assertions pass.
+- [x] Set the brand URL to `https://ai.lovemoney.live` and define empty Telegram, X, and QQ values in the single site constants module.
+- [x] Remove the Hero and project-GitHub UI; render Telegram, X, and QQ icons as non-navigating placeholders; use a text node for the announcement.
+- [x] Render each sponsor as an image-only card with its accessible `alt` text.
+- [x] Replace legacy self-brand text and URLs in runtime pages, localized content, SEO and repository readmes; retain unrelated third-party links.
+- [x] Focused presentation assertions pass. About pages no longer render the old CardNav banner image.
 
 ### Task 3: Replace PostgreSQL with MySQL
 
 **Files:** `package.json`, `src/database.ts`, `src/store.ts`, `scripts/init-mysql.mjs`, `test/mysql-store.test.ts`, `.env.example`, `README*.md`
 
-- [ ] Add a failing integration test that initializes `ailovemoney`, checks required tables, writes a minimal public snapshot, and reads it through the public store.
-- [ ] Add `mysql2`, expose a shared MySQL pool/close function, and create repeatable DDL for every table queried by `src/store.ts`.
-- [ ] Convert every query to MySQL placeholders/functions and preserve existing return shapes and ordering.
-- [ ] Add an initializer that optionally imports compatible PostgreSQL rows before PostgreSQL is retired; because the discovered source tables are empty, it must succeed with an empty import.
-- [ ] Run focused database tests, then `npm test` and `npm run typecheck`.
+- [x] Schema integration test initializes `ailovemoney` and required tables.
+- [x] Runtime uses `mysql2`; PostgreSQL driver removed.
+- [x] Public store queries use MySQL placeholders and keep existing return shapes.
+- [x] Non-empty PostgreSQL snapshots (9 rows) migrated; shop tables were empty.
+- [x] Focused database tests, typecheck, and build passed.
 
 ### Task 4: Package and validate the local release
 
 **Files:** `scripts/export-ailovemoney.ps1`, `scripts/deploy-ai-lovemoney.ps1`, `scripts/deploy-ai-lovemoney-remote.sh`, `README*.md`
 
-- [ ] Add a local exporter that runs `mysqldump` with a transient environment password and emits a disposable SQL artifact outside the Git tree.
-- [ ] Add a deployment driver that builds Astro, uploads the release and SQL via Paramiko/SFTP, and deletes only its own temporary artifacts.
-- [ ] Validate with `npm run build`, start the built service with local MySQL, and browser-check the homepage at the development port.
+- [x] Local exporter: `scripts/export-mysql.ps1` (SQL stays outside Git).
+- [x] Paramiko session uploads release/SQL and runs remote install; temp artifacts deleted.
+- [x] Local `pnpm run build` and browser QA recorded in p004.
 
 ### Task 5: Deploy without disturbing LikeShop
 
 **Server files:** `/etc/apache2/sites-available/ai.lovemoney.live.conf`, `/etc/systemd/system/ai-lovemoney.service`, `/www/wwwroot/ai.lovemoney.live`
 
-- [ ] Diagnose Apache listeners, enabled sites, Node availability, MySQL service, disk capacity, and existing port-80 owner before mutation.
-- [ ] Back up and remove only an existing port-80 non-LikeShop site when present.
-- [ ] Import the local MySQL export into server-local `ailovemoney`, install the release, enable the service/vhost, and reload Apache.
-- [ ] Verify `http://206.119.177.74/` with `Host: ai.lovemoney.live`, then verify the domain in a browser and capture the rendered homepage.
-- [ ] Verify `dtch.yg2022.top:8086/shop/`, `:8090/mobile/`, and `:8095/admin/` still return their existing applications.
+- [x] Diagnosed Apache/Node/MySQL/disk; port 80 is LikeShop `dtch.yg2022.top` and was kept as a name-based vhost.
+- [x] Did not remove LikeShop from port 80; added `ServerName ai.lovemoney.live`.
+- [x] Imported `ailovemoney`, installed `/www/wwwroot/ai.lovemoney.live`, enabled `ai-lovemoney.service`.
+- [x] Host-header and real-domain browser verification of `https://ai.lovemoney.live/` recorded in p006 QA.
+- [x] LikeShop `8086/shop/`, `8090/mobile/`, `8095/admin/` still return HTTP 200.

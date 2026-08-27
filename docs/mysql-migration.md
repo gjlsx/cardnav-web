@@ -36,3 +36,14 @@ mysql --host=127.0.0.1 --port=3306 --user=root < /path/to/ailovemoney.sql
 ```
 
 The deployment task must verify `public_snapshot_entries` counts before switching Apache traffic to the new site.
+
+## Current production layout
+
+- App directory: `/www/wwwroot/ai.lovemoney.live`
+- systemd unit: `ai-lovemoney.service` (Node listens on `127.0.0.1:3101`)
+- Apache vhost: `/etc/apache2/sites-available/ai.lovemoney.live.conf` (`*:80` and `*:443`)
+- Let's Encrypt webroot: `/var/www/letsencrypt`
+- Rollback copies: `/www/wwwroot/ai.lovemoney.live-backups`
+- Do not edit LikeShop vhosts for `8086/8090/8095`
+
+The Node binary used by systemd is `/usr/bin/node`. Do not point the unit at `/usr/local/bin/node` if that path is a symlink into `/root/.hermes`, because `www-data` cannot traverse `/root`.

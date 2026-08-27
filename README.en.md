@@ -137,11 +137,24 @@ GREYNOISE_API_KEY=
 ### Common Commands
 
 ```bash
-npm run dev
-npm run build
-npm run start
-npm run typecheck
+pnpm install
+pnpm run dev
+pnpm run build
+pnpm start
+pnpm run typecheck
 ```
+
+## Current production deployment
+
+Public site: `https://ai.lovemoney.live/`  
+The app is an Astro standalone Node process on `127.0.0.1:3101`. Apache reverse-proxies `ai.lovemoney.live` on ports 80 and 443. The database is server-local MySQL/MariaDB `ailovemoney`. LikeShop on `8086/8090/8095` stays on its own vhost and directory.
+
+- Release directory: `/www/wwwroot/ai.lovemoney.live`
+- Process: `ai-lovemoney.service` (systemd, enabled)
+- Data export/import: [MySQL migration notes](docs/mysql-migration.md)
+- Rollback copies: `/www/wwwroot/ai.lovemoney.live-backups`. To take the site down, disable `ai-lovemoney` and `a2dissite ai.lovemoney.live.conf`. Do not edit LikeShop vhosts.
+
+Do not commit passwords, SSH keys, database dumps, or the server `.env`.
 
 ### Directory Structure
 

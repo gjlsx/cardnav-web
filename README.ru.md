@@ -137,11 +137,24 @@ GREYNOISE_API_KEY=
 ### Частые команды
 
 ```bash
-npm run dev
-npm run build
-npm run start
-npm run typecheck
+pnpm install
+pnpm run dev
+pnpm run build
+pnpm start
+pnpm run typecheck
 ```
+
+## Текущий production-деплой
+
+Публичный сайт: `https://ai.lovemoney.live/`  
+Приложение — Astro standalone Node на `127.0.0.1:3101`. Apache проксирует `ai.lovemoney.live` на портах 80 и 443. База — локальный MySQL/MariaDB `ailovemoney` на сервере. LikeShop на `8086/8090/8095` остается отдельным vhost и каталогом.
+
+- Каталог релиза: `/www/wwwroot/ai.lovemoney.live`
+- Процесс: `ai-lovemoney.service` (systemd, автозапуск)
+- Экспорт/импорт данных: [заметки по миграции MySQL](docs/mysql-migration.md)
+- Откат: `/www/wwwroot/ai.lovemoney.live-backups`. Чтобы снять сайт, отключите `ai-lovemoney` и `a2dissite ai.lovemoney.live.conf`. Конфигурацию LikeShop не меняйте.
+
+Пароли, SSH-ключи, дампы БД и серверный `.env` в репозиторий не класть.
 
 ### Структура каталогов
 

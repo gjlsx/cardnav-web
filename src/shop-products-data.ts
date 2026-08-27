@@ -39,6 +39,17 @@ export type PackedShopProductRow = [
   inStock: 0 | 1,
   refreshedMs: number | null,
   score: number,
+  standardProduct?: string,
+  platform?: string,
+  productType?: string,
+  currencyCode?: string,
+  channelCount?: number | null,
+  availableChannelCount?: number | null,
+  outOfStockChannelCount?: number | null,
+  sampledMs?: number | null,
+  isSample?: 0 | 1,
+  sourceName?: string,
+  sourcePageUrl?: string,
 ];
 
 export type PackedShopProductsData = {
@@ -147,6 +158,17 @@ export function packShopProductsData(data: PublicShopProductsData): PackedShopPr
       product.inStock ? 1 : 0,
       timestampMs(product.refreshedAt),
       Number(product.score) || 0,
+      product.standardProduct || '',
+      product.platform || '',
+      product.productType || '',
+      product.currencyCode || '',
+      typeof product.channelCount === 'number' ? product.channelCount : null,
+      typeof product.availableChannelCount === 'number' ? product.availableChannelCount : null,
+      typeof product.outOfStockChannelCount === 'number' ? product.outOfStockChannelCount : null,
+      timestampMs(product.sampledAt),
+      product.isSample ? 1 : 0,
+      product.sourceName || '',
+      product.sourcePageUrl || '',
     ];
   });
 
@@ -264,4 +286,50 @@ export function shopProductRefreshTime(product: PackedShopProductRow) {
 
 export function shopProductScore(product: PackedShopProductRow) {
   return Number(product[9]) || 0;
+}
+
+// Fields after index 9 are optional v1 tuple extensions, so older snapshots
+// retain their original indexes and remain readable.
+export function shopProductStandardProduct(product: PackedShopProductRow) {
+  return product[10] || '';
+}
+
+export function shopProductPlatform(product: PackedShopProductRow) {
+  return product[11] || '';
+}
+
+export function shopProductType(product: PackedShopProductRow) {
+  return product[12] || '';
+}
+
+export function shopProductCurrencyCode(product: PackedShopProductRow) {
+  return product[13] || '';
+}
+
+export function shopProductChannelCount(product: PackedShopProductRow) {
+  return typeof product[14] === 'number' ? product[14] : null;
+}
+
+export function shopProductAvailableChannelCount(product: PackedShopProductRow) {
+  return typeof product[15] === 'number' ? product[15] : null;
+}
+
+export function shopProductOutOfStockChannelCount(product: PackedShopProductRow) {
+  return typeof product[16] === 'number' ? product[16] : null;
+}
+
+export function shopProductSampledMs(product: PackedShopProductRow) {
+  return typeof product[17] === 'number' ? product[17] : null;
+}
+
+export function shopProductIsSample(product: PackedShopProductRow) {
+  return product[18] === 1;
+}
+
+export function shopProductSourceName(product: PackedShopProductRow) {
+  return product[19] || '';
+}
+
+export function shopProductSourcePageUrl(product: PackedShopProductRow) {
+  return product[20] || '';
 }

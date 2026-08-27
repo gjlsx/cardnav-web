@@ -5,11 +5,16 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   packShopProductsData,
+  shopProductAvailableChannelCount,
   shopProductCategoryName,
+  shopProductChannelCount,
   shopProductInStock,
+  shopProductIsSample,
   shopProductName,
+  shopProductPlatform,
   shopProductPriceUnit,
   shopProductRefreshTime,
+  shopProductSourceName,
   shopProductSite,
   shopProducts,
   shopProductsTotalInStockProductCount,
@@ -50,6 +55,12 @@ const fixture: PublicShopProductsData = {
       refreshTime: '2026-07-31 20:30:00',
       clickCount: 3,
       score: 8.25,
+      platform: 'ChatGPT',
+      productType: 'Subscription',
+      channelCount: 8,
+      availableChannelCount: 6,
+      isSample: true,
+      sourceName: 'Public reference',
     },
     {
       siteId: 'merchant-a',
@@ -106,4 +117,9 @@ test('packed shop products accessors read page fields without unpacking long obj
   assert.equal(shopProductPriceUnit(packed, second), '$');
   assert.equal(shopProductInStock(second), false);
   assert.equal(shopProductRefreshTime(first), '2026-07-31 20:30:00');
+  assert.equal(shopProductPlatform(first), 'ChatGPT');
+  assert.equal(shopProductChannelCount(first), 8);
+  assert.equal(shopProductAvailableChannelCount(first), 6);
+  assert.equal(shopProductIsSample(first), true);
+  assert.equal(shopProductSourceName(first), 'Public reference');
 });

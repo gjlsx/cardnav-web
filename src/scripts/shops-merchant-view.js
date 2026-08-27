@@ -95,6 +95,12 @@ function createProductChip(item, shopProductsData, shopsMessages, createTrackedL
   const priceUnit = accessors.shopProductPriceUnit(shopProductsData, item);
   const productUrl = accessors.shopProductUrl(item);
   const inStock = accessors.shopProductInStock(item);
+  const isSample = accessors.shopProductIsSample(item);
+  const sourceName = text(accessors.shopProductSourceName(item));
+  const platform = text(accessors.shopProductPlatform(item));
+  const productType = text(accessors.shopProductType(item));
+  const availableChannelCount = accessors.shopProductAvailableChannelCount(item);
+  const channelCount = accessors.shopProductChannelCount(item);
   const price = formatDisplayPrice(priceNumber, priceUnit);
   const productTitle = `${categoryName}-${productName}`;
   const shortCategory = categoryName.length > 10 ? `${categoryName.slice(0, 10)}...` : categoryName;
@@ -130,12 +136,19 @@ function createProductChip(item, shopProductsData, shopsMessages, createTrackedL
   appendTextElement(chip, 'span', 'product-category', shortCategory);
   appendTextElement(chip, 'span', 'product-name', shortName);
   appendTextElement(chip, 'span', 'product-price', price);
+  if (platform || productType) appendTextElement(chip, 'span', 'product-chip-meta', [platform, productType].filter(Boolean).join(' · '));
+  if (isSample) appendTextElement(chip, 'span', 'product-chip-reference', shopsMessages.referenceSample);
+  if (sourceName) appendTextElement(chip, 'span', 'product-chip-source', `${shopsMessages.sourcePrefix}: ${sourceName}`);
   appendTextElement(
     chip,
     'span',
     inStock ? 'product-status-in-stock' : 'product-status-sold-out',
     productStockLabel(item, shopsMessages, accessors),
   );
+  if (channelCount !== null) {
+    const channelLabel = availableChannelCount === null ? String(channelCount) : `${availableChannelCount}/${channelCount}`;
+    appendTextElement(chip, 'span', 'product-channel-count', `${shopsMessages.channelAvailability} ${channelLabel}`);
+  }
 
   return chip;
 }

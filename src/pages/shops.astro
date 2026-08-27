@@ -119,6 +119,9 @@ const shopsScriptMessages = {
   noData: t.shops.script.noData,
   officialPriceTip: t.shops.officialPriceTip,
   gatewayTip: t.shops.gatewayTip,
+  referenceSample: t.shops.referenceSample,
+  sourcePrefix: t.shops.sourcePrefix,
+  channelAvailability: t.shops.channelAvailability,
   hotProductsTitle: t.shops.hotProductsTitle,
   searchResultsTitle: t.shops.searchResultsTitle,
   searchResultsDescription: t.shops.searchResultsDescription,
@@ -224,6 +227,14 @@ const shopProductsJsonValue = JSON.stringify(packShopProductsData({
       </div>
       <div class="btn btn-sm btn-ghost text-primary hover:bg-transparent shrink-0">{t.actions.read} ➜</div>
     </a>
+  </section>
+
+  <section class="reference-sample-notice" aria-label={t.shops.referenceNoticeTitle}>
+    <div class="reference-sample-notice-mark" aria-hidden="true">i</div>
+    <div>
+      <p class="reference-sample-notice-title">{t.shops.referenceNoticeTitle}</p>
+      <p class="reference-sample-notice-copy">{t.shops.referenceNoticeDescription}</p>
+    </div>
   </section>
 
   <section id="shopsExplorer" class="card bg-base-100 border border-base-300 shadow-sm overflow-hidden" data-shop-tabs>

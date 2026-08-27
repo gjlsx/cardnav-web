@@ -4,14 +4,20 @@
 import { buildShopSearchQuery, matchesShopSearchQuery, prepareShopSearchQuery } from '../shop-search-query.js';
 import { buildShopSearchPageMeta } from '../shop-search-page-meta.js';
 import {
+  shopProductAvailableChannelCount,
   shopProductCategoryName,
+  shopProductChannelCount,
   shopProductInStock,
+  shopProductIsSample,
   shopProductName,
+  shopProductPlatform,
   shopProductPriceNumber,
   shopProductPriceUnit,
   shopProductRefreshedMs,
   shopProductRefreshTime,
   shopProductScore,
+  shopProductSourceName,
+  shopProductType,
   shopProducts,
   shopProductsInitialLimit,
   shopProductsIsPartial,
@@ -692,6 +698,12 @@ function createFlatProductRow(item) {
   const priceNumber = shopProductPriceNumber(item);
   const priceUnit = shopProductPriceUnit(shopProductsData, item);
   const inStock = shopProductInStock(item);
+  const platform = text(shopProductPlatform(item));
+  const productType = text(shopProductType(item));
+  const isSample = shopProductIsSample(item);
+  const sourceName = text(shopProductSourceName(item));
+  const availableChannelCount = shopProductAvailableChannelCount(item);
+  const channelCount = shopProductChannelCount(item);
   const row = document.createElement('tr');
   row.className = 'flat-product-row';
 
@@ -717,6 +729,15 @@ function createFlatProductRow(item) {
   }
   if (siteSponsor) productInline.appendChild(window.CardNavSponsorBadge.create(shopsMessages.sponsorLabel || 'Partner', shopsMessages.sponsorDescription || '', shopsMessages.partnershipUrl || localizedFallbackPath('/partnership'), shopsMessages.partnershipLinkLabel || 'How to partner'));
   productCell.appendChild(productInline);
+  if (platform || productType || isSample || sourceName) {
+    const productMeta = document.createElement('div');
+    productMeta.className = 'reference-product-meta';
+    if (platform) appendTextElement(productMeta, 'span', 'reference-product-chip reference-product-chip-platform', platform);
+    if (productType) appendTextElement(productMeta, 'span', 'reference-product-chip reference-product-chip-type', productType);
+    if (isSample) appendTextElement(productMeta, 'span', 'reference-product-chip reference-product-chip-sample', shopsMessages.referenceSample);
+    if (sourceName) appendTextElement(productMeta, 'span', 'reference-product-source', `${shopsMessages.sourcePrefix}: ${sourceName}`);
+    productCell.appendChild(productMeta);
+  }
   row.appendChild(productCell);
 
   const priceCell = document.createElement('td');
@@ -734,6 +755,10 @@ function createFlatProductRow(item) {
     inStock ? 'stock-badge-in-stock' : 'stock-badge-sold-out',
     productStockLabel(item),
   );
+  if (channelCount !== null) {
+    const channelLabel = availableChannelCount === null ? String(channelCount) : `${availableChannelCount}/${channelCount}`;
+    appendTextElement(statusCell, 'span', 'reference-channel-count', `${shopsMessages.channelAvailability} ${channelLabel}`);
+  }
   row.appendChild(statusCell);
 
   const categoryCell = document.createElement('td');
@@ -860,13 +885,19 @@ function renderMerchantViewModule(module) {
   module.renderMerchantRows({
     shopProductsData,
     shopDataAccessors: {
+      shopProductAvailableChannelCount,
       shopProductCategoryName,
+      shopProductChannelCount,
       shopProductInStock,
+      shopProductIsSample,
       shopProductName,
+      shopProductPlatform,
       shopProductPriceNumber,
       shopProductPriceUnit,
       shopProductRefreshedMs,
       shopProductScore,
+      shopProductSourceName,
+      shopProductType,
       shopProducts,
       shopProductSite,
       shopProductStock,

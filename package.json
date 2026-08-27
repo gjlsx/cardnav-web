@@ -8,6 +8,7 @@
     "dev": "astro dev --host 0.0.0.0",
     "build": "astro build",
     "start": "node dist/server/entry.mjs",
+    "seed:reference-samples": "tsx scripts/seed-reference-samples.ts",
     "test": "node --import dotenv/config --import tsx --test test/**/*.test.ts",
     "typecheck": "astro check && tsc --noEmit"
   },

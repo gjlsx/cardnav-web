@@ -104,6 +104,17 @@ export type PublicProductRow = {
   siteSponsor: boolean;
   clickCount: number;
   score: number;
+  standardProduct?: string;
+  platform?: string;
+  productType?: string;
+  currencyCode?: string;
+  channelCount?: number | null;
+  availableChannelCount?: number | null;
+  outOfStockChannelCount?: number | null;
+  sampledAt?: string | null;
+  isSample?: boolean;
+  sourceName?: string;
+  sourcePageUrl?: string;
 };
 
 export type ProductClickInput = {
@@ -333,9 +344,13 @@ async function loadMySqlShopProductsData(options: { productLimit?: number; inSto
       shop_sites.last_product_refresh_success_at AS site_product_refresh_success_at,
       shop_products.category_name, shop_products.name, shop_products.price, shop_products.price_number,
       shop_products.price_unit, shop_products.product_url, shop_products.stock, shop_products.in_stock,
-      shop_products.click_count, shop_products.score, shop_products.refreshed_at
+      shop_products.click_count, shop_products.score, shop_products.refreshed_at, shop_products.standard_product,
+      shop_products.platform, shop_products.product_type, shop_products.currency_code, shop_products.channel_count,
+      shop_products.available_channel_count, shop_products.out_of_stock_channel_count, shop_products.sampled_at,
+      shop_products.is_sample, reference_data_sources.name AS source_name, reference_data_sources.source_page_url
     FROM shop_products
     INNER JOIN shop_sites ON shop_sites.id = shop_products.site_id
+    LEFT JOIN reference_data_sources ON reference_data_sources.id = shop_products.source_id
     WHERE shop_sites.status = 'online' AND shop_sites.type = 'cardShop'
       ${options.inStockOnly ? 'AND shop_products.in_stock = TRUE' : ''}
     ORDER BY shop_sites.sponsor DESC, shop_products.score DESC, shop_sites.score DESC, shop_products.in_stock DESC,
@@ -353,6 +368,12 @@ async function loadMySqlShopProductsData(options: { productLimit?: number; inSto
       clickCount: Number(row.click_count) || 0, siteId: String(row.site_id || ''), siteName: String(row.site_name || ''), siteUrl: String(row.site_url || ''),
       siteProductRefreshSuccessAt, siteProductRefreshSuccessTime: formatBeijingRefreshTime(siteProductRefreshSuccessAt), siteScore: Number(row.site_score) || 0,
       siteSponsor: row.site_sponsor === true || row.site_sponsor === 1 || row.site_sponsor === '1', score: Number(row.score) || 0,
+      standardProduct: String(row.standard_product || ''), platform: String(row.platform || ''), productType: String(row.product_type || ''),
+      currencyCode: String(row.currency_code || ''), channelCount: row.channel_count == null ? null : Number(row.channel_count),
+      availableChannelCount: row.available_channel_count == null ? null : Number(row.available_channel_count),
+      outOfStockChannelCount: row.out_of_stock_channel_count == null ? null : Number(row.out_of_stock_channel_count),
+      sampledAt: row.sampled_at ? String(row.sampled_at) : null,
+      isSample: row.is_sample === true || row.is_sample === 1 || row.is_sample === '1', sourceName: String(row.source_name || ''), sourcePageUrl: String(row.source_page_url || ''),
     };
   });
   const sitesResult = await getPool().query(`SELECT id, name, url, score, sponsor, last_product_refresh_success_at FROM shop_sites WHERE status = 'online' AND type = 'cardShop' ORDER BY sponsor DESC, score DESC, product_count DESC, in_stock_product_count DESC, last_product_refresh_success_at DESC, id ASC`);

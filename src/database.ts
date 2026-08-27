@@ -17,6 +17,15 @@ const statements = [
     payload JSON NOT NULL,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+  `CREATE TABLE IF NOT EXISTS reference_data_sources (
+    id VARCHAR(64) NOT NULL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL DEFAULT '',
+    source_page_url TEXT NOT NULL,
+    sampled_at DATETIME NOT NULL,
+    is_sample BOOLEAN NOT NULL DEFAULT TRUE,
+    usage_note VARCHAR(500) NOT NULL DEFAULT '',
+    KEY reference_data_sources_sampled_at (sampled_at)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
   `CREATE TABLE IF NOT EXISTS shop_sites (
     id VARCHAR(64) NOT NULL PRIMARY KEY,
     name VARCHAR(255) NOT NULL DEFAULT '',
@@ -131,10 +140,34 @@ const statements = [
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
 ];
 
+const shopProductColumns = [
+  ['source_id', 'VARCHAR(64) NULL'],
+  ['standard_product', "VARCHAR(255) NOT NULL DEFAULT ''"],
+  ['platform', "VARCHAR(100) NOT NULL DEFAULT ''"],
+  ['product_type', "VARCHAR(100) NOT NULL DEFAULT ''"],
+  ['currency_code', "VARCHAR(32) NOT NULL DEFAULT ''"],
+  ['channel_count', 'INT NULL'],
+  ['available_channel_count', 'INT NULL'],
+  ['out_of_stock_channel_count', 'INT NULL'],
+  ['sampled_at', 'DATETIME NULL'],
+  ['is_sample', 'BOOLEAN NOT NULL DEFAULT FALSE'],
+] as const;
+
+async function ensureShopProductColumns(connection: mysql.Connection) {
+  for (const [name, definition] of shopProductColumns) {
+    const [rows] = await connection.query<mysql.RowDataPacket[]>(
+      `SELECT 1 FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = 'shop_products' AND column_name = ? LIMIT 1`,
+      [name],
+    );
+    if (rows.length === 0) await connection.query(`ALTER TABLE shop_products ADD COLUMN \`${name}\` ${definition}`);
+  }
+}
+
 export async function initializeMySqlSchema(config: MySqlConnectionConfig) {
   const connection = await mysql.createConnection(config);
   try {
     for (const statement of statements) await connection.query(statement);
+    await ensureShopProductColumns(connection);
   } finally {
     await connection.end();
   }

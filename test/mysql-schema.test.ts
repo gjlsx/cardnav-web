@@ -22,9 +22,23 @@ test('MySQL schema creates every public runtime table', async () => {
     const tables = new Set(rows.map(row => Object.values(row)[0]));
     for (const table of [
       'public_snapshot_entries', 'shop_sites', 'shop_products', 'shop_search_terms',
-      'gateway_sites', 'gateway_model_prices', 'official_prices', 'model_leaderboards',
+      'gateway_sites', 'gateway_model_prices', 'official_prices', 'model_leaderboards', 'reference_data_sources',
     ]) {
       assert.ok(tables.has(table), `missing ${table}`);
+    }
+  } finally {
+    await connection.end();
+  }
+});
+
+test('MySQL schema keeps reference sample provenance columns on shop products', async () => {
+  await initializeMySqlSchema(config);
+  const connection = await mysql.createConnection(config);
+  try {
+    const [rows] = await connection.query<RowDataPacket[]>('SHOW COLUMNS FROM shop_products');
+    const columns = new Set(rows.map(row => String(row.Field)));
+    for (const column of ['source_id', 'standard_product', 'platform', 'product_type', 'currency_code', 'channel_count', 'available_channel_count', 'out_of_stock_channel_count', 'sampled_at', 'is_sample']) {
+      assert.ok(columns.has(column), `missing ${column}`);
     }
   } finally {
     await connection.end();

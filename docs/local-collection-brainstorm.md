@@ -2,7 +2,7 @@
 
 ## 本文状态
 
-这是下一阶段的设计输入，不是授权，也不是可直接投入生产的采集器。本次没有创建脚本、没有访问任何隐藏接口、没有启用 Windows Task Scheduler、没有写 cron、没有发起批量请求，也没有将自动采集接到生产站。
+这是采集方案的设计输入，**不是授权**，也不是可直接投入生产的采集器。当前事实与已实现边界见 [data-nav-and-collection.md](data-nav-and-collection.md)。`tasklist08281547.p006` 只允许本机 CLI/GUI、fixture/dry-run 和 MySQL staging 演练；默认 `enabled=false`。没有来源批准时不得发 HTTP，不得安装计划任务，不得自动 publish。
 
 本轮样例已经证明的数据结构是：**标准产品 × 商家/渠道 × 来源页 × 采样时点**。任何未来自动化必须以此为中心，而不是仅“抓网页文字”。
 

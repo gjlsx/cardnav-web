@@ -29,7 +29,8 @@
   <a href="#all-in-one-capabilities">Capabilities</a> ·
   <a href="#who-it-is-for">Who It Is For</a> ·
   <a href="#how-to-use-it">How To Use It</a> ·
-  <a href="#guides">Guides</a> ·
+  <a href="#help">Help</a> ·
+  <a href="#current-implementation-boundary">Current boundary</a> ·
   <a href="#local-development">Local Development</a> ·
   <a href="#contributing">Contributing</a> ·
   <a href="#license">License</a>
@@ -49,10 +50,10 @@ For more on the thinking behind AI LoveMoney and why it was created, read [About
 
 | Section | Description |
 | --- | --- |
-| Guides | Connect model selection, usage methods, practical setup, merchant evaluation, network environment, payment methods, KYC, and daily risk control into one complete path so users can fill in key judgments before placing an order |
-| Card shop merchants | Aggregates third-party AI card shop merchant and product information, with keyword search, popular searches, price ranges, stock status, merchant grouping, overall sorting, and favorites to help users find purchase entrances worth checking |
-| Model rankings | View mainstream model rankings by tasks such as programming, creative writing, math, and text-to-image generation to judge which model category fits best |
-| Official subscription price comparison | Compare subscription prices and CNY conversions for ChatGPT, Claude, Gemini, Grok, Copilot, Kimi, X, and more across regions to judge whether an official plan is worth buying and which region is more cost-effective |
+| Help | Connect model selection, usage methods, practical setup, merchant evaluation, network environment, payment methods, KYC, and daily risk control into one complete path so users can fill in key judgments before placing an order |
+| Card shops | Aggregates third-party quotes as standard SKUs: one canonical product per row, with a lowest reference price, channel count, and in-stock channels. Merchant details are a drill-down, not the default view |
+| Model rankings | View public reference rankings for coding, creative writing, math, text-to-image, and video generation. Video generation is currently an empty placeholder. Scores come from public pages, not this site’s live evaluation |
+| Official sites | Compare ChatGPT, Claude, Gemini, and Grok official plan prices across regions, then jump to related shop SKUs and gateway sites that support the model family |
 | Toolset | Provides ChatGPT Session conversion, IP cleanliness checks, and external helper tools such as Codex credential assistant and Outlook quick pickup to help users complete quick checks and processing before registration, login, payment, import, or format conversion |
 | Merchant submission and cooperation | Provides merchant submission, public listing, sponsorship slots, and cooperation entrances so quality merchants can get clearer display and exposure paths |
 
@@ -72,13 +73,13 @@ AI LoveMoney does not try to throw everything at you at once. It tries to put th
 1. Check model rankings first to see which models matter for different tasks
 2. Compare official subscription prices to understand regional price differences
 3. When a third-party channel is needed, search merchants, products, stock, and prices on the homepage
-4. Before placing an order, read the guides to prepare network access, payment, delivery expectations, KYC, and risk-control basics
+4. Before placing an order, read Help to prepare network access, payment, delivery expectations, KYC, and risk-control basics
 5. When it is time to operate, use tools such as IP cleanliness checks and Session conversion
 6. Quality merchants can enter the listing flow through the submission entrance or view cooperation exposure options directly
 
-## Guides
+## Help
 
-The [Guides](https://ai.lovemoney.live/guide) are AI LoveMoney's usage path for new users. They are not a loose tutorial collection. They systematically separate the issues that are often mixed together, following the order of choosing a model, choosing a usage method, preparing network and payment basics, and then handling daily risk control.
+[Help](https://ai.lovemoney.live/guide) is AI LoveMoney's usage path for new users. It is not a loose tutorial collection. It systematically separates the issues that are often mixed together, following the order of choosing a model, choosing a usage method, preparing network and payment basics, and then handling daily risk control.
 
 The following are the original Markdown guide documents. Reading them directly on the [official website](https://ai.lovemoney.live/guide) is recommended for the best layout and browsing experience.
 
@@ -139,10 +140,25 @@ GREYNOISE_API_KEY=
 ```bash
 pnpm install
 pnpm run dev
+pnpm run seed:reference-samples
+pnpm test
+pnpm run typecheck
 pnpm run build
 pnpm start
-pnpm run typecheck
 ```
+
+`seed:reference-samples` writes a bounded public reference sample set into local MySQL `ailovemoney` and the public snapshots. It is not live collection.
+
+## Current implementation boundary
+
+Canonical decisions: [data navigation and collection boundary](docs/data-nav-and-collection.md).
+
+- Done: renamed three-locale nav, standard SKU aggregation, gateway/official/leaderboard reference samples, and internal model/plan relation queries. Production is display-only.
+- Manual check: after seeding, open `/shops`, `/llm-gateway`, `/official-price`, and `/model-leaderboard` on `http://127.0.0.1:3101`. Samples are labeled non-live and have no purchase outbound links.
+- Requires per-source user approval: real HTTP collection, Windows/remote schedulers, auto-publishing staging to public snapshots. Unapproved sources must not make network requests.
+- Existing partnership/submit forms stay; submissions are not auto-published.
+- Source defaults: `enabled=false`, `interval_minutes=60`, `max_items_per_run=1000` (`0` = unlimited). `site.score=50` is a display initial value only.
+- Passwords, SSH keys, connection strings, and SQL dumps stay out of this repository.
 
 ## Current production deployment
 

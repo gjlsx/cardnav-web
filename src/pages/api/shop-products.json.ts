@@ -9,9 +9,10 @@ import {
 import { packShopProductsData } from '../../shop-products-data.js';
 import { loadPackedShopProductsSnapshot, loadShopProductsData } from '../../store.js';
 
-export const GET: APIRoute = async () => {
-  const packedSnapshot = await loadPackedShopProductsSnapshot();
-  const payload = packedSnapshot ?? packShopProductsData(await loadShopProductsData());
+export const GET: APIRoute = async ({ request }) => {
+  const target = new URL(request.url).searchParams.get('target')?.trim() || '';
+  const packedSnapshot = target ? null : await loadPackedShopProductsSnapshot();
+  const payload = packedSnapshot ?? packShopProductsData(await loadShopProductsData({ target }));
   return new Response(JSON.stringify(payload), {
     headers: {
       'content-type': 'application/json; charset=utf-8',

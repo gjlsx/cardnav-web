@@ -9,6 +9,7 @@ import { buildModelLeaderboardGroups } from '../model-leaderboard.js';
 import { buildOfficialPriceGroups, matchOfficialPriceCatalogEntries } from '../official-price.js';
 import pageWidgetsScriptUrl from '../scripts/page-widgets.js?url';
 import { buildSeoContext } from '../seo.js';
+import { catalogProductTarget } from '../catalog.js';
 import { publicSiteUrl } from '../site.js';
 import {
   loadShopProductsData,
@@ -177,7 +178,7 @@ const productHighlights = shopProductsData.products.slice(0, 6).map(product => (
   value: typeof product.priceNumber === 'number' && product.priceUnit
     ? `${product.priceUnit}${String(product.priceNumber)}`
     : product.price,
-  href: `/shops?q=${encodeURIComponent(product.name)}`,
+  href: `/shops?target=${encodeURIComponent(catalogProductTarget(product.standardProduct || '')?.slug || '')}`,
 }));
 
 function guideUrlClickAttrs(targetPage: string) {

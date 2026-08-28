@@ -3,7 +3,7 @@
  */
 import type { PublicProductRow, PublicSiteRow } from './store.js';
 
-const PACKED_SHOP_PRODUCTS_VERSION = 1;
+const PACKED_SHOP_PRODUCTS_VERSION = 2;
 const DEFAULT_PRICE_UNIT = '¥';
 const NO_PRICE_UNIT = -1;
 
@@ -53,7 +53,7 @@ export type PackedShopProductRow = [
 ];
 
 export type PackedShopProductsData = {
-  v: 1;
+  v: 1 | 2;
   s: PackedShopSiteRow[];
   c: string[];
   u: string[];
@@ -64,6 +64,7 @@ export type PackedShopProductsData = {
   l: number | null;
   i?: number;
   x: 0 | 1;
+  d?: Array<NonNullable<PublicProductRow['channelDetails']>>;
 };
 
 const beijingDateFormatter = new Intl.DateTimeFormat('sv-SE', {
@@ -184,6 +185,7 @@ export function packShopProductsData(data: PublicShopProductsData): PackedShopPr
     l: timestampMs(data.latestRefreshedAt),
     ...(typeof data.initialProductLimit === 'number' ? { i: data.initialProductLimit } : {}),
     x: data.isPartial ? 1 : 0,
+    ...(data.products.some(product => product.channelDetails?.length) ? { d: data.products.map(product => product.channelDetails ?? []) } : {}),
   };
 }
 
@@ -332,4 +334,9 @@ export function shopProductSourceName(product: PackedShopProductRow) {
 
 export function shopProductSourcePageUrl(product: PackedShopProductRow) {
   return product[20] || '';
+}
+
+export function shopProductChannelDetails(data: PackedShopProductsData, product: PackedShopProductRow) {
+  const index = shopProducts(data).indexOf(product);
+  return index < 0 ? [] : data.d?.[index] ?? [];
 }

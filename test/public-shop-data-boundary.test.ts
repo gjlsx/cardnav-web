@@ -11,10 +11,17 @@ const storeSource = fs.readFileSync(path.resolve('src/store.ts'), 'utf8');
 test('public shop reads and interactions require online card shops', () => {
   assert.match(storeSource, /FROM shop_sites\s+WHERE status = 'online'\s+AND type = 'cardShop'/);
   assert.match(storeSource, /INNER JOIN shop_sites ON shop_sites\.id = shop_products\.site_id\s+WHERE shop_sites\.status = 'online'\s+AND shop_sites\.type = 'cardShop'/);
-  assert.match(storeSource, /SELECT COUNT\(\*\) FROM shop_products INNER JOIN shop_sites ON shop_sites\.id = shop_products\.site_id WHERE shop_sites\.status = 'online' AND shop_sites\.type = 'cardShop'/);
   assert.match(storeSource, /SELECT shop_products\.id FROM shop_products INNER JOIN shop_sites[\s\S]+?shop_sites\.status = 'online'[\s\S]+?shop_sites\.type = 'cardShop'/);
   assert.match(storeSource, /UPDATE shop_products SET click_count = click_count \+ 1 WHERE id = \?/);
   assert.match(storeSource, /SELECT term FROM shop_search_terms WHERE total_count > 0 AND result_count > 0/);
+});
+
+test('shop default applies canonical aggregation and keeps merchant/product details internal', () => {
+  const browserSource = fs.readFileSync(path.resolve('src/scripts/index.js'), 'utf8');
+  assert.match(storeSource, /aggregateCatalogProducts\(rawProducts\)/);
+  assert.match(browserSource, /shopProductChannelDetails/);
+  assert.match(browserSource, /document\.createElement\('span'\)/);
+  assert.doesNotMatch(browserSource.match(/function createTrackedProductLink[\s\S]+?function tableLabel/)?.[0] ?? '', /\.href\s*=/);
 });
 
 test('public gateway sites expose sponsor marker and pin sponsors before score sorting', () => {

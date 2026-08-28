@@ -4,6 +4,7 @@
 import 'dotenv/config';
 import { createHash } from 'node:crypto';
 import mysql from 'mysql2/promise';
+import { aggregateCatalogProducts, catalogProductSlugsForTarget } from './catalog.js';
 import type { PackedShopProductsData, PublicShopProductsData } from './shop-products-data.js';
 import { validatePublicSubmittedUrl, type PublicSubmittedUrlRejectReason } from './submitted-url.js';
 
@@ -85,6 +86,7 @@ export type PublicGatewayModelDetail = {
 };
 
 export type PublicProductRow = {
+  id?: string;
   categoryName: string;
   name: string;
   price: string;
@@ -115,6 +117,17 @@ export type PublicProductRow = {
   isSample?: boolean;
   sourceName?: string;
   sourcePageUrl?: string;
+  sourcePriority?: number;
+  channelDetails?: Array<{
+    siteId: string;
+    siteName: string;
+    inStock: boolean;
+    price: string;
+    priceNumber: number | null;
+    priceUnit: string | null;
+    sampledAt: string | null;
+    isSample: boolean;
+  }>;
 };
 
 export type ProductClickInput = {
@@ -335,7 +348,16 @@ async function mysqlGatewaySiteRows(options: { slug?: string; modelId?: string; 
   return result.rows.map(mapMySqlGatewaySiteRow);
 }
 
-async function loadMySqlShopProductsData(options: { productLimit?: number; inStockOnly?: boolean }): Promise<PublicShopProductsData> {
+type ShopProductsOptions = { productLimit?: number; inStockOnly?: boolean; target?: string };
+
+function applyCatalogTarget(products: PublicProductRow[], target: string | undefined) {
+  const normalized = String(target || '').trim();
+  if (!normalized) return products;
+  const slugs = catalogProductSlugsForTarget(normalized);
+  return products.filter(product => slugs.includes(String(product.standardProduct || '')));
+}
+
+async function loadMySqlShopProductsData(options: ShopProductsOptions): Promise<PublicShopProductsData> {
   const limit = typeof options.productLimit === 'number' && Number.isFinite(options.productLimit) ? Math.max(1, Math.floor(options.productLimit)) : null;
   const productsResult = await getPool().query(`
     SELECT
@@ -347,17 +369,16 @@ async function loadMySqlShopProductsData(options: { productLimit?: number; inSto
       shop_products.click_count, shop_products.score, shop_products.refreshed_at, shop_products.standard_product,
       shop_products.platform, shop_products.product_type, shop_products.currency_code, shop_products.channel_count,
       shop_products.available_channel_count, shop_products.out_of_stock_channel_count, shop_products.sampled_at,
-      shop_products.is_sample, reference_data_sources.name AS source_name, reference_data_sources.source_page_url
+      shop_products.is_sample, reference_data_sources.name AS source_name, reference_data_sources.source_page_url,
+      reference_data_sources.priority AS source_priority
     FROM shop_products
     INNER JOIN shop_sites ON shop_sites.id = shop_products.site_id
     LEFT JOIN reference_data_sources ON reference_data_sources.id = shop_products.source_id
     WHERE shop_sites.status = 'online' AND shop_sites.type = 'cardShop'
-      ${options.inStockOnly ? 'AND shop_products.in_stock = TRUE' : ''}
     ORDER BY shop_sites.sponsor DESC, shop_products.score DESC, shop_sites.score DESC, shop_products.in_stock DESC,
       shop_products.refreshed_at DESC, shop_products.category_name ASC, shop_products.name ASC
-    ${limit ? 'LIMIT ?' : ''}
-  `, limit ? [limit] : []);
-  const products: PublicProductRow[] = productsResult.rows.map(row => {
+  `);
+  const rawProducts: PublicProductRow[] = productsResult.rows.map(row => {
     const refreshedAt = row.refreshed_at ? String(row.refreshed_at) : null;
     const siteProductRefreshSuccessAt = row.site_product_refresh_success_at ? String(row.site_product_refresh_success_at) : null;
     return {
@@ -373,24 +394,24 @@ async function loadMySqlShopProductsData(options: { productLimit?: number; inSto
       availableChannelCount: row.available_channel_count == null ? null : Number(row.available_channel_count),
       outOfStockChannelCount: row.out_of_stock_channel_count == null ? null : Number(row.out_of_stock_channel_count),
       sampledAt: row.sampled_at ? String(row.sampled_at) : null,
-      isSample: row.is_sample === true || row.is_sample === 1 || row.is_sample === '1', sourceName: String(row.source_name || ''), sourcePageUrl: String(row.source_page_url || ''),
+      isSample: row.is_sample === true || row.is_sample === 1 || row.is_sample === '1', sourceName: String(row.source_name || ''), sourcePageUrl: String(row.source_page_url || ''), sourcePriority: Number(row.source_priority) || 0,
     };
   });
+  const aggregateProducts = applyCatalogTarget(aggregateCatalogProducts(rawProducts), options.target);
+  const products = limit ? aggregateProducts.slice(0, limit) : aggregateProducts;
   const sitesResult = await getPool().query(`SELECT id, name, url, score, sponsor, last_product_refresh_success_at FROM shop_sites WHERE status = 'online' AND type = 'cardShop' ORDER BY sponsor DESC, score DESC, product_count DESC, in_stock_product_count DESC, last_product_refresh_success_at DESC, id ASC`);
   const summaryResult = await getPool().query(`
     SELECT COUNT(*) AS total_site_count,
-      COALESCE((SELECT COUNT(*) FROM shop_products INNER JOIN shop_sites ON shop_sites.id = shop_products.site_id WHERE shop_sites.status = 'online' AND shop_sites.type = 'cardShop'), 0) AS total_product_count,
-      COALESCE((SELECT COUNT(*) FROM shop_products INNER JOIN shop_sites ON shop_sites.id = shop_products.site_id WHERE shop_sites.status = 'online' AND shop_sites.type = 'cardShop' AND shop_products.in_stock = TRUE), 0) AS total_in_stock_product_count,
       MAX(last_product_refresh_success_at) AS latest_refreshed_at
     FROM shop_sites WHERE status = 'online' AND type = 'cardShop'
   `);
   const summary = summaryResult.rows[0] ?? {};
   return {
     sites: sitesResult.rows.map(row => { const at = row.last_product_refresh_success_at ? String(row.last_product_refresh_success_at) : null; return { id: String(row.id || ''), name: String(row.name || ''), url: String(row.url || ''), lastProductRefreshSuccessAt: at, lastProductRefreshSuccessTime: formatBeijingRefreshTime(at), score: Number(row.score) || 0, sponsor: row.sponsor === true || row.sponsor === 1 || row.sponsor === '1' }; }),
-    products, totalSiteCount: Number(summary.total_site_count) || 0, totalProductCount: Number(summary.total_product_count) || 0,
-    totalInStockProductCount: Number(summary.total_in_stock_product_count) || 0, latestRefreshedAt: summary.latest_refreshed_at ? String(summary.latest_refreshed_at) : null,
+    products, totalSiteCount: Number(summary.total_site_count) || 0, totalProductCount: aggregateProducts.length,
+    totalInStockProductCount: aggregateProducts.filter(product => product.inStock).length, latestRefreshedAt: summary.latest_refreshed_at ? String(summary.latest_refreshed_at) : null,
     latestRefreshTime: formatBeijingRefreshTime(summary.latest_refreshed_at ? String(summary.latest_refreshed_at) : null),
-    isPartial: (options.inStockOnly ? Number(summary.total_in_stock_product_count) : Number(summary.total_product_count)) > products.length,
+    isPartial: aggregateProducts.length > products.length,
   };
 }
 
@@ -497,7 +518,7 @@ async function loadMySqlOfficialPriceCatalog(): Promise<PublicOfficialPriceCatal
   return result.rows.map(row => ({ appSlug: String(row.app_slug), planSlug: String(row.plan_slug), appName: String(row.app_name), planName: String(row.plan_name), displayName: String(row.display_name), urlSlug: String(row.url_slug), isDefault: row.is_default === true || row.is_default === 1 || row.is_default === '1', displayOrder: Number(row.display_order) || 0 }));
 }
 
-export async function loadShopProductsData(options: { productLimit?: number; inStockOnly?: boolean } = {}): Promise<PublicShopProductsData> {
+export async function loadShopProductsData(options: ShopProductsOptions = {}): Promise<PublicShopProductsData> {
   const snapshot = await loadPublicSnapshot<{
     sites: PublicSiteRow[];
     products: PublicProductRow[];
@@ -512,18 +533,20 @@ export async function loadShopProductsData(options: { productLimit?: number; inS
     ? Math.max(1, Math.floor(options.productLimit))
     : null;
   if (snapshot) {
-    const sourceProducts = (options.inStockOnly ? snapshot.products.filter(product => product.inStock) : snapshot.products)
-      .map(product => ({ ...product, siteSponsor: product.siteSponsor === true }));
+    const snapshotIsAggregate = snapshot.products.every(product => Array.isArray(product.channelDetails));
+    const aggregateProducts = applyCatalogTarget(snapshotIsAggregate ? snapshot.products : aggregateCatalogProducts(snapshot.products), options.target);
+    const sourceProducts = aggregateProducts.map(product => ({ ...product, siteSponsor: product.siteSponsor === true }));
     const products = productLimit == null ? sourceProducts : sourceProducts.slice(0, productLimit);
     const sites = productLimit == null
       ? snapshot.sites.map(site => ({ ...site, sponsor: site.sponsor === true }))
       : snapshot.sites.filter(site => products.some(product => product.siteId === site.id)).map(site => ({ ...site, sponsor: site.sponsor === true }));
-    const totalInStockProductCount = snapshot.totalInStockProductCount ?? snapshot.products.filter(product => product.inStock).length;
-    const availableCount = options.inStockOnly ? totalInStockProductCount : snapshot.totalProductCount;
+    const totalInStockProductCount = aggregateProducts.filter(product => product.inStock).length;
+    const availableCount = aggregateProducts.length;
     return {
       ...snapshot,
       sites,
       products,
+      totalProductCount: aggregateProducts.length,
       totalInStockProductCount,
       ...(productLimit == null ? {} : { initialProductLimit: productLimit }),
       isPartial: availableCount > products.length,

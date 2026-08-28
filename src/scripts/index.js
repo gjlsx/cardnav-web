@@ -6,6 +6,7 @@ import { buildShopSearchPageMeta } from '../shop-search-page-meta.js';
 import {
   shopProductAvailableChannelCount,
   shopProductCategoryName,
+  shopProductChannelDetails,
   shopProductChannelCount,
   shopProductInStock,
   shopProductIsSample,
@@ -654,29 +655,17 @@ function sponsoredRel(sponsored) {
 }
 
 function createTrackedProductLink(href, className, label, eventLabel, options = {}) {
-  const link = document.createElement('a');
-  link.href = href;
-  link.target = '_blank';
-  link.rel = sponsoredRel(options.sponsor);
-  link.dataset.umamiEvent = 'product-click';
-  link.dataset.umamiEventUrl = href;
-  link.dataset.umamiEventName = eventLabel;
-  link.className = className;
-  link.textContent = label;
-  return link;
+  const textNode = document.createElement('span');
+  textNode.className = className;
+  textNode.textContent = label;
+  return textNode;
 }
 
 function createTrackedMerchantLink(href, label, options = {}) {
-  const link = document.createElement('a');
-  link.href = href;
-  link.target = '_blank';
-  link.rel = sponsoredRel(options.sponsor);
-  link.dataset.umamiEvent = 'merchant-click';
-  link.dataset.umamiEventUrl = href;
-  link.dataset.umamiEventName = label;
-  link.className = 'merchant-link merchant-text';
-  link.textContent = label;
-  return link;
+  const textNode = document.createElement('span');
+  textNode.className = 'merchant-text';
+  textNode.textContent = label;
+  return textNode;
 }
 
 function tableLabel(key) {
@@ -704,6 +693,7 @@ function createFlatProductRow(item) {
   const sourceName = text(shopProductSourceName(item));
   const availableChannelCount = shopProductAvailableChannelCount(item);
   const channelCount = shopProductChannelCount(item);
+  const channelDetails = shopProductChannelDetails(shopProductsData, item);
   const row = document.createElement('tr');
   row.className = 'flat-product-row';
 
@@ -717,7 +707,25 @@ function createFlatProductRow(item) {
   const productInline = document.createElement('div');
   productInline.className = 'cell-inline';
   productInline.appendChild(createFavoriteButton('product', productFavoriteKey, `${shopsMessages.productFavorite || 'Favorite product'} ${productTitle}`));
-  if (productUrl) {
+  if (channelDetails.length) {
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'btn btn-ghost btn-xs h-auto min-h-0 px-0 font-semibold normal-case text-base-content hover:bg-transparent';
+    toggle.textContent = productName;
+    toggle.setAttribute('aria-expanded', 'false');
+    const details = document.createElement('div');
+    details.className = 'reference-product-meta hidden';
+    channelDetails.forEach(channel => {
+      appendTextElement(details, 'span', 'reference-product-source', `${channel.siteName} · ${formatDisplayPrice(channel.priceNumber, channel.priceUnit)} · ${channel.inStock ? shopsMessages.inStock : shopsMessages.soldOut}`);
+    });
+    toggle.addEventListener('click', () => {
+      const opened = details.classList.toggle('hidden');
+      toggle.setAttribute('aria-expanded', opened ? 'false' : 'true');
+    });
+    productInline.appendChild(toggle);
+    productCell.appendChild(productInline);
+    productCell.appendChild(details);
+  } else if (productUrl) {
     const productLink = createTrackedProductLink(productUrl, 'product-link', productName, productTitle, { sponsor: siteSponsor });
     productLink.dataset.productClickSiteId = siteId;
     productLink.dataset.productClickUrl = productUrl;
@@ -728,7 +736,7 @@ function createFlatProductRow(item) {
     appendTextElement(productInline, 'span', 'product-text', productName);
   }
   if (siteSponsor) productInline.appendChild(window.CardNavSponsorBadge.create(shopsMessages.sponsorLabel || 'Partner', shopsMessages.sponsorDescription || '', shopsMessages.partnershipUrl || localizedFallbackPath('/partnership'), shopsMessages.partnershipLinkLabel || 'How to partner'));
-  productCell.appendChild(productInline);
+  if (!channelDetails.length) productCell.appendChild(productInline);
   if (platform || productType || isSample || sourceName) {
     const productMeta = document.createElement('div');
     productMeta.className = 'reference-product-meta';
@@ -1230,7 +1238,9 @@ async function loadShopProductsDataFromApi() {
     productEmptyState?.classList.add('hidden');
     merchantEmptyState?.classList.add('hidden');
     try {
-      const response = await fetch('/api/shop-products.json', { headers: { accept: 'application/json' } });
+      const target = String(shopsMessages.catalogTarget || '').trim();
+      const endpoint = target ? `/api/shop-products.json?target=${encodeURIComponent(target)}` : '/api/shop-products.json';
+      const response = await fetch(endpoint, { headers: { accept: 'application/json' } });
       if (!response.ok) {
         isShopProductsDataLoading = false;
         await applyFilters();

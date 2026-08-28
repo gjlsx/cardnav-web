@@ -28,6 +28,7 @@ const linkTo = Astro.locals.localizePath;
 const requestUrl = new URL(Astro.request.url);
 const seoSearchTerm = Astro.props.seoSearchTerm ?? null;
 const initialSearchQuery = seoSearchTerm?.query ?? requestUrl.searchParams.get('q')?.trim() ?? '';
+const initialCatalogTarget = requestUrl.searchParams.get('target')?.trim() ?? '';
 const seoSearchPageMeta = seoSearchTerm
   ? buildShopSearchPageMeta(seoSearchTerm.label, {
       searchResultsTitle: t.shops.searchResultsTitle,
@@ -40,7 +41,7 @@ const heroTitle = seoSearchPageMeta?.heroTitle ?? t.shops.title;
 const heroDescription = seoSearchPageMeta?.heroDescription ?? t.shops.description;
 const seoPathname = seoSearchTerm ? quickPlanSearchSeoPath(seoSearchTerm) : '/shops';
 const hasNonCanonicalQuery = !seoSearchTerm && requestUrl.search.length > 0;
-const data = await loadShopProductsData({ productLimit: initialProductLimitValue, inStockOnly: true });
+const data = await loadShopProductsData({ productLimit: initialProductLimitValue, inStockOnly: true, target: initialCatalogTarget });
 const popularSearchResult = await loadPopularSearchTerms(10, [...t.home.presetPopularSearchTerms]);
 const officialPriceCatalog = await loadOfficialPriceCatalog();
 const popularSearchTerms = popularSearchResult.terms;
@@ -145,6 +146,7 @@ const shopsScriptMessages = {
   defaultHeroTitle: t.shops.title,
   defaultHeroDescription: t.shops.description,
   shopsPath: linkTo('/shops'),
+  catalogTarget: initialCatalogTarget,
   seoSearchQuery: seoSearchTerm?.query ?? '',
   seoSearchPath: seoSearchTerm ? linkTo(quickPlanSearchSeoPath(seoSearchTerm)) : '',
   searchPlaceholder: t.shops.searchPlaceholder,
@@ -154,7 +156,7 @@ const shopsScriptMessages = {
     price: t.labels.price,
     stock: t.labels.stock,
     category: t.labels.category,
-    merchant: t.labels.merchant,
+    merchant: t.shops.channelAvailability,
     merchantScore: t.labels.merchantScore,
     productScore: t.labels.productScore,
     productCount: t.labels.productCount,
@@ -174,7 +176,7 @@ const flatSortColumns = [
   { key: 'stockValue', type: 'number', label: t.labels.stock },
   { key: 'categoryName', type: 'text', label: t.labels.category },
   { key: 'score', type: 'number', label: t.labels.productScore, tip: t.shops.productScoreTip, tipLabel: t.shops.productScoreHelpLabel },
-  { key: 'siteName', type: 'text', label: t.labels.merchant },
+  { key: 'siteName', type: 'text', label: t.shops.channelAvailability },
   { key: 'productRefreshedAt', type: 'number', label: t.labels.latestRefresh },
 ] satisfies SortColumn[];
 const rightAlignedProductColumns = new Set(['priceValue', 'stockValue', 'score']);

@@ -8,6 +8,7 @@ export type ReferenceDataSource = {
   sourcePageUrl: string;
   sampledAt: string;
   usageNote: string;
+  priority: number;
 };
 
 export type ReferenceProductSample = {
@@ -40,6 +41,7 @@ export const referenceDataSources: ReferenceDataSource[] = [
     sourcePageUrl: 'https://cardnav.xyz/',
     sampledAt,
     usageNote: '公开首页的短商品和中转站展示字段，仅作本地参考样例。',
+    priority: 20,
   },
   {
     id: 'reference-priceai-channels',
@@ -47,6 +49,7 @@ export const referenceDataSources: ReferenceDataSource[] = [
     sourcePageUrl: 'https://priceai.cc/channels',
     sampledAt,
     usageNote: '公开标准商品/渠道聚合字段，仅作本地参考样例。',
+    priority: 30,
   },
   {
     id: 'reference-openprice-products',
@@ -54,6 +57,7 @@ export const referenceDataSources: ReferenceDataSource[] = [
     sourcePageUrl: 'https://www.openprice.cc/card-products',
     sampledAt,
     usageNote: '公开按平台分组的最低参考价字段，仅作本地参考样例。',
+    priority: 10,
   },
 ];
 

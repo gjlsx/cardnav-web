@@ -7,6 +7,7 @@ import {
   packShopProductsData,
   shopProductAvailableChannelCount,
   shopProductCategoryName,
+  shopProductChannelDetails,
   shopProductChannelCount,
   shopProductInStock,
   shopProductIsSample,
@@ -122,4 +123,19 @@ test('packed shop products accessors read page fields without unpacking long obj
   assert.equal(shopProductAvailableChannelCount(first), 6);
   assert.equal(shopProductIsSample(first), true);
   assert.equal(shopProductSourceName(first), 'Public reference');
+});
+
+test('packed v2 channel details remain optional so v1 snapshots stay readable', () => {
+  const packed = packShopProductsData({
+    ...fixture,
+    products: [{
+      ...fixture.products[0],
+      channelDetails: [{ siteId: 'merchant-a', siteName: '商家 A', inStock: true, price: '¥35', priceNumber: 35, priceUnit: '¥', sampledAt: null, isSample: true }],
+    }],
+  });
+  assert.equal(packed.v, 2);
+  assert.equal(shopProductChannelDetails(packed, shopProducts(packed)[0]).length, 1);
+
+  const legacy = { ...packed, v: 1 as const, d: undefined };
+  assert.deepEqual(shopProductChannelDetails(legacy, shopProducts(legacy)[0]), []);
 });

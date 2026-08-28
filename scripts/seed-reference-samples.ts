@@ -4,6 +4,7 @@
 import 'dotenv/config';
 import mysql from 'mysql2/promise';
 import { initializeMySqlSchema } from '../src/database.js';
+import { catalogPlanModels, catalogProducts, aggregateCatalogProducts } from '../src/catalog.js';
 import { packShopProductsData, type PublicShopProductsData } from '../src/shop-products-data.js';
 import { referenceDataSources, referenceProductSamples } from '../src/reference-samples.js';
 
@@ -26,10 +27,10 @@ async function main() {
     await connection.beginTransaction();
     for (const source of referenceDataSources) {
       await connection.execute(
-        `INSERT INTO reference_data_sources (id, name, source_page_url, sampled_at, is_sample, usage_note)
-         VALUES (?, ?, ?, ?, TRUE, ?)
-         ON DUPLICATE KEY UPDATE name = VALUES(name), source_page_url = VALUES(source_page_url), sampled_at = VALUES(sampled_at), is_sample = TRUE, usage_note = VALUES(usage_note)`,
-        [source.id, source.name, source.sourcePageUrl, toMySqlDate(source.sampledAt), source.usageNote],
+        `INSERT INTO reference_data_sources (id, name, source_page_url, sampled_at, is_sample, usage_note, priority)
+         VALUES (?, ?, ?, ?, TRUE, ?, ?)
+         ON DUPLICATE KEY UPDATE name = VALUES(name), source_page_url = VALUES(source_page_url), sampled_at = VALUES(sampled_at), is_sample = TRUE, usage_note = VALUES(usage_note), priority = VALUES(priority)`,
+        [source.id, source.name, source.sourcePageUrl, toMySqlDate(source.sampledAt), source.usageNote, source.priority],
       );
     }
 
@@ -38,17 +39,31 @@ async function main() {
     await connection.execute(`DELETE FROM shop_products WHERE is_sample = TRUE AND source_id IN (${placeholders})`, sourceIds);
     await connection.execute("DELETE FROM shop_sites WHERE family = 'reference-sample' AND id LIKE 'reference-%'");
 
-    const sourceById = new Map(referenceDataSources.map(source => [source.id, source]));
     const sites = [...new Map(referenceProductSamples.map(sample => [sample.siteId, sample])).values()];
     for (const site of sites) {
       const siteProducts = referenceProductSamples.filter(sample => sample.siteId === site.siteId);
       const inStockCount = siteProducts.filter(sample => sample.inStock).length;
-      const sourceUrl = sourceById.get(site.sourceId)?.sourcePageUrl ?? '';
       await connection.execute(
         `INSERT INTO shop_sites (id, name, url, last_product_refresh_success_at, score, sponsor, product_count, in_stock_product_count, status, type, family)
-         VALUES (?, ?, ?, ?, 0, FALSE, ?, ?, 'online', 'cardShop', 'reference-sample')
-         ON DUPLICATE KEY UPDATE name = VALUES(name), url = VALUES(url), last_product_refresh_success_at = VALUES(last_product_refresh_success_at), score = 0, sponsor = FALSE, product_count = VALUES(product_count), in_stock_product_count = VALUES(in_stock_product_count), status = 'online', type = 'cardShop', family = 'reference-sample'`,
-        [site.siteId, site.siteName, `${sourceUrl}#${site.siteId}`, toMySqlDate(site.sampledAt), siteProducts.length, inStockCount],
+         VALUES (?, ?, NULL, ?, 50, FALSE, ?, ?, 'online', 'cardShop', 'reference-sample')
+         ON DUPLICATE KEY UPDATE name = VALUES(name), url = NULL, last_product_refresh_success_at = VALUES(last_product_refresh_success_at), score = 50, sponsor = FALSE, product_count = VALUES(product_count), in_stock_product_count = VALUES(in_stock_product_count), status = 'online', type = 'cardShop', family = 'reference-sample'`,
+        [site.siteId, site.siteName, toMySqlDate(site.sampledAt), siteProducts.length, inStockCount],
+      );
+    }
+
+    for (const product of catalogProducts) {
+      await connection.execute(
+        `INSERT INTO catalog_products (slug, target_kind, target_slug, platform, product_type, display_name, aliases, modality)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+         ON DUPLICATE KEY UPDATE target_kind = VALUES(target_kind), target_slug = VALUES(target_slug), platform = VALUES(platform), product_type = VALUES(product_type), display_name = VALUES(display_name), aliases = VALUES(aliases), modality = VALUES(modality)`,
+        [product.slug, product.targetKind, product.targetSlug, product.platform, product.productType, product.displayName, JSON.stringify(product.aliases), product.modality],
+      );
+    }
+    for (const relation of catalogPlanModels) {
+      await connection.execute(
+        `INSERT INTO catalog_plan_models (plan_slug, model_family) VALUES (?, ?)
+         ON DUPLICATE KEY UPDATE model_family = VALUES(model_family)`,
+        [relation.planSlug, relation.modelFamily],
       );
     }
 
@@ -66,21 +81,22 @@ async function main() {
       );
     }
 
-    const data: PublicShopProductsData = {
+    const rawData: PublicShopProductsData = {
       sites: sites.map(site => ({
         id: site.siteId, name: site.siteName, url: '', lastProductRefreshSuccessAt: site.sampledAt,
-        lastProductRefreshSuccessTime: toMySqlDate(site.sampledAt), score: 0, sponsor: false,
+        lastProductRefreshSuccessTime: toMySqlDate(site.sampledAt), score: 50, sponsor: false,
       })),
       products: referenceProductSamples.map(sample => ({
         categoryName: sample.categoryName, name: sample.name, price: sample.price, priceNumber: sample.priceNumber, priceUnit: sample.priceUnit,
         inStock: sample.inStock, refreshedAt: sample.sampledAt, refreshTime: toMySqlDate(sample.sampledAt), siteId: sample.siteId,
         siteName: sample.siteName, siteUrl: '', siteProductRefreshSuccessAt: sample.sampledAt,
-        siteProductRefreshSuccessTime: toMySqlDate(sample.sampledAt), siteScore: 0, siteSponsor: false, clickCount: 0, score: 0,
+        siteProductRefreshSuccessTime: toMySqlDate(sample.sampledAt), siteScore: 50, siteSponsor: false, clickCount: 0, score: 0,
         standardProduct: sample.standardProduct, platform: sample.platform, productType: sample.productType, currencyCode: sample.currencyCode,
         channelCount: sample.channelCount, availableChannelCount: sample.availableChannelCount, outOfStockChannelCount: sample.outOfStockChannelCount,
         sampledAt: sample.sampledAt, isSample: true,
         sourceName: referenceDataSources.find(source => source.id === sample.sourceId)?.name ?? '',
         sourcePageUrl: referenceDataSources.find(source => source.id === sample.sourceId)?.sourcePageUrl ?? '',
+        sourcePriority: referenceDataSources.find(source => source.id === sample.sourceId)?.priority ?? 0,
       })),
       totalSiteCount: sites.length,
       totalProductCount: referenceProductSamples.length,
@@ -89,10 +105,15 @@ async function main() {
       latestRefreshTime: toMySqlDate(referenceProductSamples.map(sample => sample.sampledAt).sort().at(-1) ?? ''),
       isPartial: false,
     };
+    const data: PublicShopProductsData = {
+      ...rawData,
+      products: aggregateCatalogProducts(rawData.products),
+      totalProductCount: aggregateCatalogProducts(rawData.products).length,
+      totalInStockProductCount: aggregateCatalogProducts(rawData.products).filter(product => product.inStock).length,
+    };
     const snapshots = [
       ['shop-products', data],
       ['shop-products-packed', packShopProductsData(data)],
-      ['popular-search-terms', { terms: ['ChatGPT', 'Claude', 'Gemini', 'Grok', 'API'], normalizedTerms: ['chatgpt', 'claude', 'gemini', 'grok', 'api'] }],
     ] as const;
     for (const [key, payload] of snapshots) {
       await connection.execute(

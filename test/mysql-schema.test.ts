@@ -23,9 +23,25 @@ test('MySQL schema creates every public runtime table', async () => {
     for (const table of [
       'public_snapshot_entries', 'shop_sites', 'shop_products', 'shop_search_terms',
       'gateway_sites', 'gateway_model_prices', 'official_prices', 'model_leaderboards', 'reference_data_sources',
+      'catalog_products', 'catalog_plan_models', 'shop_site_model_coverage', 'catalog_unknown_aliases',
     ]) {
       assert.ok(tables.has(table), `missing ${table}`);
     }
+  } finally {
+    await connection.end();
+  }
+});
+
+test('MySQL schema keeps source priority separate from site display score and declares canonical catalog tables', async () => {
+  const connection = await mysql.createConnection(config);
+  try {
+    await initializeMySqlSchema(config);
+    const [sourceRows] = await connection.query<RowDataPacket[]>('SHOW COLUMNS FROM reference_data_sources');
+    assert.ok(sourceRows.some(row => row.Field === 'priority'));
+    const [catalogRows] = await connection.query<RowDataPacket[]>('SHOW COLUMNS FROM catalog_products');
+    assert.ok(catalogRows.some(row => row.Field === 'target_kind'));
+    const [indexRows] = await connection.query<RowDataPacket[]>('SHOW INDEX FROM shop_products');
+    assert.ok(indexRows.some(row => row.Key_name === 'shop_products_source_standard_site'));
   } finally {
     await connection.end();
   }

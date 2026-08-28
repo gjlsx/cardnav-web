@@ -22,14 +22,15 @@ const statements = [
     name VARCHAR(255) NOT NULL DEFAULT '',
     source_page_url TEXT NOT NULL,
     sampled_at DATETIME NOT NULL,
-    is_sample BOOLEAN NOT NULL DEFAULT TRUE,
+    is_sample BOOLEAN NOT NULL DEFAULT FALSE,
+    priority INT NOT NULL DEFAULT 0,
     usage_note VARCHAR(500) NOT NULL DEFAULT '',
     KEY reference_data_sources_sampled_at (sampled_at)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
   `CREATE TABLE IF NOT EXISTS shop_sites (
     id VARCHAR(64) NOT NULL PRIMARY KEY,
     name VARCHAR(255) NOT NULL DEFAULT '',
-    url TEXT NOT NULL,
+    url TEXT NULL,
     last_product_refresh_success_at DATETIME NULL,
     score DECIMAL(12,4) NOT NULL DEFAULT 0,
     sponsor BOOLEAN NOT NULL DEFAULT FALSE,
@@ -57,6 +58,38 @@ const statements = [
     score DECIMAL(12,4) NOT NULL DEFAULT 0,
     KEY shop_products_site_id (site_id),
     KEY shop_products_public_order (score, refreshed_at)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+  `CREATE TABLE IF NOT EXISTS catalog_products (
+    slug VARCHAR(255) NOT NULL PRIMARY KEY,
+    target_kind VARCHAR(32) NOT NULL,
+    target_slug VARCHAR(255) NOT NULL,
+    platform VARCHAR(100) NOT NULL DEFAULT '',
+    product_type VARCHAR(100) NOT NULL DEFAULT '',
+    display_name VARCHAR(255) NOT NULL DEFAULT '',
+    aliases JSON NOT NULL,
+    modality VARCHAR(100) NOT NULL DEFAULT '',
+    KEY catalog_products_target (target_kind, target_slug)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+  `CREATE TABLE IF NOT EXISTS catalog_plan_models (
+    plan_slug VARCHAR(255) NOT NULL,
+    model_family VARCHAR(255) NOT NULL,
+    PRIMARY KEY (plan_slug, model_family)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+  `CREATE TABLE IF NOT EXISTS shop_site_model_coverage (
+    site_id VARCHAR(64) NOT NULL,
+    model_family VARCHAR(255) NOT NULL,
+    source_id VARCHAR(64) NULL,
+    observed_at DATETIME NULL,
+    PRIMARY KEY (site_id, model_family)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+  `CREATE TABLE IF NOT EXISTS catalog_unknown_aliases (
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    alias_text VARCHAR(500) NOT NULL,
+    source_id VARCHAR(64) NULL,
+    site_id VARCHAR(64) NULL,
+    observed_at DATETIME NULL,
+    status VARCHAR(32) NOT NULL DEFAULT 'pending',
+    UNIQUE KEY catalog_unknown_alias_source_site (alias_text(255), source_id, site_id)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
   `CREATE TABLE IF NOT EXISTS shop_search_terms (
     term VARCHAR(255) NOT NULL PRIMARY KEY,
@@ -163,11 +196,32 @@ async function ensureShopProductColumns(connection: mysql.Connection) {
   }
 }
 
+async function ensureReferenceSourceColumns(connection: mysql.Connection) {
+  const [rows] = await connection.query<mysql.RowDataPacket[]>(
+    `SELECT 1 FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = 'reference_data_sources' AND column_name = 'priority' LIMIT 1`,
+  );
+  if (rows.length === 0) await connection.query('ALTER TABLE reference_data_sources ADD COLUMN priority INT NOT NULL DEFAULT 0');
+  // This narrows the default for legacy databases without changing existing provenance flags.
+  await connection.query('ALTER TABLE reference_data_sources MODIFY COLUMN is_sample BOOLEAN NOT NULL DEFAULT FALSE');
+  await connection.query('ALTER TABLE shop_sites MODIFY COLUMN url TEXT NULL');
+}
+
+async function ensureShopProductNaturalKey(connection: mysql.Connection) {
+  const [rows] = await connection.query<mysql.RowDataPacket[]>(
+    `SELECT 1 FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = 'shop_products' AND index_name = 'shop_products_source_standard_site' LIMIT 1`,
+  );
+  if (rows.length === 0) {
+    await connection.query('CREATE UNIQUE INDEX shop_products_source_standard_site ON shop_products (source_id, standard_product, site_id)');
+  }
+}
+
 export async function initializeMySqlSchema(config: MySqlConnectionConfig) {
   const connection = await mysql.createConnection(config);
   try {
     for (const statement of statements) await connection.query(statement);
     await ensureShopProductColumns(connection);
+    await ensureReferenceSourceColumns(connection);
+    await ensureShopProductNaturalKey(connection);
   } finally {
     await connection.end();
   }

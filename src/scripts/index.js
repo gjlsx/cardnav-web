@@ -698,6 +698,8 @@ function createFlatProductRow(item) {
   productCell.setAttribute('data-label', tableLabel('product'));
   const productInline = document.createElement('div');
   productInline.className = 'cell-inline';
+  appendTextElement(productInline, 'span', 'product-text', productName);
+  productCell.appendChild(productInline);
   if (channelDetails.length) {
     const toggle = document.createElement('button');
     toggle.type = 'button';
@@ -720,12 +722,8 @@ function createFlatProductRow(item) {
       chevron.textContent = isCollapsed ? '⌄' : '⌃';
     });
     productInline.appendChild(toggle);
-    productCell.appendChild(productInline);
     productCell.appendChild(details);
-  } else {
-    appendTextElement(productInline, 'span', 'product-text', productName);
   }
-  if (!channelDetails.length) productCell.appendChild(productInline);
   if (platform || productType || isSample || sourceName) {
     const productMeta = document.createElement('div');
     productMeta.className = 'reference-product-meta';
@@ -1071,8 +1069,8 @@ function flatRowValue(rowEntry, key, type) {
 }
 
 function updateFlatProductIndexes() {
-  currentFlatRows.slice(0, currentFlatVisibleLimit).forEach(({ indexCell, originalIndex }) => {
-    if (indexCell) indexCell.textContent = String(originalIndex + 1);
+  currentFlatRows.slice(0, currentFlatVisibleLimit).forEach(({ indexCell }, index) => {
+    if (indexCell) indexCell.textContent = String(index + 1);
   });
 }
 

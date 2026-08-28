@@ -37,6 +37,13 @@ test('aggregate shop view uses a compact accessible channel drill-down instead o
   assert.match(tableCss, /data-table-shop-products[\s\S]*display: block/);
 });
 
+test('aggregate rows keep the canonical product identity visible after price sorting', () => {
+  const browserSource = fs.readFileSync(path.resolve('src/scripts/index.js'), 'utf8');
+  const productCellSource = browserSource.match(/function createFlatProductRow[\s\S]+?function updateFlatProductIndexes/)?.[0] ?? '';
+  assert.match(productCellSource, /appendTextElement\(productInline, 'span', 'product-text', productName\);[\s\S]*if \(channelDetails\.length\)/);
+  assert.match(browserSource, /currentFlatRows\.slice\(0, currentFlatVisibleLimit\)\.forEach\(\(\{ indexCell \}, index\) => \{[\s\S]*String\(index \+ 1\)/);
+});
+
 test('public gateway sites expose sponsor marker and pin sponsors before score sorting', () => {
   assert.match(storeSource, /gateway_sites\.sponsor/);
   assert.match(storeSource, /ORDER BY gateway_sites\.sponsor DESC, gateway_sites\.score DESC/);

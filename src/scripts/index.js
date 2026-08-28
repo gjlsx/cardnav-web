@@ -17,7 +17,6 @@ import {
   shopProductRefreshedMs,
   shopProductRefreshTime,
   shopProductScore,
-  shopProductSourceName,
   shopProductType,
   shopProducts,
   shopProductsInitialLimit,
@@ -682,7 +681,6 @@ function createFlatProductRow(item) {
   const platform = text(shopProductPlatform(item));
   const productType = text(shopProductType(item));
   const isSample = shopProductIsSample(item);
-  const sourceName = text(shopProductSourceName(item));
   const availableChannelCount = shopProductAvailableChannelCount(item);
   const channelCount = shopProductChannelCount(item);
   const channelDetails = shopProductChannelDetails(shopProductsData, item);
@@ -713,7 +711,7 @@ function createFlatProductRow(item) {
     const toggleLabel = appendTextElement(toggle, 'span', '', shopsMessages.showChannels || 'Show channels');
     const chevron = appendTextElement(toggle, 'span', 'text-xs', '⌄');
     channelDetails.forEach(channel => {
-      appendTextElement(details, 'span', 'reference-product-source', `${channel.siteName} · ${formatDisplayPrice(channel.priceNumber, channel.priceUnit)} · ${channel.inStock ? shopsMessages.inStock : shopsMessages.soldOut}`);
+      appendTextElement(details, 'span', 'reference-product-source', `${formatDisplayPrice(channel.priceNumber, channel.priceUnit)} · ${channel.inStock ? shopsMessages.inStock : shopsMessages.soldOut}`);
     });
     toggle.addEventListener('click', () => {
       const isCollapsed = details.classList.toggle('hidden');
@@ -724,13 +722,12 @@ function createFlatProductRow(item) {
     productInline.appendChild(toggle);
     productCell.appendChild(details);
   }
-  if (platform || productType || isSample || sourceName) {
+  if (platform || productType || isSample) {
     const productMeta = document.createElement('div');
     productMeta.className = 'reference-product-meta';
     if (platform) appendTextElement(productMeta, 'span', 'reference-product-chip reference-product-chip-platform', platform);
     if (productType) appendTextElement(productMeta, 'span', 'reference-product-chip reference-product-chip-type', productType);
     if (isSample) appendTextElement(productMeta, 'span', 'reference-product-chip reference-product-chip-sample', shopsMessages.referenceSample);
-    if (sourceName) appendTextElement(productMeta, 'span', 'reference-product-source', `${shopsMessages.sourcePrefix}: ${sourceName}`);
     productCell.appendChild(productMeta);
   }
   row.appendChild(productCell);
@@ -865,7 +862,6 @@ function renderMerchantViewModule(module) {
       shopProductPriceUnit,
       shopProductRefreshedMs,
       shopProductScore,
-      shopProductSourceName,
       shopProductType,
       shopProducts,
       shopProductSite,

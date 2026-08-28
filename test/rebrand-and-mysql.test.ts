@@ -12,9 +12,9 @@ const publicPageSource = readSource('src/layouts/PublicPage.astro');
 const sponsorsSource = readSource('src/components/Sponsors.astro');
 const packageSource = readSource('package.json');
 
-test('public runtime uses ai.lovemoney.live and blank community placeholders', () => {
+test('public runtime uses ai.lovemoney.live, the approved Telegram contact, and blank optional placeholders', () => {
   assert.match(siteSource, /publicSiteUrl = process\.env\.PUBLIC_SITE_URL \|\| 'https:\/\/ai\.lovemoney\.live'/);
-  assert.match(siteSource, /telegramGroupUrl = ''/);
+  assert.match(siteSource, /telegramGroupUrl = 'https:\/\/t\.me\/\+AX9TXrzMaS04OWI1'/);
   assert.match(siteSource, /xProfileUrl = ''/);
   assert.match(siteSource, /qqGroupUrl = ''/);
   assert.doesNotMatch(siteSource, /cardnav\.xyz|t\.me\/cardnav_xyz_group|github\.com\/charleslee8266|x\.com\/CharlesLee8266/);

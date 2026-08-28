@@ -101,12 +101,12 @@ async function main() {
         `INSERT INTO gateway_sites (
           site_id, url, api_endpoint, status, name, family, type, slug, host, weight, summary, invite_url, sponsor,
           score, model_types, payment_methods, source_id, sampled_at, is_sample, created_at
-        ) VALUES (?, NULL, NULL, 'online', ?, ?, 'gateway', ?, '', 0, ?, NULL, FALSE, 50, JSON_ARRAY(), JSON_ARRAY(), ?, ?, TRUE, ?)
-        ON DUPLICATE KEY UPDATE url = NULL, api_endpoint = NULL, status = 'online', name = VALUES(name), family = VALUES(family),
+        ) VALUES (?, ?, NULL, 'online', ?, ?, 'gateway', ?, '', 0, ?, NULL, FALSE, 50, JSON_ARRAY(), JSON_ARRAY(), ?, ?, TRUE, ?)
+        ON DUPLICATE KEY UPDATE url = VALUES(url), api_endpoint = NULL, status = 'online', name = VALUES(name), family = VALUES(family),
           type = 'gateway', slug = VALUES(slug), host = '', weight = 0, summary = VALUES(summary), invite_url = NULL,
           sponsor = FALSE, score = 50, model_types = JSON_ARRAY(), payment_methods = JSON_ARRAY(), source_id = VALUES(source_id),
           sampled_at = VALUES(sampled_at), is_sample = TRUE, created_at = VALUES(created_at)`,
-        [sample.id, sample.name, sample.family, sample.id.replace(/^reference-gateway-/, ''), sample.summary, sample.sourceId, toMySqlDate(sample.sampledAt), toMySqlDate(sample.sampledAt)],
+        [sample.id, sample.url || null, sample.name, sample.family, sample.id.replace(/^reference-gateway-/, ''), sample.summary, sample.sourceId, toMySqlDate(sample.sampledAt), toMySqlDate(sample.sampledAt)],
       );
     }
     for (const coverage of referenceGatewayModelCoverage) {
@@ -186,7 +186,7 @@ async function main() {
         const coverage = referenceGatewayModelCoverage.filter(item => item.siteId === sample.id);
         const source = referenceDataSources.find(item => item.id === sample.sourceId);
         return {
-          id: sample.id, slug: sample.id.replace(/^reference-gateway-/, ''), name: sample.name, url: '', outboundUrl: '', host: '',
+          id: sample.id, slug: sample.id.replace(/^reference-gateway-/, ''), name: sample.name, url: sample.url, outboundUrl: sample.url, host: sample.url ? new URL(sample.url).hostname : '',
           family: sample.family, displayFamily: sample.family, createdAt: sample.sampledAt, createdTime: formatBeijingRefreshTime(sample.sampledAt),
           lastProductRefreshCompleteAt: null, lastProductRefreshCompleteTime: '', siteScore: 50, sponsor: false,
           availabilityPercent: null, avgSuccessLatencyMs: null, summary: sample.summary, modelTypes: [], paymentMethods: [],

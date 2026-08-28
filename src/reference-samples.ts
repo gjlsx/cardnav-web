@@ -40,7 +40,8 @@ export type ReferenceGatewaySample = {
   family: string;
   summary: string;
   score: number;
-  url: '';
+  // Empty until a public destination has been manually verified; never infer one from a source listing.
+  url: string;
   inviteUrl: '';
   isSample: true;
   sampledAt: string;
@@ -181,7 +182,7 @@ export const referenceGatewaySamples: ReferenceGatewaySample[] = [
   },
   {
     id: 'reference-gateway-genius-coder', sourceId: 'reference-cardnav-home', sourcePageUrl: 'https://cardnav.xyz/',
-    name: 'Genius Coder（公开参考）', family: 'Sub2API', summary: '公开页面列出的 API 中转参考样例；价格与可用性需自行核对。', score: 50, url: '', inviteUrl: '', isSample: true, sampledAt,
+    name: 'Genius Coder（公开参考）', family: 'Sub2API', summary: '公开页面列出的 API 中转参考样例；价格与可用性需自行核对。', score: 50, url: 'https://www.geniuscoder.net/zh/', inviteUrl: '', isSample: true, sampledAt,
   },
   {
     id: 'reference-gateway-packy-code', sourceId: 'reference-cardnav-home', sourcePageUrl: 'https://cardnav.xyz/',
@@ -193,7 +194,7 @@ export const referenceGatewaySamples: ReferenceGatewaySample[] = [
   },
   {
     id: 'reference-gateway-beibei', sourceId: 'reference-priceai-channels', sourcePageUrl: 'https://priceai.cc/channels',
-    name: '贝贝（公开参考）', family: 'Sub2API', summary: '公开频道列表中的中转站参考样例；不含性能、购买或邀请信息。', score: 50, url: '', inviteUrl: '', isSample: true, sampledAt,
+    name: '贝贝（公开参考）', family: 'Sub2API', summary: '公开频道列表中的中转站参考样例；不含性能、购买或邀请信息。', score: 50, url: 'https://www.bb-api.com/', inviteUrl: '', isSample: true, sampledAt,
   },
 ];
 

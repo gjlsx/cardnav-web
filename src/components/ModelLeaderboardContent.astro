@@ -110,9 +110,9 @@ function relatedLinks(modelFamily: string) {
                     <span class="font-semibold break-all">{item.modelName}</span>
                     {item.isSample && <span class="badge badge-ghost badge-sm">{t.leaderboard.sampleBadge}</span>}
                   </div>
-                  {(item.localizedSourceName || sampledAt) && (
+                  {sampledAt && (
                     <span class="text-xs leading-5 text-base-content/60">
-                      {item.localizedSourceName}{sampledAt ? ` · ${sampledAt}` : ''}
+                      {sampledAt}
                     </span>
                   )}
                   <div class="flex flex-row flex-wrap items-center gap-2">

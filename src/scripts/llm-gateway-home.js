@@ -1,7 +1,7 @@
 /*
  * 文件说明: 中转站首页标签页、本地筛选、URL 查询参数同步、懒加载与排序埋点交互。
  */
-import { formatPositiveScore, paymentIcon, uniqueLabels } from '../gateway-display.js';
+import { formatPositiveScore, uniqueLabels } from '../gateway-display.js';
 
 (() => {
   const gatewayHome = document.querySelector('[data-gateway-home]');
@@ -17,10 +17,8 @@ import { formatPositiveScore, paymentIcon, uniqueLabels } from '../gateway-displ
   const gatewayLinkPrefix = config.gatewayLinkPrefix || localizedFallbackPath('/llm-gateway');
   const modelLinkPrefix = config.modelLinkPrefix || localizedFallbackPath('/llm-gateway/models');
   const partnershipUrl = config.partnershipUrl || localizedFallbackPath('/partnership');
-  const paymentMethodLabels = config.paymentMethodLabels || {};
   const siteSearchInput = gatewayHome.querySelector('[data-home-site-search]');
   const siteFamilySelect = gatewayHome.querySelector('[data-home-site-family]');
-  const sitePaymentSelect = gatewayHome.querySelector('[data-home-site-payment]');
   const modelSearchInput = gatewayHome.querySelector('[data-home-model-search]');
   const SITE_PAGE_SIZE = Number(config.sitePageSize) || 20;
   const MODEL_PAGE_SIZE = Number(config.modelPageSize) || 100;
@@ -62,10 +60,6 @@ import { formatPositiveScore, paymentIcon, uniqueLabels } from '../gateway-displ
   function trackGatewayEvent(eventName, eventData = {}) {
     if (typeof window.umami?.track !== 'function') return;
     window.umami.track(eventName, eventData);
-  }
-
-  function paymentLabel(key) {
-    return paymentMethodLabels[key] || key;
   }
 
   function el(tagName, className, text) {
@@ -133,44 +127,20 @@ import { formatPositiveScore, paymentIcon, uniqueLabels } from '../gateway-displ
     return Boolean(site.sponsor);
   }
 
-  function paymentBadges(payments) {
-    const wrap = el('div', 'flex flex-wrap gap-1.5');
-    payments.forEach(item => {
-      const icon = paymentIcon(item);
-      const label = paymentLabel(item);
-      const badge = el('span', 'payment-icon', icon.src ? undefined : icon.fallback);
-      badge.title = label;
-      badge.setAttribute('aria-label', label);
-      if (icon.src) {
-        const image = document.createElement('img');
-        image.src = icon.src;
-        image.alt = '';
-        image.loading = 'lazy';
-        badge.append(image);
-      }
-      wrap.append(badge);
-    });
-    return wrap;
-  }
-
   function siteRowElement(site, index) {
     const families = uniqueLabels(site.displayModelFamilies, 8);
-    const payments = uniqueLabels(site.paymentMethods, 6);
-    const search = `${site.name} ${site.url} ${site.host} ${(site.displayModelFamilies || []).join(' ')} ${(site.paymentMethods || []).map(paymentLabel).join(' ')}`.toLowerCase();
+    const search = `${site.name} ${site.url} ${site.host} ${(site.displayModelFamilies || []).join(' ')}`.toLowerCase();
     const row = document.createElement('tr');
     row.setAttribute('data-home-site-card', '');
     setDataset(row, {
       search,
       families: families.map(item => item.toLowerCase()).join(','),
-      payments: payments.join(','),
       originalOrder: index,
       sortSequence: index + 1,
       sortSticky: isStickySite(site) ? 1 : 0,
       sortName: site.name,
       sortScore: Number(site.siteScore) || 0,
       sortFamilies: families.join(' '),
-      sortModelCount: Number(site.modelCount) || 0,
-      sortPayments: payments.map(paymentLabel).join(' '),
     });
 
     const sequenceCell = tableCell(config.sequenceLabel, 'center', '', { sequence: true });
@@ -228,13 +198,6 @@ import { formatPositiveScore, paymentIcon, uniqueLabels } from '../gateway-displ
     }
     row.append(familiesCell);
 
-    const modelCountCell = tableCell(config.modelCountLabel, 'right', 'font-mono');
-    modelCountCell.textContent = site.modelCount > 0 ? site.modelCount : '-';
-    row.append(modelCountCell);
-
-    const paymentsCell = tableCell(config.paymentMethodsLabel);
-    paymentsCell.append(payments.length ? paymentBadges(payments) : el('span', 'text-base-content/35', '-'));
-    row.append(paymentsCell);
     return row;
   }
 
@@ -294,15 +257,12 @@ import { formatPositiveScore, paymentIcon, uniqueLabels } from '../gateway-displ
       item: null,
       search: row.dataset.search || '',
       families: row.dataset.families || '',
-      payments: row.dataset.payments || '',
       sort: type === 'sites' ? {
         sticky: rowSortValue(row, 'sticky', 'number'),
         sequence: rowSortValue(row, 'sequence', 'number') || index + 1,
         name: rowSortValue(row, 'name'),
         score: rowSortValue(row, 'score', 'number'),
         families: rowSortValue(row, 'families'),
-        modelCount: rowSortValue(row, 'modelCount', 'number'),
-        payments: rowSortValue(row, 'payments'),
       } : {
         sequence: rowSortValue(row, 'sequence', 'number') || index + 1,
         model: rowSortValue(row, 'model'),
@@ -314,23 +274,19 @@ import { formatPositiveScore, paymentIcon, uniqueLabels } from '../gateway-displ
 
   function siteEntryFromItem(site, index) {
     const families = uniqueLabels(site.displayModelFamilies, 8);
-    const payments = uniqueLabels(site.paymentMethods, 6);
-    const search = `${site.name} ${site.url} ${site.host} ${(site.displayModelFamilies || []).join(' ')} ${(site.paymentMethods || []).map(paymentLabel).join(' ')}`.toLowerCase();
+    const search = `${site.name} ${site.url} ${site.host} ${(site.displayModelFamilies || []).join(' ')}`.toLowerCase();
     return {
       index,
       row: null,
       item: site,
       search,
       families: families.map(item => item.toLowerCase()).join(','),
-      payments: payments.join(','),
       sort: {
         sticky: isStickySite(site) ? 1 : 0,
         sequence: index + 1,
         name: site.name,
         score: Number(site.siteScore) || 0,
         families: families.join(' '),
-        modelCount: Number(site.modelCount) || 0,
-        payments: payments.map(paymentLabel).join(' '),
       },
     };
   }
@@ -342,7 +298,6 @@ import { formatPositiveScore, paymentIcon, uniqueLabels } from '../gateway-displ
       item: model,
       search: `${model.modelId} ${model.modelFamily}`.toLowerCase(),
       families: '',
-      payments: '',
       sort: {
         sequence: index + 1,
         model: model.modelId,
@@ -446,15 +401,13 @@ import { formatPositiveScore, paymentIcon, uniqueLabels } from '../gateway-displ
   function filterSiteEntries() {
     const keyword = (siteSearchInput?.value || '').trim().toLowerCase();
     const selectedFamily = siteFamilySelect?.value || '';
-    const selectedPayment = sitePaymentSelect?.value || '';
     const state = gatewayLists.sites;
     state.filteredEntries = state.entries.filter(entry => {
       const matchesKeyword = !keyword || entry.search.includes(keyword);
       const matchesFamily = !selectedFamily || entry.families.split(',').includes(selectedFamily);
-      const matchesPayment = !selectedPayment || entry.payments.split(',').includes(selectedPayment);
-      return matchesKeyword && matchesFamily && matchesPayment;
+      return matchesKeyword && matchesFamily;
     });
-    return { keyword, selectedFamily, selectedPayment, visibleCount: state.filteredEntries.length };
+    return { keyword, selectedFamily, visibleCount: state.filteredEntries.length };
   }
 
   function filterModelEntries() {
@@ -465,12 +418,11 @@ import { formatPositiveScore, paymentIcon, uniqueLabels } from '../gateway-displ
   }
 
   function applySiteFilters({ track = true } = {}) {
-    const { keyword, selectedFamily, selectedPayment, visibleCount } = filterSiteEntries();
+    const { keyword, selectedFamily, visibleCount } = filterSiteEntries();
     renderGatewayList(gatewayLists.sites);
     if (track) scheduleGatewayFilterTrack('sites', {
       query: keyword,
       family: selectedFamily,
-      payment: selectedPayment,
       visibleCount,
     });
   }
@@ -496,28 +448,23 @@ import { formatPositiveScore, paymentIcon, uniqueLabels } from '../gateway-displ
   function readSiteFilterQueryParams() {
     const params = new URLSearchParams(window.location.search);
     const family = normalizeSiteFamilyParam(params.get('model') || params.get('family') || '');
-    const payment = (params.get('payment') || '').trim();
     return {
       family: selectHasValue(siteFamilySelect, family) ? family : '',
-      payment: selectHasValue(sitePaymentSelect, payment) ? payment : '',
     };
   }
 
   function syncSiteFilterControlsFromQuery() {
-    const { family, payment } = readSiteFilterQueryParams();
+    const { family } = readSiteFilterQueryParams();
     if (siteFamilySelect) siteFamilySelect.value = family;
-    if (sitePaymentSelect) sitePaymentSelect.value = payment;
   }
 
   function syncSiteFilterQueryFromControls() {
     const url = new URL(window.location.href);
     const selectedFamily = siteFamilySelect?.value || '';
-    const selectedPayment = sitePaymentSelect?.value || '';
     if (selectedFamily) url.searchParams.set('model', selectedFamily);
     else url.searchParams.delete('model');
     url.searchParams.delete('family');
-    if (selectedPayment) url.searchParams.set('payment', selectedPayment);
-    else url.searchParams.delete('payment');
+    url.searchParams.delete('payment');
     window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
   }
 
@@ -525,7 +472,6 @@ import { formatPositiveScore, paymentIcon, uniqueLabels } from '../gateway-displ
     return Boolean(
       (siteSearchInput?.value || '').trim()
       || siteFamilySelect?.value
-      || sitePaymentSelect?.value
     );
   }
 
@@ -667,7 +613,6 @@ import { formatPositiveScore, paymentIcon, uniqueLabels } from '../gateway-displ
     void applySiteFiltersWithDeferred({ resetLimit: true });
   });
   siteFamilySelect?.addEventListener('change', applySiteFilterChange);
-  sitePaymentSelect?.addEventListener('change', applySiteFilterChange);
   modelSearchInput?.addEventListener('input', () => {
     void applyModelFiltersWithDeferred({ resetLimit: true });
   });

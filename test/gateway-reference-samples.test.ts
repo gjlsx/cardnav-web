@@ -12,12 +12,16 @@ const storeSource = fs.readFileSync(path.resolve('src/store.ts'), 'utf8');
 const seedSource = fs.readFileSync(path.resolve('scripts/seed-reference-samples.ts'), 'utf8');
 const schemaSource = fs.readFileSync(path.resolve('src/database.ts'), 'utf8');
 
-test('gateway reference samples are limited, sourced, score-neutral, and have no outbound URL', () => {
+test('gateway reference samples are limited, sourced, score-neutral, and expose only approved outbound URLs', () => {
   assert.ok(referenceGatewaySamples.length >= 4 && referenceGatewaySamples.length <= 8);
+  const approvedOutboundUrls = new Set([
+    'https://www.geniuscoder.net/zh/',
+    'https://www.bb-api.com/',
+  ]);
   for (const sample of referenceGatewaySamples) {
     assert.equal(sample.isSample, true);
     assert.equal(sample.score, 50);
-    assert.equal(sample.url, '');
+    assert.ok(sample.url === '' || approvedOutboundUrls.has(sample.url));
     assert.equal(sample.inviteUrl, '');
     assert.match(sample.sourcePageUrl, /^https:\/\//);
   }
@@ -31,9 +35,11 @@ test('gateway support coverage is independent of public price rows and snapshots
   assert.match(seedSource, /'gateway-sites'/);
   assert.match(seedSource, /'gateway-models'/);
   assert.match(seedSource, /gateway_model_coverage/);
+  assert.match(seedSource, /sample\.url \|\| null/);
+  assert.match(seedSource, /url: sample\.url, outboundUrl: sample\.url/);
 });
 
-test('gateway list avoids performance claims and empty reference URLs do not create an open action', () => {
+test('gateway list avoids performance claims and renders an open action only for approved URLs', () => {
   const siteRowSource = fs.readFileSync(path.resolve('src/components/GatewaySiteTableRow.astro'), 'utf8');
   const detailPageSource = fs.readFileSync(path.resolve('src/pages/llm-gateway/[slug].astro'), 'utf8');
   const deferredTableSource = fs.readFileSync(path.resolve('src/scripts/gateway-detail-tables.js'), 'utf8');
@@ -45,6 +51,8 @@ test('gateway list avoids performance claims and empty reference URLs do not cre
   assert.match(detailPageSource, /site\.outboundUrl \?/);
   assert.match(detailPageSource, /!site\.isSample/);
   assert.match(deferredTableSource, /if \(site\.outboundUrl \|\| site\.url\)/);
+  assert.match(fs.readFileSync(path.resolve('src/reference-samples.ts'), 'utf8'), /https:\/\/www\.geniuscoder\.net\/zh\//);
+  assert.match(fs.readFileSync(path.resolve('src/reference-samples.ts'), 'utf8'), /https:\/\/www\.bb-api\.com\//);
   assert.doesNotMatch(seedSource, /availability_percent|avg_success_latency_ms/);
   assert.match(seedSource, /availabilityPercent: null/);
 });

@@ -11,6 +11,7 @@ sys.path.insert(0, str(ROOT))
 
 from collection_lib.contracts import RecordKind  # noqa: E402
 from collection_lib.pipeline import process_batch, run_source_pipeline  # noqa: E402
+from collection_lib.publisher import PublicPublisher  # noqa: E402
 
 
 class MemoryRepository:
@@ -116,6 +117,32 @@ class PipelineTests(unittest.TestCase):
 
 
 class LiveMysqlHttpTests(unittest.TestCase):
+    @staticmethod
+    def _purge_live_fixture(repository):
+        source_id = "p013-http"
+        site_id = "collected-p013-test.example"
+        repository.execute("DELETE FROM collection_staging_observations WHERE source_id = %s", (source_id,))
+        repository.execute("DELETE FROM collection_raw_records WHERE source_id = %s", (source_id,))
+        repository.execute("DELETE FROM collection_raw_payloads WHERE source_id = %s", (source_id,))
+        repository.execute("DELETE FROM collection_runs WHERE source_id = %s", (source_id,))
+        repository.execute("DELETE FROM shop_products WHERE site_id = %s", (site_id,))
+        repository.execute("DELETE FROM shop_sites WHERE id = %s AND NOT EXISTS (SELECT 1 FROM shop_products WHERE shop_products.site_id = %s)", (site_id, site_id))
+        PublicPublisher().rebuild_snapshots(repository, {RecordKind.SHOP_PRODUCT})
+        repository.commit()
+
+    def test_live_http_fixture_does_not_leave_publishable_test_site(self):
+        from collect import load_dotenv
+        from collection_lib.repository import CollectionRepository, open_local_connection
+
+        load_dotenv()
+        connection = open_local_connection()
+        try:
+            repository = CollectionRepository(connection)
+            rows = repository.query("SELECT 1 FROM shop_products WHERE site_id = %s LIMIT 1", ("collected-p013-test.example",))
+            self.assertEqual(rows, [])
+        finally:
+            connection.close()
+
     def test_approved_local_http_ingests_to_local_mysql(self):
         import json
         import os
@@ -167,6 +194,7 @@ class LiveMysqlHttpTests(unittest.TestCase):
             server.shutdown()
             server.server_close()
             thread.join(timeout=2)
+            self._purge_live_fixture(CollectionRepository(connection))
             connection.close()
 
 

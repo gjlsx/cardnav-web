@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+import tempfile
 import time
 import unittest
 from pathlib import Path
@@ -11,6 +12,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from console_lib.page_log import PageLogs  # noqa: E402
+from console_lib.source_control import SourceRunControl  # noqa: E402
+from console_lib.source_test import run_source_test  # noqa: E402
 from console_lib.task_runner import TaskRunner  # noqa: E402
 
 
@@ -28,6 +31,26 @@ class FakeAfter:
 
 
 class RunnerTests(unittest.TestCase):
+    def test_source_stop_flag_stops_loop_and_reports_message(self):
+        control = SourceRunControl()
+        stop = control.start_loop("xxa")
+        self.assertFalse(stop.is_set())
+        self.assertTrue(control.begin("xxa") is stop)
+        self.assertEqual(control.stop("xxa"), "task xxa is stop!")
+        self.assertTrue(stop.is_set())
+        self.assertFalse(control.is_looping("xxa"))
+        self.assertTrue(control.should_stop("xxa"))
+
+    def test_source_test_runs_only_fixed_project_test_py_and_captures_output(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            script = root / "source_tests" / "test.py"
+            script.parent.mkdir()
+            script.write_text("import sys\nprint('input=' + sys.argv[2])\nprint('error-line', file=sys.stderr)\n", encoding="utf-8")
+            result = run_source_test(root, "xxa")
+        self.assertEqual(result["returncode"], 0)
+        self.assertIn("input=xxa", result["stdout"])
+        self.assertIn("error-line", result["stderr"])
     def test_same_action_does_not_run_concurrently_and_events_are_queued(self):
         after = FakeAfter()
         runner = TaskRunner(after)

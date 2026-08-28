@@ -97,6 +97,18 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(result["skipped_manual"], 1)
         self.assertEqual(repository.staging, [])
 
+    def test_stop_flag_keeps_raw_payload_but_skips_staging_and_publish(self):
+        repository = PipelineRepo()
+        result = run_source_pipeline(
+            repository, {"id": "stop-source"}, "[]",
+            [{"normalized_site": "shop.example.com", "model_or_plan": "chatgpt-plus", "price": 9}],
+            "application/json", "manual", RecordKind.SHOP_PRODUCT, FakePublisher(), should_stop=lambda: True,
+        )
+        self.assertTrue(result["stopped"])
+        self.assertEqual(result["published"]["published"], 0)
+        self.assertEqual(repository.raw_payloads, 1)
+        self.assertEqual(repository.staging, [])
+
     def test_publish_failure_rolls_back_and_does_not_commit_half_snapshot(self):
         from collection_lib.pipeline import run_source_pipeline
 

@@ -29,10 +29,13 @@ def price_is_valid(value: Any) -> bool:
     return number == number  # NaN check
 
 
-def process_batch(repository, run_id: str, source_id: str, content_type: str, body: str, rows: list[dict[str, Any]], kind: RecordKind = RecordKind.SHOP_PRODUCT) -> dict[str, int]:
+def process_batch(repository, run_id: str, source_id: str, content_type: str, body: str, rows: list[dict[str, Any]], kind: RecordKind = RecordKind.SHOP_PRODUCT, should_stop=lambda: False) -> dict[str, int | bool]:
     payload_id = repository.write_raw_payload(run_id, source_id, content_type, hashlib.sha256(body.encode("utf-8")).hexdigest(), body)
-    stats = {"raw_records": 0, "skipped_manual": 0, "invalid": 0, "staged": 0}
+    stats = {"raw_records": 0, "skipped_manual": 0, "invalid": 0, "staged": 0, "stopped": False}
     for row in rows:
+        if should_stop():
+            stats["stopped"] = True
+            break
         clean = filter_observation(row)
         clean.setdefault("source_id", source_id)
         try:
@@ -53,12 +56,16 @@ def process_batch(repository, run_id: str, source_id: str, content_type: str, bo
     return stats
 
 
-def run_source_pipeline(repository, source: dict[str, Any], body: str, rows: list[dict[str, Any]], content_type: str, trigger: str, kind: RecordKind, publisher) -> dict[str, Any]:
+def run_source_pipeline(repository, source: dict[str, Any], body: str, rows: list[dict[str, Any]], content_type: str, trigger: str, kind: RecordKind, publisher, should_stop=lambda: False) -> dict[str, Any]:
     run_id = datetime.now(timezone.utc).strftime("run-%Y%m%d%H%M%S-%f")
     source_id = str(source.get("id") or source.get("source_id") or "")
     repository.create_run(run_id, source_id, trigger)
     try:
-        stats = process_batch(repository, run_id, source_id, content_type, body, rows, kind=kind)
+        stats = process_batch(repository, run_id, source_id, content_type, body, rows, kind=kind, should_stop=should_stop)
+        if stats["stopped"] or should_stop():
+            repository.finish_run(run_id, "stopped")
+            repository.commit()
+            return {"run_id": run_id, "stats": stats, "published": {"published": 0}, "stopped": True, "error": None}
         published = publisher.publish_run(repository, run_id)
         repository.finish_run(run_id, "completed")
         repository.commit()

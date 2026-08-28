@@ -42,4 +42,6 @@ MySQL 连接只从仓库根目录 `.env` 的 `MYSQL_*` 读取。`collection_stag
 
 ## GUI
 
-当前 GUI 是迁移前入口。总控台完成后由同一个 `python gui.py` 打开采集数据、网站配置、合作运维三根 Tab；采集数据含中转网站、卡网商品、官方网站、模型排行四个子 Tab，每页保存独立日志。形态参考 `D:\work\dock\PriceAI-Monitor\settings_gui.py`，但不包含自动下单或生产站采集。
+总控台由同一个 `python gui.py` 打开采集数据、网站配置、合作运维三根 Tab；采集数据含中转网站、卡网商品、官方网站、模型排行四个子 Tab，每页保存独立日志。来源列表是动态的：选中一项后可“抓取一次”“开始循环抓取”“停止选中来源”或“测试选中来源”。循环仅影响该来源，按它自己的 `interval_minutes` 运行且不会重叠；停止会设置运行标志，当前 HTTP 完成后不会继续清洗/发布。
+
+测试按钮只执行项目内固定的 `scripts/collection/source_tests/test.py --source <id>`，其 stdout/stderr 和退出状态会写入该页日志；它是本地 fixture 诊断，不执行任意 shell 命令，也不发送 HTTP。形态参考 `D:\work\dock\PriceAI-Monitor\settings_gui.py`，但不包含自动下单或生产站采集。

@@ -5,6 +5,7 @@ import json
 import tkinter as tk
 from tkinter import messagebox, ttk
 from typing import Any
+from pathlib import Path
 
 from collection_lib.config import load_sources, normalize_source, validate_sources
 from collection_lib.contracts import OverrideState, RecordKind
@@ -13,6 +14,8 @@ from collection_lib.fixtures import fixtures_for_source
 from collection_lib.pipeline import run_source_pipeline
 from collection_lib.publisher import PublicPublisher
 from collection_lib.config import source_may_request_network, apply_item_cap
+from console_lib.source_control import SourceRunControl
+from console_lib.source_test import run_source_test
 
 KIND_BY_PAGE = {
     "collect.gateway": RecordKind.GATEWAY_SITE,
@@ -28,15 +31,17 @@ class CollectionWorkspace:
         self.page = page
         self.kind = kind
         self.sources_path = sources_path
+        self.control = SourceRunControl()
         self.sources: list[dict[str, Any]] = []
         self._build()
         self.reload()
 
     def _build(self) -> None:
         ttk.Button(self.page.left, text="刷新", command=self.reload).pack(fill=tk.X, padx=6, pady=2)
-        ttk.Button(self.page.left, text="手工运行选中来源", command=self.manual_run).pack(fill=tk.X, padx=6, pady=2)
-        ttk.Button(self.page.left, text="启动本页调度", command=self.start_scheduler).pack(fill=tk.X, padx=6, pady=2)
-        ttk.Button(self.page.left, text="停止本页调度", command=self.stop_scheduler).pack(fill=tk.X, padx=6, pady=2)
+        ttk.Button(self.page.left, text="抓取一次选中来源", command=self.manual_run).pack(fill=tk.X, padx=6, pady=2)
+        ttk.Button(self.page.left, text="开始循环抓取选中来源", command=self.start_scheduler).pack(fill=tk.X, padx=6, pady=2)
+        ttk.Button(self.page.left, text="停止选中来源", command=self.stop_scheduler).pack(fill=tk.X, padx=6, pady=2)
+        ttk.Button(self.page.left, text="测试选中来源", command=self.test_source).pack(fill=tk.X, padx=6, pady=2)
         self.source_list = tk.Listbox(self.page.left, height=12)
         self.source_list.pack(fill=tk.BOTH, expand=True, padx=6, pady=4)
         form = ttk.Frame(self.page.right)
@@ -129,17 +134,29 @@ class CollectionWorkspace:
     def manual_run(self) -> None:
         source = self._selected_source() or self._read_form()
 
-        def job():
-            if source_may_request_network(source):
-                body, rows, content_type = fetch_approved_json(source)
-            else:
-                rows = fixtures_for_source(source["id"])
-                body = json.dumps(rows, ensure_ascii=False)
-                content_type = "application/json"
-            rows = apply_item_cap(rows, int(source.get("max_items_per_run") or 0))
-            return run_source_pipeline(self.app.repository, source, body, rows, content_type, "manual", self.kind, PublicPublisher())
+        self._launch(source, "manual")
 
-        self.app.run_action(self.page.page_key, "manual-run", job)
+    def _launch(self, source: dict[str, Any], trigger: str) -> None:
+        source_id = str(source["id"])
+        stop_flag = self.control.begin(source_id)
+        if stop_flag is None:
+            self.app.log(self.page.page_key, f"{source_id} 已在运行")
+            return
+
+        def job():
+            try:
+                if source_may_request_network(source):
+                    body, rows, content_type = fetch_approved_json(source)
+                else:
+                    rows = fixtures_for_source(source["id"])
+                    body = json.dumps(rows, ensure_ascii=False)
+                    content_type = "application/json"
+                rows = apply_item_cap(rows, int(source.get("max_items_per_run") or 0))
+                return run_source_pipeline(self.app.repository, source, body, rows, content_type, trigger, self.kind, PublicPublisher(), should_stop=stop_flag.is_set)
+            finally:
+                self.control.finish(source_id)
+
+        self.app.run_action(self.page.page_key, f"collect:{source_id}", job)
 
     def _selected_key(self) -> str | None:
         if not self.records.curselection():
@@ -157,14 +174,38 @@ class CollectionWorkspace:
         self.app.log(self.page.page_key, f"{key} -> {state.value}")
 
     def start_scheduler(self) -> None:
-        if self.app.scheduler:
-            self.app.scheduler.start()
-            self.app.log(self.page.page_key, "已启动进程内调度（默认不会选中 enabled=false 的来源）")
+        source = self._selected_source()
+        if not source:
+            return
+        source_id = str(source["id"])
+        self.control.start_loop(source_id)
+        self.app.log(self.page.page_key, f"已开始循环抓取 {source_id}")
+        self._loop(source)
 
     def stop_scheduler(self) -> None:
-        if self.app.scheduler:
-            self.app.scheduler.stop()
-            self.app.log(self.page.page_key, "已停止进程内调度")
+        source = self._selected_source()
+        if source:
+            self.app.log(self.page.page_key, self.control.stop(str(source["id"])))
+
+    def _loop(self, source: dict[str, Any]) -> None:
+        source_id = str(source["id"])
+        if not self.control.is_looping(source_id):
+            return
+        self._launch(source, "scheduler")
+        delay = max(1, int(source.get("interval_minutes") or 60)) * 60 * 1000
+        self.app.root.after(delay, lambda: self._loop(source))
+
+    def test_source(self) -> None:
+        source = self._selected_source() or self._read_form()
+        source_id = str(source.get("id") or "")
+        if not source_id:
+            self.app.log(self.page.page_key, "测试失败：未选择来源")
+            return
+
+        def job():
+            return run_source_test(Path(__file__).resolve().parents[1], source_id)
+
+        self.app.run_action(self.page.page_key, f"test:{source_id}", job)
 
     def clear_flag(self) -> None:
         key = self._selected_key()

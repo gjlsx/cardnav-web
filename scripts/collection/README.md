@@ -1,6 +1,6 @@
 # 本机采集 CLI / GUI MVP
 
-可移植 Python 工具。运行位置可以是本机或以后的远程机器；本轮只在本机用 fixture / dry-run 演练。
+本机网站总控台（Python/Tkinter）。入口：`python gui.py`。根 Tab：采集数据、网站配置、合作运维。采集子 Tab：中转网站、卡网商品、官方网站、模型排行。每页底部独立日志。
 
 ## 安全边界与已批准方向
 
@@ -33,10 +33,12 @@ python collect.py check-config
 python collect.py dry-run
 python collect.py write-staging
 python gui.py
-python -m unittest tests.test_collection
+python -m unittest discover -s tests
 ```
 
-MySQL 连接只从仓库根目录 `.env` 的 `MYSQL_*` 读取，不要把密码写进本目录。`collection_staging_observations` 是唯一 staging 表；旧 fixture 结果会以增量迁移兼容。当前命令仍是 MVP 入口，p013 后会统一写入 raw、staging 和正式数据并打印匿名计数。
+合作运维备份/恢复/发布先预检，再输入确认短语后才会执行。发布遵循仓库根目录 `howtorunvpsnew.md`，禁止 SSH 密码编辑和改动 LikeShop `8086/8090/8095`。进程内调度默认关闭，关闭 GUI 即停止。
+
+MySQL 连接只从仓库根目录 `.env` 的 `MYSQL_*` 读取。`collection_staging_observations` 是唯一 staging 表。`write-staging` 对 draft 用 fixture、对 approved+allowlist 发真实 HTTP，并自动发布到本机正式表/快照。
 
 ## GUI
 

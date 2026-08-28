@@ -120,14 +120,15 @@ class CliFixtureTests(unittest.TestCase):
 
 
 class GuiSmokeTests(unittest.TestCase):
-    def test_gui_validate_without_mainloop(self):
+    def test_gui_entry_launches_console_shell(self):
         import tkinter as tk
-        from gui import CollectorGui
+        from console_app import ConsoleApp
 
         root = tk.Tk()
         root.withdraw()
-        app = CollectorGui(root)
-        self.assertEqual(validate_sources(app.sources), [])
+        app = ConsoleApp(root)
+        self.assertIn("collect.shops", app.pages)
+        self.assertIn("operations", app.pages)
         root.destroy()
 
 

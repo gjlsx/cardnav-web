@@ -1,0 +1,1 @@
+"""Desktop console helpers."""

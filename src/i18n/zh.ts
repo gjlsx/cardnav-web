@@ -280,6 +280,8 @@ export const zhMessages = {
     referenceSample: '参考样例',
     sourcePrefix: '来源',
     channelAvailability: '可用/总渠道',
+    showChannels: '展开渠道',
+    hideChannels: '收起渠道',
     submitMerchant: '提交商家',
     urlLabel: '网址',
     guideTitle: '购前必看：如何挑选靠谱商家',

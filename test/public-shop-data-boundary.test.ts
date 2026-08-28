@@ -26,6 +26,17 @@ test('shop default applies canonical aggregation and keeps merchant/product deta
   assert.doesNotMatch(merchantViewSource, /document\.createElement\('a'\)|\.href\s*=/);
 });
 
+test('aggregate shop view uses a compact accessible channel drill-down instead of a merchant-first score table', () => {
+  const pageSource = fs.readFileSync(path.resolve('src/pages/shops.astro'), 'utf8');
+  const browserSource = fs.readFileSync(path.resolve('src/scripts/index.js'), 'utf8');
+  const tableCss = fs.readFileSync(path.resolve('src/components/data-table.css'), 'utf8');
+  assert.doesNotMatch(pageSource, /shopMerchantsTab/);
+  assert.doesNotMatch(pageSource.match(/const flatSortColumns = \[[\s\S]*?\] satisfies/)?.[0] ?? '', /productScore|categoryName|siteName/);
+  assert.match(browserSource, /showChannels/);
+  assert.match(browserSource, /aria-expanded/);
+  assert.match(tableCss, /data-table-shop-products[\s\S]*display: block/);
+});
+
 test('public gateway sites expose sponsor marker and pin sponsors before score sorting', () => {
   assert.match(storeSource, /gateway_sites\.sponsor/);
   assert.match(storeSource, /ORDER BY gateway_sites\.sponsor DESC, gateway_sites\.score DESC/);

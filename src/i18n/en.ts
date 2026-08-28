@@ -281,6 +281,8 @@ export const enMessages: Messages = {
     referenceSample: 'Reference sample',
     sourcePrefix: 'Source',
     channelAvailability: 'Available/total channels',
+    showChannels: 'Show channels',
+    hideChannels: 'Hide channels',
     submitMerchant: 'Submit merchant',
     urlLabel: 'URL',
     guideTitle: 'Before you buy: how to choose a reliable merchant',

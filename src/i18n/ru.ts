@@ -281,6 +281,8 @@ export const ruMessages: Messages = {
     referenceSample: 'Справочный пример',
     sourcePrefix: 'Источник',
     channelAvailability: 'Доступно/всего каналов',
+    showChannels: 'Показать каналы',
+    hideChannels: 'Скрыть каналы',
     submitMerchant: 'Добавить продавца',
     urlLabel: 'URL',
     guideTitle: 'Перед покупкой: как выбрать надежного продавца',

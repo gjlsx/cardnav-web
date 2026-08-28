@@ -74,7 +74,7 @@
   }
 
   .data-table-shop-products {
-    @apply min-w-[860px] w-full table-fixed border-collapse lg:min-w-[1160px];
+    @apply min-w-[640px] w-full table-fixed border-collapse lg:min-w-[760px];
   }
 
   .gateway-site-table {
@@ -338,31 +338,69 @@
   }
 
   .data-table-shop-products th:nth-child(2) {
-    @apply w-[180px] lg:w-[28%];
+    @apply w-[250px] lg:w-[48%];
   }
 
   .data-table-shop-products th:nth-child(3) {
-    @apply w-[72px] lg:w-[120px];
+    @apply w-[92px] lg:w-[150px];
   }
 
   .data-table-shop-products th:nth-child(4) {
-    @apply w-[64px] lg:w-[100px];
+    @apply w-[116px] lg:w-[154px];
   }
 
   .data-table-shop-products th:nth-child(5) {
-    @apply w-[96px] lg:w-[150px];
-  }
-
-  .data-table-shop-products th:nth-child(6) {
-    @apply w-[104px] lg:w-[128px];
-  }
-
-  .data-table-shop-products th:nth-child(7) {
-    @apply w-[152px] lg:w-[18%];
-  }
-
-  .data-table-shop-products th:nth-child(8) {
     @apply w-[140px] lg:w-[160px];
+  }
+
+  @media (max-width: 767px) {
+    .product-table-scroll:has(.data-table-shop-products) {
+      @apply overflow-visible px-3 py-3;
+    }
+
+    .data-table-shop-products,
+    .data-table-shop-products tbody,
+    .data-table-shop-products tr,
+    .data-table-shop-products td,
+    .data-table-shop-products th {
+      display: block;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .data-table-shop-products thead,
+    .data-table-shop-products .data-table-sequence-cell {
+      @apply hidden;
+    }
+
+    .data-table-shop-products {
+      @apply border-separate border-spacing-0 bg-transparent;
+    }
+
+    .data-table-shop-products tr {
+      @apply mb-3 overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-sm;
+    }
+
+    .data-table-shop-products tr.hidden {
+      display: none;
+    }
+
+    .data-table-shop-products td {
+      @apply border-r-0 border-b border-base-300 px-3 py-3 text-left last:border-b-0;
+    }
+
+    .data-table-shop-products td::before {
+      content: attr(data-label);
+      @apply mb-1 block text-[11px] font-semibold uppercase text-base-content/45;
+    }
+
+    .data-table-shop-products .flat-product-cell {
+      @apply bg-base-200/35;
+    }
+
+    .data-table-shop-products .data-table-cell-align-right {
+      text-align: left;
+    }
   }
 
   .data-table-product-score-cell {

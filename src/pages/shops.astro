@@ -123,6 +123,8 @@ const shopsScriptMessages = {
   referenceSample: t.shops.referenceSample,
   sourcePrefix: t.shops.sourcePrefix,
   channelAvailability: t.shops.channelAvailability,
+  showChannels: t.shops.showChannels,
+  hideChannels: t.shops.hideChannels,
   hotProductsTitle: t.shops.hotProductsTitle,
   searchResultsTitle: t.shops.searchResultsTitle,
   searchResultsDescription: t.shops.searchResultsDescription,
@@ -170,17 +172,13 @@ type SortColumn = {
   tip?: string;
   tipLabel?: string;
 };
-const flatSortColumns = [
+const flatSortColumns: SortColumn[] = [
   { key: 'productName', type: 'text', label: t.labels.product },
   { key: 'priceValue', type: 'number', label: t.labels.price },
   { key: 'stockValue', type: 'number', label: t.labels.stock },
-  { key: 'categoryName', type: 'text', label: t.labels.category },
-  { key: 'score', type: 'number', label: t.labels.productScore, tip: t.shops.productScoreTip, tipLabel: t.shops.productScoreHelpLabel },
-  { key: 'siteName', type: 'text', label: t.shops.channelAvailability },
   { key: 'productRefreshedAt', type: 'number', label: t.labels.latestRefresh },
-] satisfies SortColumn[];
-const rightAlignedProductColumns = new Set(['priceValue', 'stockValue', 'score']);
-const merchantTabLabel = t.labels.merchant;
+];
+const rightAlignedProductColumns = new Set(['priceValue', 'stockValue']);
 const merchantSortColumns = [
   { key: 'siteName', type: 'text', label: t.labels.merchant },
   { key: 'productCount', type: 'number', label: t.labels.productCount },
@@ -246,10 +244,6 @@ const shopProductsJsonValue = JSON.stringify(packShopProductsData({
           <button type="button" class="tab tab-active" role="tab" aria-selected="true" aria-controls="flatProductView" id="shopProductsTab" data-shop-tab="products">
             {t.labels.products}
             <span class="tool-tab-badge">{data.totalProductCount}</span>
-          </button>
-          <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="merchantGroupedView" id="shopMerchantsTab" data-shop-tab="merchants">
-            {merchantTabLabel}
-            <span class="tool-tab-badge">{data.totalSiteCount}</span>
           </button>
         </div>
       </div>
@@ -380,7 +374,7 @@ const shopProductsJsonValue = JSON.stringify(packShopProductsData({
       </DataTable>
     </div>
 
-    <div id="merchantGroupedView" role="tabpanel" aria-labelledby="shopMerchantsTab" data-shop-panel="merchants" hidden>
+    <div id="merchantGroupedView" role="tabpanel" data-shop-panel="merchants" hidden>
       <form id="merchantFilters" class="card-body p-4 border-b border-base-300" method="get" action={linkTo('/shops')}>
         <input id="merchantSearchFilter" name="merchantQ" value="" class="input input-bordered w-full max-w-3xl" placeholder={t.shops.merchantSearchPlaceholder} autocomplete="off" />
       </form>

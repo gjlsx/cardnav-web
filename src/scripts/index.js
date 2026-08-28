@@ -81,7 +81,7 @@ const DEFAULT_FLAT_PRODUCT_LIMIT = 100;
 const FLAT_PRODUCT_LOAD_MORE_STEP = 100;
 const DEFAULT_MERCHANT_LIMIT = 20;
 const MERCHANT_LOAD_MORE_STEP = 20;
-const DEFAULT_FLAT_SORT = { key: 'score', direction: 'desc', type: 'number' };
+const DEFAULT_FLAT_SORT = { key: 'priceValue', direction: 'asc', type: 'number' };
 const FAVORITE_MERCHANT_PRODUCT_PIN_LIMIT = 10;
 const SPONSOR_PRODUCT_PIN_LIMIT = 10;
 const SPONSOR_PRODUCT_PIN_LIMIT_PER_SITE = 5;
@@ -673,17 +673,9 @@ function tableLabel(key) {
 }
 
 function createFlatProductRow(item) {
-  const site = shopProductSite(shopProductsData, item);
-  const siteId = text(shopSiteId(site));
-  const siteName = text(shopSiteName(site));
-  const siteUrl = text(shopSiteUrl(site)).trim();
-  const siteSponsor = shopSiteSponsor(site);
   const categoryName = text(shopProductCategoryName(shopProductsData, item));
   const productName = text(shopProductName(item));
   const productTitle = `${categoryName}-${productName}`;
-  const productFavoriteKey = `${siteName}#${productTitle}`;
-  const siteFavoriteKey = siteId || siteName;
-  const productUrl = shopProductUrl(item);
   const priceNumber = shopProductPriceNumber(item);
   const priceUnit = shopProductPriceUnit(shopProductsData, item);
   const inStock = shopProductInStock(item);
@@ -706,36 +698,33 @@ function createFlatProductRow(item) {
   productCell.setAttribute('data-label', tableLabel('product'));
   const productInline = document.createElement('div');
   productInline.className = 'cell-inline';
-  productInline.appendChild(createFavoriteButton('product', productFavoriteKey, `${shopsMessages.productFavorite || 'Favorite product'} ${productTitle}`));
   if (channelDetails.length) {
     const toggle = document.createElement('button');
     toggle.type = 'button';
-    toggle.className = 'btn btn-ghost btn-xs h-auto min-h-0 px-0 font-semibold normal-case text-base-content hover:bg-transparent';
-    toggle.textContent = productName;
+    toggle.className = 'btn btn-outline btn-xs h-auto min-h-7 gap-1 px-2 font-semibold normal-case';
     toggle.setAttribute('aria-expanded', 'false');
     const details = document.createElement('div');
+    const detailId = `channel-details-${productTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+    details.id = detailId;
     details.className = 'reference-product-meta hidden';
+    toggle.setAttribute('aria-controls', detailId);
+    const toggleLabel = appendTextElement(toggle, 'span', '', shopsMessages.showChannels || 'Show channels');
+    const chevron = appendTextElement(toggle, 'span', 'text-xs', '⌄');
     channelDetails.forEach(channel => {
       appendTextElement(details, 'span', 'reference-product-source', `${channel.siteName} · ${formatDisplayPrice(channel.priceNumber, channel.priceUnit)} · ${channel.inStock ? shopsMessages.inStock : shopsMessages.soldOut}`);
     });
     toggle.addEventListener('click', () => {
-      const opened = details.classList.toggle('hidden');
-      toggle.setAttribute('aria-expanded', opened ? 'false' : 'true');
+      const isCollapsed = details.classList.toggle('hidden');
+      toggle.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+      toggleLabel.textContent = isCollapsed ? (shopsMessages.showChannels || 'Show channels') : (shopsMessages.hideChannels || 'Hide channels');
+      chevron.textContent = isCollapsed ? '⌄' : '⌃';
     });
     productInline.appendChild(toggle);
     productCell.appendChild(productInline);
     productCell.appendChild(details);
-  } else if (productUrl) {
-    const productLink = createTrackedProductLink(productUrl, 'product-link', productName, productTitle, { sponsor: siteSponsor });
-    productLink.dataset.productClickSiteId = siteId;
-    productLink.dataset.productClickUrl = productUrl;
-    productLink.dataset.productClickCategory = categoryName;
-    productLink.dataset.productClickName = productName;
-    productInline.appendChild(productLink);
   } else {
     appendTextElement(productInline, 'span', 'product-text', productName);
   }
-  if (siteSponsor) productInline.appendChild(window.CardNavSponsorBadge.create(shopsMessages.sponsorLabel || 'Partner', shopsMessages.sponsorDescription || '', shopsMessages.partnershipUrl || localizedFallbackPath('/partnership'), shopsMessages.partnershipLinkLabel || 'How to partner'));
   if (!channelDetails.length) productCell.appendChild(productInline);
   if (platform || productType || isSample || sourceName) {
     const productMeta = document.createElement('div');
@@ -768,32 +757,6 @@ function createFlatProductRow(item) {
     appendTextElement(statusCell, 'span', 'reference-channel-count', `${shopsMessages.channelAvailability} ${channelLabel}`);
   }
   row.appendChild(statusCell);
-
-  const categoryCell = document.createElement('td');
-  categoryCell.className = 'flat-category-cell';
-  categoryCell.setAttribute('data-label', tableLabel('category'));
-  categoryCell.appendChild(document.createTextNode(categoryName));
-  row.appendChild(categoryCell);
-
-  const productScoreCell = document.createElement('td');
-  productScoreCell.className = 'data-table-product-score-cell data-table-cell-align-right';
-  productScoreCell.setAttribute('data-label', tableLabel('productScore'));
-  productScoreCell.appendChild(document.createTextNode(formatScore(shopProductScore(item))));
-  row.appendChild(productScoreCell);
-
-  const merchantCell = document.createElement('td');
-  merchantCell.className = 'flat-merchant-cell';
-  merchantCell.setAttribute('data-label', tableLabel('merchant'));
-  const merchantInline = document.createElement('div');
-  merchantInline.className = 'cell-inline';
-  merchantInline.appendChild(createFavoriteButton('site', siteFavoriteKey, `${shopsMessages.merchantFavorite || 'Favorite merchant'} ${siteName}`));
-  if (siteUrl) {
-    merchantInline.appendChild(createTrackedMerchantLink(siteUrl, siteName, { sponsor: siteSponsor }));
-  } else {
-    appendTextElement(merchantInline, 'span', 'merchant-text', siteName);
-  }
-  merchantCell.appendChild(merchantInline);
-  row.appendChild(merchantCell);
 
   const refreshCell = document.createElement('td');
   refreshCell.className = 'flat-refresh-cell';

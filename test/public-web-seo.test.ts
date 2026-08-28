@@ -64,8 +64,8 @@ test('cardnav-web sitemap, text sitemap and llms include every public SEO route'
   assert.match(sitemapXml, /<xhtml:link rel="alternate" hreflang="en" href="https:\/\/ai\.lovemoney\.live\/en" \/>/);
   assert.match(sitemapXml, /<xhtml:link rel="alternate" hreflang="ru" href="https:\/\/ai\.lovemoney\.live\/ru" \/>/);
   assert.match(sitemapXml, /<xhtml:link rel="alternate" hreflang="x-default" href="https:\/\/ai\.lovemoney\.live\/" \/>/);
-  assert.match(llmsTxt, /https:\/\/ai\.lovemoney\.live\/en\): AI gateway sites/);
-  assert.match(llmsTxt, /https:\/\/ai\.lovemoney\.live\/ru\): AI-шлюзы/);
+  assert.match(llmsTxt, /https:\/\/ai\.lovemoney\.live\/en\): Gateway sites/);
+  assert.match(llmsTxt, /https:\/\/ai\.lovemoney\.live\/ru\): Сайты-шлюзы/);
 });
 
 test('cardnav-web sitemap index points crawlers to split sitemap files', () => {

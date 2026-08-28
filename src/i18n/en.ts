@@ -102,7 +102,7 @@ export const enMessages: Messages = {
     domain: 'ai.lovemoney.live',
     tagline: 'One-stop navigation for AI model account access',
     heroDescription:
-      'Not sure where to buy AI accounts at a lower price from more reliable sources? AI LoveMoney brings together AI gateway sites, third-party shops, official subscription price comparisons, plus model rankings, guides, and practical tools to help you avoid traps and spend less.',
+      'Not sure where to buy AI accounts at a lower price from more reliable sources? AI LoveMoney brings together gateway sites, third-party shops, official site price references, plus model rankings, help resources, and practical tools to help you avoid traps and spend less.',
   },
   nav: {
     openMenu: 'Open menu',
@@ -196,13 +196,13 @@ export const enMessages: Messages = {
   seo: {
     titleSuffix: 'AI LoveMoney',
     websiteName: 'AI LoveMoney',
-    llmsDescription: 'AI LoveMoney is a public navigation site that aggregates AI account merchants, API gateways, products, stock status, prices, submission entry points, and pre-purchase guidance.',
+    llmsDescription: 'AI LoveMoney is a public navigation site that aggregates AI account merchants, gateway sites, products, stock status, prices, submission entry points, and pre-purchase help.',
     crawlerPolicy: 'Public pages may be used for search indexing, citation, answer grounding, and user-requested retrieval. AI LoveMoney does not authorize model-training or bulk dataset crawling; see robots.txt for crawler-specific rules.',
   },
   home: {
     seoTitle: 'AI LoveMoney - One-stop navigation for AI model account access',
     seoDescription:
-      'AI gateway sites, third-party AI shops, official subscription price comparisons, model rankings, guides, and practical tools for GPT, Claude, Gemini, Cursor, Grok, and more.',
+      'Gateway sites, third-party AI shops, official site price references, model rankings, help resources, and practical tools for GPT, Claude, Gemini, Cursor, Grok, and more.',
     guideTitle: 'Not sure where to start? Open help',
     guideDescription: 'Clarify model choices, access methods, and practical preparation before you buy.',
     guideSteps: [
@@ -222,7 +222,7 @@ export const enMessages: Messages = {
     searchPlaceholder: 'Search products or merchant keywords',
     pathEyebrow: 'Choose your access path',
     pathTitle: 'Start with how you want to use AI',
-    pathDescription: 'Official subscriptions, API gateways, and third-party AI shops are different paths. If you are still unsure, check the model leaderboard or the guide first.',
+    pathDescription: 'Official sites, gateway sites, and third-party AI shops are different paths. If you are still unsure, check the model leaderboard or help first.',
     officialPathBadge: 'Official subscription',
     officialPathTitle: 'I want an official plan',
     officialPathDescription: 'Compare regional prices for ChatGPT, Claude, Gemini, Grok, and other official subscriptions before deciding whether the official route is worth it.',
@@ -548,7 +548,7 @@ export const enMessages: Messages = {
     seoDescription: 'Check proxy, VPN, Tor, hosting, and abuse risk signals for a target IP to quickly filter high-risk exits before registration, login, or payment.',
     title: 'IP purity check',
     description: 'This page aggregates proxy, VPN, Tor, hosting, and abuse signals. Enter a target IP, or leave it blank to check your current network exit.',
-    guideLink: 'What is IP purity? Read the guide',
+    guideLink: 'What is IP purity? Read the help',
     inputTitle: 'Check input',
     ipAddress: 'IP address',
     inputPlaceholder: 'Example: 8.8.8.8; leave blank to check current IP',
@@ -586,8 +586,8 @@ export const enMessages: Messages = {
   guide: {
     seoDescription: 'Practical judgment methods before buying AI accounts, choosing merchants, or ordering virtual products.',
     allDocs: 'All docs',
-    docListLabel: 'Guide document list',
-    eyebrow: 'Guide',
+    docListLabel: 'Help document list',
+    eyebrow: 'Help',
     nextStep: 'Next step',
   },
   sponsors: {

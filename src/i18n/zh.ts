@@ -101,7 +101,7 @@ export const zhMessages = {
     domain: 'ai.lovemoney.live',
     tagline: '一站式 AI 大模型账号购买导航',
     heroDescription:
-      '不知道 AI 账号去哪买便宜又靠谱？这里聚合 AI 中转站、卡网、官方订阅比价，还有模型排行、使用指南、实用工具，帮你少踩坑，少花钱。',
+      '不知道 AI 账号去哪买便宜又靠谱？这里聚合 AI 中转网站、卡网、官方网站价格参考，还有模型排行、帮助和实用工具，帮你少踩坑，少花钱。',
   },
   nav: {
     openMenu: '打开菜单',
@@ -195,13 +195,13 @@ export const zhMessages = {
   seo: {
     titleSuffix: 'AI LoveMoney',
     websiteName: 'AI LoveMoney',
-    llmsDescription: 'AI LoveMoney是一个中文公开导航站点，聚合 AI 账号商家、API 中转站、商品、库存状态、价格、提交入口和购买前判断内容。',
+    llmsDescription: 'AI LoveMoney是一个中文公开导航站点，聚合 AI 账号商家、API 中转网站、商品、库存状态、价格、提交入口和购买前帮助内容。',
     crawlerPolicy: 'Public pages may be used for search indexing, citation, answer grounding, and user-requested retrieval. AI LoveMoney does not authorize model-training or bulk dataset crawling; see robots.txt for crawler-specific rules.',
   },
   home: {
     seoTitle: 'AI LoveMoney - 一站式 AI 大模型账号购买导航',
     seoDescription:
-      '聚合 AI 中转站、卡网、官方订阅比价，还有模型排行、使用指南、实用工具，帮你少踩坑，少花钱。GPT，Claude，Gemini，Cursor，Grok 应有尽有。',
+      '聚合 AI 中转网站、卡网、官方网站价格参考，还有模型排行、帮助和实用工具，帮你少踩坑，少花钱。GPT，Claude，Gemini，Cursor，Grok 应有尽有。',
     guideTitle: '不知道如何开始？点击进入帮助',
     guideDescription: '从模型选择、使用方式到实践，先把思路理清楚。',
     guideSteps: [
@@ -221,7 +221,7 @@ export const zhMessages = {
     searchPlaceholder: '搜索商品、商家关键词',
     pathEyebrow: 'AI LoveMoney',
     pathTitle: 'AI 订阅、账号和 API 入口导航',
-    pathDescription: '把官方订阅价格、API 中转站、第三方卡网商品、模型排行榜和购买向导放在一起，帮你少开几个页面，先把选择看清楚。',
+    pathDescription: '把官方网站价格、API 中转网站、第三方卡网商品、模型排行榜和购买帮助放在一起，帮你少开几个页面，先把选择看清楚。',
     officialPathBadge: '官方订阅',
     officialPathTitle: '我想买官方订阅',
     officialPathDescription: '查看 ChatGPT、Claude、Gemini、Grok 等官方订阅在不同地区的价格差异，先判断官方方案值不值得买。',
@@ -547,7 +547,7 @@ export const zhMessages = {
     seoDescription: '检测目标 IP 的代理、VPN、Tor、机房和滥用风险信号，帮助你在注册、登录和支付前快速筛掉高风险出口。',
     title: 'IP 纯净度检测',
     description: '页面会汇总代理、VPN、Tor、机房和滥用信号；你可以直接输入目标 IP，也可以留空后检测当前网络出口。',
-    guideLink: '什么是 IP 纯净度？查看向导说明',
+    guideLink: '什么是 IP 纯净度？查看帮助说明',
     inputTitle: '检测输入',
     ipAddress: 'IP 地址',
     inputPlaceholder: '例如 8.8.8.8；留空则检测当前 IP',
@@ -585,8 +585,8 @@ export const zhMessages = {
   guide: {
     seoDescription: 'AI 账号购买、商家选择和虚拟商品下单前的判断方法。',
     allDocs: '全部文档',
-    docListLabel: '向导文档列表',
-    eyebrow: '向导指南',
+    docListLabel: '帮助文档列表',
+    eyebrow: '帮助指南',
     nextStep: '下一步',
   },
   sponsors: {

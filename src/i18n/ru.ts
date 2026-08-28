@@ -102,7 +102,7 @@ export const ruMessages: Messages = {
     domain: 'ai.lovemoney.live',
     tagline: 'Единый навигатор для доступа к аккаунтам AI-моделей',
     heroDescription:
-      'Не знаете, где купить AI-аккаунт дешевле и надежнее? AI LoveMoney собирает AI-шлюзы, сторонние магазины, сравнение официальных подписок, а также рейтинги моделей, гайды и практичные инструменты, чтобы вы меньше ошибались и меньше тратили.',
+      'Не знаете, где купить AI-аккаунт дешевле и надежнее? AI LoveMoney собирает сайты-шлюзы, сторонние магазины, справочные цены официальных сайтов, а также рейтинги моделей, раздел помощи и практичные инструменты, чтобы вы меньше ошибались и меньше тратили.',
   },
   nav: {
     openMenu: 'Открыть меню',
@@ -196,13 +196,13 @@ export const ruMessages: Messages = {
   seo: {
     titleSuffix: 'AI LoveMoney',
     websiteName: 'AI LoveMoney',
-    llmsDescription: 'AI LoveMoney — публичный навигационный сайт с агрегированными AI-продавцами, API-gatewayми, товарами, остатками, ценами, формой добавления и материалами для проверки перед покупкой.',
+    llmsDescription: 'AI LoveMoney — публичный навигационный сайт с агрегированными AI-продавцами, сайтами-шлюзами, товарами, остатками, ценами, формой добавления и материалами помощи перед покупкой.',
     crawlerPolicy: 'Public pages may be used for search indexing, citation, answer grounding, and user-requested retrieval. AI LoveMoney does not authorize model-training or bulk dataset crawling; see robots.txt for crawler-specific rules.',
   },
   home: {
     seoTitle: 'AI LoveMoney - единый навигатор для доступа к аккаунтам AI-моделей',
     seoDescription:
-      'AI-шлюзы, сторонние AI-магазины, сравнение официальных подписок, рейтинги моделей, гайды и практичные инструменты для GPT, Claude, Gemini, Cursor, Grok и других сервисов.',
+      'Сайты-шлюзы, сторонние AI-магазины, справочные цены официальных сайтов, рейтинги моделей, раздел помощи и практичные инструменты для GPT, Claude, Gemini, Cursor, Grok и других сервисов.',
     guideTitle: 'Не знаете, с чего начать? Откройте раздел помощи',
     guideDescription: 'Сначала разберитесь с выбором модели, способом доступа и подготовкой к покупке.',
     guideSteps: [
@@ -222,7 +222,7 @@ export const ruMessages: Messages = {
     searchPlaceholder: 'Искать товары или продавцов',
     pathEyebrow: 'Выберите путь доступа',
     pathTitle: 'Сначала решите, как вы хотите пользоваться AI',
-    pathDescription: 'Официальные подписки, API gateway и сторонние AI-магазины — разные пути. Если вы еще не уверены, начните с рейтинга моделей или гайда.',
+    pathDescription: 'Официальные сайты, сайты-шлюзы и сторонние AI-магазины — разные пути. Если вы еще не уверены, начните с рейтинга моделей или раздела помощи.',
     officialPathBadge: 'Официальная подписка',
     officialPathTitle: 'Хочу официальную подписку',
     officialPathDescription: 'Сравните региональные цены ChatGPT, Claude, Gemini, Grok и других официальных подписок перед выбором официального варианта.',
@@ -548,7 +548,7 @@ export const ruMessages: Messages = {
     seoDescription: 'Проверьте целевой IP на proxy, VPN, Tor, хостинг и abuse-сигналы, чтобы быстро отсеять рискованные выходы перед регистрацией, входом или оплатой.',
     title: 'Проверка чистоты IP',
     description: 'Страница собирает сигналы proxy, VPN, Tor, хостинга и abuse. Введите целевой IP или оставьте поле пустым, чтобы проверить текущий сетевой выход.',
-    guideLink: 'Что такое чистота IP? Читать гайд',
+    guideLink: 'Что такое чистота IP? Читать помощь',
     inputTitle: 'Ввод для проверки',
     ipAddress: 'IP-адрес',
     inputPlaceholder: 'Например 8.8.8.8; оставьте пустым для текущего IP',
@@ -586,8 +586,8 @@ export const ruMessages: Messages = {
   guide: {
     seoDescription: 'Практичные способы оценки перед покупкой AI-аккаунтов, выбором продавцов и заказом виртуальных товаров.',
     allDocs: 'Все документы',
-    docListLabel: 'Список документов гайда',
-    eyebrow: 'Гайд',
+    docListLabel: 'Список документов помощи',
+    eyebrow: 'Помощь',
     nextStep: 'Следующий шаг',
   },
   sponsors: {

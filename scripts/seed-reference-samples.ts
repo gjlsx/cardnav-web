@@ -7,6 +7,7 @@ import { initializeMySqlSchema } from '../src/database.js';
 import { catalogPlanModels, catalogProducts, aggregateCatalogProducts } from '../src/catalog.js';
 import { packShopProductsData, type PublicShopProductsData } from '../src/shop-products-data.js';
 import { referenceDataSources, referenceGatewayModelCoverage, referenceGatewaySamples, referenceProductSamples } from '../src/reference-samples.js';
+import { formatBeijingRefreshTime } from '../src/store.js';
 
 const config = {
   host: process.env.MYSQL_HOST || '127.0.0.1',
@@ -145,12 +146,12 @@ async function main() {
         const source = referenceDataSources.find(item => item.id === sample.sourceId);
         return {
           id: sample.id, slug: sample.id.replace(/^reference-gateway-/, ''), name: sample.name, url: '', outboundUrl: '', host: '',
-          family: sample.family, displayFamily: sample.family, createdAt: sample.sampledAt, createdTime: toMySqlDate(sample.sampledAt),
+          family: sample.family, displayFamily: sample.family, createdAt: sample.sampledAt, createdTime: formatBeijingRefreshTime(sample.sampledAt),
           lastProductRefreshCompleteAt: null, lastProductRefreshCompleteTime: '', siteScore: 50, sponsor: false,
           availabilityPercent: null, avgSuccessLatencyMs: null, summary: sample.summary, modelTypes: [], paymentMethods: [],
           modelCount: coverage.length, priceCount: 0, modelFamilies: [...new Set(coverage.map(item => item.modelFamily))],
           displayModelFamilies: [...new Set(coverage.map(item => item.modelFamily))], refreshStatus: '', refreshErrorType: '',
-          latestGatewayRefreshAt: sample.sampledAt, latestGatewayRefreshTime: toMySqlDate(sample.sampledAt), sampledAt: sample.sampledAt,
+          latestGatewayRefreshAt: sample.sampledAt, latestGatewayRefreshTime: formatBeijingRefreshTime(sample.sampledAt), sampledAt: sample.sampledAt,
           isSample: true, sourceName: source?.name ?? '', sourcePageUrl: source?.sourcePageUrl ?? '',
         };
       })
@@ -162,7 +163,7 @@ async function main() {
           id: coverage.modelId, modelId: coverage.modelId, modelFamily: coverage.modelFamily,
           supportSiteCount: new Set(rows.map(item => item.siteId)).size, priceCount: 0,
           latestGatewayRefreshAt: rows.map(item => item.observedAt).sort().at(-1) ?? null,
-          latestGatewayRefreshTime: toMySqlDate(rows.map(item => item.observedAt).sort().at(-1) ?? ''),
+          latestGatewayRefreshTime: formatBeijingRefreshTime(rows.map(item => item.observedAt).sort().at(-1) ?? ''),
         };
       })
       .sort((left, right) => right.supportSiteCount - left.supportSiteCount || left.modelId.localeCompare(right.modelId));

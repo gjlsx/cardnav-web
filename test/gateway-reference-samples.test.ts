@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 import { referenceGatewaySamples, referenceGatewayModelCoverage } from '../src/reference-samples.js';
+import { formatBeijingRefreshTime } from '../src/store.js';
 
 const storeSource = fs.readFileSync(path.resolve('src/store.ts'), 'utf8');
 const seedSource = fs.readFileSync(path.resolve('scripts/seed-reference-samples.ts'), 'utf8');
@@ -51,4 +52,10 @@ test('gateway list avoids performance claims and empty reference URLs do not cre
 test('gateway row mapper turns SQL NULL URLs into an empty public value', () => {
   assert.match(storeSource, /const url = row\.url == null \? '' : String\(row\.url\)\.trim\(\);/);
   assert.doesNotMatch(storeSource, /const url = String\(row\.url\);/);
+});
+
+test('gateway sample snapshots use the same Beijing display time as the detail query', () => {
+  assert.equal(formatBeijingRefreshTime('2026-08-27T22:55:00.000Z'), '2026-08-28 06:55:00');
+  assert.match(seedSource, /formatBeijingRefreshTime/);
+  assert.doesNotMatch(seedSource, /latestGatewayRefreshTime: toMySqlDate/);
 });

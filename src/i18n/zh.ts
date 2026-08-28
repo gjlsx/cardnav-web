@@ -304,7 +304,7 @@ export const zhMessages = {
     headerSort: '表头排序',
     hotSearchTags: '热门搜索标签',
     quickPlanSearch: '快速搜索',
-    officialPriceTip: '查看 {term} 官方订阅比价',
+    officialPriceTip: '查看 {term} 官方网站价格',
     gatewayTip: '查看支持 {term} 的中转站',
     moreQuickPlans: '更多',
     lessQuickPlans: '收起',

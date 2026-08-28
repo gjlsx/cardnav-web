@@ -9,6 +9,7 @@ import type { PublicModelLeaderboardRow, PublicOfficialPriceRow } from './store.
 
 export type LocalizedOfficialPriceRow = PublicOfficialPriceRow & {
   localizedCountryLabel: string;
+  localizedSourceName: string;
   equivalentCurrencyCode: string;
   equivalentPriceText: string;
 };
@@ -53,6 +54,13 @@ function localizeCountryLabel(countryCode: string, fallback: string, locale: Loc
   return displayNames.of(normalized) ?? fallback;
 }
 
+function localizeOfficialPriceSource(sourceId: string, fallback: string, locale: Locale) {
+  if (sourceId !== 'reference-cardnav-official-price') return fallback;
+  if (locale === 'en') return 'CardNav official plan public reference';
+  if (locale === 'ru') return 'Публичная справка CardNav по официальному плану';
+  return 'CardNav 官方订阅公开参考';
+}
+
 export function localizeTaskLabel(taskSlug: string, messages: Messages) {
   const taskLabels = messages.leaderboard.taskLabels as Record<string, string>;
   return taskLabels[taskSlug] ?? taskSlug;
@@ -84,6 +92,7 @@ export function localizeOfficialPriceGroups(
       return {
         ...price,
         localizedCountryLabel: localizeCountryLabel(price.countryCode, price.countryLabel, locale),
+        localizedSourceName: localizeOfficialPriceSource(price.sourceId, price.sourceName, locale),
         equivalentCurrencyCode: currency,
         equivalentPriceText: formatCurrency(equivalentPrice, currency, locale),
       };

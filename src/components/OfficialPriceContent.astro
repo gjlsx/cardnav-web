@@ -117,6 +117,7 @@ function countryFlag(countryCode: string): CountryFlag {
     )}
     {currentGroup && (
       <>
+        <div class="hidden md:block">
         <DataTable
           sortable={false}
           variant="compact"
@@ -148,13 +149,56 @@ function countryFlag(countryCode: string): CountryFlag {
                 <DataTableCell label={t.officialPrice.cnyPrice} class="font-bold text-primary font-mono text-base">{item.equivalentPriceText}</DataTableCell>
                 <DataTableCell label={t.officialPrice.sampledAt} class="whitespace-nowrap text-sm text-base-content/70">{item.sampledAt ? formatBeijingRefreshTime(item.sampledAt) : t.labels.notRecorded}</DataTableCell>
                 <DataTableCell label={t.officialPrice.source} class="text-sm text-base-content/70">
-                  <span>{item.sourceName || t.labels.notRecorded}</span>
+                  <span>{item.localizedSourceName || t.labels.notRecorded}</span>
                   {item.isSample && <span class="mt-1 block text-xs text-base-content/55">{t.officialPrice.referenceDisclosure}</span>}
                 </DataTableCell>
               </tr>
             );
           })}
         </DataTable>
+        </div>
+        <div class="grid gap-3 p-3 md:hidden" data-official-price-mobile-cards>
+          {currentGroup.prices.length === 0 && (
+            <p class="px-1 py-4 text-sm text-base-content/70">{t.officialPrice.empty}</p>
+          )}
+          {currentGroup.prices.map(item => {
+            const flag = countryFlag(item.countryCode);
+            return (
+              <article class="rounded-lg border border-base-300 bg-base-100 p-4 shadow-sm">
+                <div class="flex items-center justify-between gap-3">
+                  <h3 class="min-w-0 text-base font-bold text-base-content">
+                    <span aria-hidden="true" class="mr-1.5">{flag.emoji}</span>
+                    {item.localizedCountryLabel} ({item.countryCode})
+                  </h3>
+                  <span class="shrink-0 font-mono text-base font-bold text-primary">{item.equivalentPriceText}</span>
+                </div>
+                <dl class="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+                  <div>
+                    <dt class="text-xs text-base-content/55">{t.officialPrice.localPrice}</dt>
+                    <dd class="mt-1 break-words font-mono font-semibold text-base-content">{item.priceText}</dd>
+                  </div>
+                  <div>
+                    <dt class="text-xs text-base-content/55">{t.officialPrice.currency}</dt>
+                    <dd class="mt-1 font-mono text-base-content">{item.currencyCode}</dd>
+                  </div>
+                  <div>
+                    <dt class="text-xs text-base-content/55">{t.officialPrice.cnyPrice}</dt>
+                    <dd class="mt-1 font-mono font-bold text-primary">{item.equivalentPriceText}</dd>
+                  </div>
+                  <div>
+                    <dt class="text-xs text-base-content/55">{t.officialPrice.sampledAt}</dt>
+                    <dd class="mt-1 whitespace-nowrap text-base-content/75">{item.sampledAt ? formatBeijingRefreshTime(item.sampledAt) : t.labels.notRecorded}</dd>
+                  </div>
+                  <div class="col-span-2 min-w-0">
+                    <dt class="text-xs text-base-content/55">{t.officialPrice.source}</dt>
+                    <dd class="mt-1 break-words leading-5 text-base-content/75">{item.localizedSourceName || t.labels.notRecorded}</dd>
+                    {item.isSample && <p class="mt-1 text-xs leading-5 text-base-content/55">{t.officialPrice.referenceDisclosure}</p>}
+                  </div>
+                </dl>
+              </article>
+            );
+          })}
+        </div>
       </>
     )}
   </section>

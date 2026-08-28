@@ -52,15 +52,16 @@ pnpm run seed:reference-samples
 
 来源配置默认值：`enabled=false`、`interval_minutes=60`、`max_items_per_run=1000`；`0` 表示不限条数。批准状态默认 `draft`。未获逐来源批准时，工具只允许 fixture / dry-run，不得发 HTTP。本机 CLI/GUI 在 `scripts/collection/`（见该目录 README）。
 
-## 必须由用户逐项批准后才能做
+## 已批准的本机总控台方向（p011–p019）
 
 - 对未批准来源发真实 HTTP / 批量抓取
 - 安装 Windows 计划任务、cron、远程调度
-- 把 staging 自动 publish 到公开快照或生产库
 - 在 `ai.lovemoney.live` 上运行采集器
 
-三个聚合站仍是未来定时补充源，不是当前可抓取名单。CardNav / PriceAI / OpenPrice 本轮只提供公开参考样例。
+已批准、公开且字段白名单明确的来源可由本机 GUI 手工真实 HTTP 采集，先写入本机 MySQL `ailovemoney` 的 raw 表和唯一 staging 表 `collection_staging_observations`，通过质量规则后自动发布到正式表/快照。来源仍默认 `enabled=false`，`interval_minutes=60`、`max_items_per_run=1000`；人工运行忽略 enabled 但不忽略上限。原始公开响应保留 30 天，解析记录和审计长期保留；账号、Cookie、验证码、订单和交付数据均不得保存。
+
+站点级手工覆盖/隐藏按稳定键在清洗阶段生效：批量来源响应可继续保存 raw 和处理其它记录，但覆盖记录不进入 staging、不覆盖正式展示。解除覆盖后必须重新采集，不能恢复旧快照。MVP 只管理本机 MySQL；远程 MySQL 的本机直连读写属于后续独立任务。服务器发布经合作运维 Tab 的二次确认后，遵循项目根目录 `howtorunvpsnew.md` 真执行，并保持 LikeShop 8086/8090/8095 不受影响。
 
 ## 秘密边界
 
-密码、SSH 私钥、token、cookie、数据库连接串、SQL dump、完整第三方 HTML 不得写入 git、tasklog 或 README。连接方式只引用本机受控安全文件。
+密码、SSH 私钥、token、cookie、数据库连接串、SQL dump、完整第三方 HTML 不得写入 git、tasklog 或 README。仅允许白名单公开响应在本机 MySQL raw 审计表保存 30 天；连接方式只引用本机受控安全文件。

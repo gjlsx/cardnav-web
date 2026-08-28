@@ -28,9 +28,9 @@ const t = Astro.locals.messages;
 const linkTo = Astro.locals.localizePath;
 const preferredOfficialPlans = [
   { app: 'chatgpt', plan: 'plus' },
-  { app: 'gpt', plan: '20x' },
   { app: 'claude', plan: 'pro' },
-  { app: 'claude', plan: '20x' },
+  { app: 'gemini', plan: 'advanced' },
+  { app: 'grok', plan: 'supergrok' },
 ];
 const shopProductsData = await loadShopProductsData({ productLimit: 6 });
 const popularSearchSnapshot = await loadPopularSearchTerms(10, [...t.home.presetPopularSearchTerms]);

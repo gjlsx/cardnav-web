@@ -764,6 +764,11 @@ export type PublicOfficialPriceRow = {
   cnyPrice: number;
   usdPrice: number;
   rubPrice: number;
+  sourceId: string;
+  sourceName: string;
+  sourcePageUrl: string;
+  sampledAt: string;
+  isSample: boolean;
   fetchedAt: string;
 };
 
@@ -808,6 +813,11 @@ function mapOfficialPriceRow(row: Record<string, unknown>): PublicOfficialPriceR
     cnyPrice: Number(row.cny_price),
     usdPrice: Number(row.usd_price),
     rubPrice: Number(row.rub_price),
+    sourceId: row.source_id == null ? '' : String(row.source_id),
+    sourceName: row.source_name == null ? '' : String(row.source_name),
+    sourcePageUrl: row.source_page_url == null ? '' : String(row.source_page_url),
+    sampledAt: row.sampled_at == null ? '' : String(row.sampled_at),
+    isSample: row.is_sample === true || row.is_sample === 1 || row.is_sample === '1',
     fetchedAt: String(row.fetched_at),
   };
 }
@@ -827,8 +837,9 @@ export async function loadOfficialPricesByUrlSlug(urlSlug: string): Promise<Publ
   }
 
   const result = await getPool().query(`
-    SELECT app_slug, plan_slug, app_name, plan_name, display_name, url_slug, is_default, display_order, country_code, country_label, currency_code, price_text, price_value, cny_price, usd_price, rub_price, fetched_at
-    FROM official_prices
+    SELECT official_prices.app_slug, official_prices.plan_slug, official_prices.app_name, official_prices.plan_name, official_prices.display_name, official_prices.url_slug, official_prices.is_default, official_prices.display_order, official_prices.country_code, official_prices.country_label, official_prices.currency_code, official_prices.price_text, official_prices.price_value, official_prices.cny_price, official_prices.usd_price, official_prices.rub_price, official_prices.source_id, official_prices.sampled_at, official_prices.is_sample, official_prices.fetched_at,
+      COALESCE(reference_data_sources.name, '') AS source_name, COALESCE(reference_data_sources.source_page_url, '') AS source_page_url
+    FROM official_prices LEFT JOIN reference_data_sources ON reference_data_sources.id = official_prices.source_id
     WHERE lower(trim(url_slug)) = ?
     ORDER BY cny_price ASC
   `, [normalizedSlug]);
@@ -841,8 +852,9 @@ export async function loadOfficialPrices(): Promise<PublicOfficialPriceRow[]> {
 
   const db = getPool();
   const result = await db.query(`
-    SELECT app_slug, plan_slug, app_name, plan_name, display_name, url_slug, is_default, display_order, country_code, country_label, currency_code, price_text, price_value, cny_price, usd_price, rub_price, fetched_at
-    FROM official_prices
+    SELECT official_prices.app_slug, official_prices.plan_slug, official_prices.app_name, official_prices.plan_name, official_prices.display_name, official_prices.url_slug, official_prices.is_default, official_prices.display_order, official_prices.country_code, official_prices.country_label, official_prices.currency_code, official_prices.price_text, official_prices.price_value, official_prices.cny_price, official_prices.usd_price, official_prices.rub_price, official_prices.source_id, official_prices.sampled_at, official_prices.is_sample, official_prices.fetched_at,
+      COALESCE(reference_data_sources.name, '') AS source_name, COALESCE(reference_data_sources.source_page_url, '') AS source_page_url
+    FROM official_prices LEFT JOIN reference_data_sources ON reference_data_sources.id = official_prices.source_id
     ORDER BY display_order ASC, cny_price ASC
   `);
   return result.rows.map(row => mapOfficialPriceRow(row));

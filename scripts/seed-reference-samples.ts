@@ -6,7 +6,13 @@ import mysql from 'mysql2/promise';
 import { initializeMySqlSchema } from '../src/database.js';
 import { catalogPlanModels, catalogProducts, aggregateCatalogProducts } from '../src/catalog.js';
 import { packShopProductsData, type PublicShopProductsData } from '../src/shop-products-data.js';
-import { referenceDataSources, referenceGatewayModelCoverage, referenceGatewaySamples, referenceProductSamples } from '../src/reference-samples.js';
+import {
+  referenceDataSources,
+  referenceGatewayModelCoverage,
+  referenceGatewaySamples,
+  referenceOfficialPriceSamples,
+  referenceProductSamples,
+} from '../src/reference-samples.js';
 import { formatBeijingRefreshTime } from '../src/store.js';
 
 const config = {
@@ -110,6 +116,24 @@ async function main() {
       );
     }
 
+    // Only sample rows are replaced, keeping any later verified official data intact.
+    await connection.execute('DELETE FROM official_prices WHERE is_sample = TRUE');
+    for (const sample of referenceOfficialPriceSamples) {
+      await connection.execute(
+        `INSERT INTO official_prices (
+          app_slug, plan_slug, app_name, plan_name, display_name, url_slug, is_default, display_order,
+          country_code, country_label, currency_code, price_text, price_value, cny_price, usd_price, rub_price,
+          source_id, sampled_at, is_sample, fetched_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, TRUE, ?)`,
+        [
+          sample.appSlug, sample.planSlug, sample.appName, sample.planName, sample.displayName, sample.urlSlug,
+          sample.isDefault, sample.displayOrder, sample.countryCode, sample.countryLabel, sample.currencyCode,
+          sample.priceText, sample.priceValue, sample.cnyPrice, sample.usdPrice, sample.rubPrice, sample.sourceId,
+          toMySqlDate(sample.sampledAt), toMySqlDate(sample.sampledAt),
+        ],
+      );
+    }
+
     const rawData: PublicShopProductsData = {
       sites: sites.map(site => ({
         id: site.siteId, name: site.siteName, url: '', lastProductRefreshSuccessAt: site.sampledAt,
@@ -175,11 +199,32 @@ async function main() {
       models: gatewayModels, totalModelCount: gatewayModels.length,
       totalSupportCount: gatewayModels.reduce((total, model) => total + model.supportSiteCount, 0),
     };
+    const officialPrices = referenceOfficialPriceSamples.map(sample => {
+      const source = referenceDataSources.find(item => item.id === sample.sourceId);
+      return {
+        appSlug: sample.appSlug, planSlug: sample.planSlug, appName: sample.appName, planName: sample.planName,
+        displayName: sample.displayName, urlSlug: sample.urlSlug, isDefault: sample.isDefault, displayOrder: sample.displayOrder,
+        countryCode: sample.countryCode, countryLabel: sample.countryLabel, currencyCode: sample.currencyCode,
+        priceText: sample.priceText, priceValue: sample.priceValue, cnyPrice: sample.cnyPrice, usdPrice: sample.usdPrice,
+        rubPrice: sample.rubPrice, sourceId: sample.sourceId, sourceName: source?.name ?? '',
+        sourcePageUrl: source?.sourcePageUrl ?? sample.sourcePageUrl, sampledAt: sample.sampledAt, isSample: true,
+        fetchedAt: sample.sampledAt,
+      };
+    });
+    const officialPriceCatalog = [...new Map(officialPrices.map(price => [
+      `${price.appSlug}:${price.planSlug}`,
+      {
+        appSlug: price.appSlug, planSlug: price.planSlug, appName: price.appName, planName: price.planName,
+        displayName: price.displayName, urlSlug: price.urlSlug, isDefault: price.isDefault, displayOrder: price.displayOrder,
+      },
+    ])).values()].sort((left, right) => left.displayOrder - right.displayOrder || left.displayName.localeCompare(right.displayName));
     const snapshots = [
       ['shop-products', data],
       ['shop-products-packed', packShopProductsData(data)],
       ['gateway-sites', gatewaySitesData],
       ['gateway-models', gatewayModelsData],
+      ['official-price-catalog', officialPriceCatalog],
+      ['official-prices', officialPrices],
     ] as const;
     for (const [key, payload] of snapshots) {
       await connection.execute(

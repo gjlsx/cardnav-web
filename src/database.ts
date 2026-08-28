@@ -167,6 +167,9 @@ const statements = [
     cny_price DECIMAL(18,6) NOT NULL DEFAULT 0,
     usd_price DECIMAL(18,6) NOT NULL DEFAULT 0,
     rub_price DECIMAL(18,6) NOT NULL DEFAULT 0,
+    source_id VARCHAR(64) NULL,
+    sampled_at DATETIME NULL,
+    is_sample BOOLEAN NOT NULL DEFAULT FALSE,
     fetched_at DATETIME NULL,
     KEY official_prices_catalog (app_slug, plan_slug, display_order),
     KEY official_prices_url_slug (url_slug)
@@ -225,6 +228,12 @@ const gatewaySiteColumns = [
   ['is_sample', 'BOOLEAN NOT NULL DEFAULT FALSE'],
 ] as const;
 
+const officialPriceColumns = [
+  ['source_id', 'VARCHAR(64) NULL'],
+  ['sampled_at', 'DATETIME NULL'],
+  ['is_sample', 'BOOLEAN NOT NULL DEFAULT FALSE'],
+] as const;
+
 async function ensureGatewaySiteColumns(connection: mysql.Connection) {
   for (const [name, definition] of gatewaySiteColumns) {
     const [rows] = await connection.query<mysql.RowDataPacket[]>(
@@ -234,6 +243,16 @@ async function ensureGatewaySiteColumns(connection: mysql.Connection) {
     if (rows.length === 0) await connection.query(`ALTER TABLE gateway_sites ADD COLUMN \`${name}\` ${definition}`);
   }
   await connection.query('ALTER TABLE gateway_sites MODIFY COLUMN url TEXT NULL');
+}
+
+async function ensureOfficialPriceColumns(connection: mysql.Connection) {
+  for (const [name, definition] of officialPriceColumns) {
+    const [rows] = await connection.query<mysql.RowDataPacket[]>(
+      `SELECT 1 FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = 'official_prices' AND column_name = ? LIMIT 1`,
+      [name],
+    );
+    if (rows.length === 0) await connection.query(`ALTER TABLE official_prices ADD COLUMN \`${name}\` ${definition}`);
+  }
 }
 
 async function ensureShopProductNaturalKey(connection: mysql.Connection) {
@@ -271,6 +290,7 @@ export async function initializeMySqlSchema(config: MySqlConnectionConfig) {
     await ensureShopProductColumns(connection);
     await ensureReferenceSourceColumns(connection);
     await ensureGatewaySiteColumns(connection);
+    await ensureOfficialPriceColumns(connection);
     await ensureShopProductNaturalKey(connection);
   } finally {
     await connection.end();

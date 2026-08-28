@@ -21,6 +21,24 @@ export function officialPricePathname(urlSlug: string) {
   return `/official-price/${urlSlug}`;
 }
 
+type OfficialPlanRelation = {
+  catalogTarget: string;
+  modelFamily: string;
+};
+
+// These are manual catalog relations. Unknown plans deliberately have no
+// related-shop or gateway link rather than inferring a commercial mapping.
+const officialPlanRelations: Record<string, OfficialPlanRelation> = {
+  'chatgpt-plus': { catalogTarget: 'chatgpt-plus', modelFamily: 'gpt' },
+  'claude-pro': { catalogTarget: 'claude-pro', modelFamily: 'claude' },
+  'gemini-advanced': { catalogTarget: 'gemini', modelFamily: 'gemini' },
+  'grok-supergrok': { catalogTarget: 'super-grok', modelFamily: 'grok' },
+};
+
+export function officialPlanRelation(urlSlug: string): OfficialPlanRelation | null {
+  return officialPlanRelations[urlSlug.trim().toLowerCase()] ?? null;
+}
+
 function isOfficialPriceGroupRow(price: PublicOfficialPriceRow) {
   const urlSlug = price.urlSlug.trim().toLowerCase();
   return Boolean(urlSlug)

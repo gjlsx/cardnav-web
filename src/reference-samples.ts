@@ -56,6 +56,29 @@ export type ReferenceGatewayModelCoverage = {
   hasPublicPrice: boolean;
 };
 
+export type ReferenceOfficialPriceSample = {
+  sourceId: string;
+  sourcePageUrl: string;
+  appSlug: string;
+  planSlug: string;
+  appName: string;
+  planName: string;
+  displayName: string;
+  urlSlug: string;
+  isDefault: boolean;
+  displayOrder: number;
+  countryCode: string;
+  countryLabel: string;
+  currencyCode: string;
+  priceText: string;
+  priceValue: number;
+  cnyPrice: number;
+  usdPrice: number;
+  rubPrice: number;
+  sampledAt: string;
+  isSample: true;
+};
+
 const sampledAt = '2026-08-27T22:55:00.000Z';
 
 export const referenceDataSources: ReferenceDataSource[] = [
@@ -82,6 +105,14 @@ export const referenceDataSources: ReferenceDataSource[] = [
     sampledAt,
     usageNote: '公开按平台分组的最低参考价字段，仅作本地参考样例。',
     priority: 10,
+  },
+  {
+    id: 'reference-cardnav-official-price',
+    name: 'CardNav 官方订阅公开参考',
+    sourcePageUrl: 'https://cardnav.xyz/official-price/chatgpt-pro-5x',
+    sampledAt,
+    usageNote: '公开官方订阅页的信息层级与地区价格字段，仅作本地参考样例，非实时或官方价格承诺。',
+    priority: 20,
   },
 ];
 
@@ -168,4 +199,18 @@ export const referenceGatewayModelCoverage: ReferenceGatewayModelCoverage[] = [
   { siteId: 'reference-gateway-mfapi', modelId: 'deepseek-v3', modelFamily: 'DeepSeek', sourceId: 'reference-priceai-channels', observedAt: sampledAt, isSample: true, hasPublicPrice: false },
   { siteId: 'reference-gateway-mfapi', modelId: 'qwen-max', modelFamily: 'Qwen', sourceId: 'reference-priceai-channels', observedAt: sampledAt, isSample: true, hasPublicPrice: false },
   { siteId: 'reference-gateway-beibei', modelId: 'qwen-max', modelFamily: 'Qwen', sourceId: 'reference-priceai-channels', observedAt: sampledAt, isSample: true, hasPublicPrice: false },
+];
+
+// These are intentionally bounded public reference rows. Currency conversions
+// are fixed sample values for display verification, not live exchange quotes.
+export const referenceOfficialPriceSamples: ReferenceOfficialPriceSample[] = [
+  { sourceId: 'reference-cardnav-official-price', sourcePageUrl: 'https://cardnav.xyz/official-price/chatgpt-pro-5x', appSlug: 'chatgpt', planSlug: 'plus', appName: 'ChatGPT', planName: 'Plus', displayName: 'ChatGPT Plus', urlSlug: 'chatgpt-plus', isDefault: true, displayOrder: 10, countryCode: 'US', countryLabel: '美国', currencyCode: 'USD', priceText: '$20.00', priceValue: 20, cnyPrice: 144, usdPrice: 20, rubPrice: 1840, sampledAt, isSample: true },
+  { sourceId: 'reference-cardnav-official-price', sourcePageUrl: 'https://cardnav.xyz/official-price/chatgpt-pro-5x', appSlug: 'chatgpt', planSlug: 'plus', appName: 'ChatGPT', planName: 'Plus', displayName: 'ChatGPT Plus', urlSlug: 'chatgpt-plus', isDefault: true, displayOrder: 10, countryCode: 'JP', countryLabel: '日本', currencyCode: 'JPY', priceText: '¥3,000', priceValue: 3000, cnyPrice: 139, usdPrice: 19.3, rubPrice: 1776, sampledAt, isSample: true },
+  { sourceId: 'reference-cardnav-official-price', sourcePageUrl: 'https://cardnav.xyz/official-price/chatgpt-pro-5x', appSlug: 'chatgpt', planSlug: 'plus', appName: 'ChatGPT', planName: 'Plus', displayName: 'ChatGPT Plus', urlSlug: 'chatgpt-plus', isDefault: true, displayOrder: 10, countryCode: 'TR', countryLabel: '土耳其', currencyCode: 'TRY', priceText: '₺699.99', priceValue: 699.99, cnyPrice: 153, usdPrice: 21.2, rubPrice: 1950, sampledAt, isSample: true },
+  { sourceId: 'reference-cardnav-official-price', sourcePageUrl: 'https://cardnav.xyz/official-price/chatgpt-pro-5x', appSlug: 'claude', planSlug: 'pro', appName: 'Claude', planName: 'Pro', displayName: 'Claude Pro', urlSlug: 'claude-pro', isDefault: false, displayOrder: 20, countryCode: 'US', countryLabel: '美国', currencyCode: 'USD', priceText: '$20.00', priceValue: 20, cnyPrice: 144, usdPrice: 20, rubPrice: 1840, sampledAt, isSample: true },
+  { sourceId: 'reference-cardnav-official-price', sourcePageUrl: 'https://cardnav.xyz/official-price/chatgpt-pro-5x', appSlug: 'claude', planSlug: 'pro', appName: 'Claude', planName: 'Pro', displayName: 'Claude Pro', urlSlug: 'claude-pro', isDefault: false, displayOrder: 20, countryCode: 'GB', countryLabel: '英国', currencyCode: 'GBP', priceText: '£18.00', priceValue: 18, cnyPrice: 166, usdPrice: 23, rubPrice: 2116, sampledAt, isSample: true },
+  { sourceId: 'reference-cardnav-official-price', sourcePageUrl: 'https://cardnav.xyz/official-price/chatgpt-pro-5x', appSlug: 'gemini', planSlug: 'advanced', appName: 'Gemini', planName: 'Advanced', displayName: 'Gemini Advanced', urlSlug: 'gemini-advanced', isDefault: false, displayOrder: 30, countryCode: 'US', countryLabel: '美国', currencyCode: 'USD', priceText: '$19.99', priceValue: 19.99, cnyPrice: 144, usdPrice: 19.99, rubPrice: 1839, sampledAt, isSample: true },
+  { sourceId: 'reference-cardnav-official-price', sourcePageUrl: 'https://cardnav.xyz/official-price/chatgpt-pro-5x', appSlug: 'gemini', planSlug: 'advanced', appName: 'Gemini', planName: 'Advanced', displayName: 'Gemini Advanced', urlSlug: 'gemini-advanced', isDefault: false, displayOrder: 30, countryCode: 'JP', countryLabel: '日本', currencyCode: 'JPY', priceText: '¥2,900', priceValue: 2900, cnyPrice: 135, usdPrice: 18.7, rubPrice: 1720, sampledAt, isSample: true },
+  { sourceId: 'reference-cardnav-official-price', sourcePageUrl: 'https://cardnav.xyz/official-price/chatgpt-pro-5x', appSlug: 'grok', planSlug: 'supergrok', appName: 'Grok', planName: 'SuperGrok', displayName: 'SuperGrok', urlSlug: 'grok-supergrok', isDefault: false, displayOrder: 40, countryCode: 'US', countryLabel: '美国', currencyCode: 'USD', priceText: '$30.00', priceValue: 30, cnyPrice: 216, usdPrice: 30, rubPrice: 2760, sampledAt, isSample: true },
+  { sourceId: 'reference-cardnav-official-price', sourcePageUrl: 'https://cardnav.xyz/official-price/chatgpt-pro-5x', appSlug: 'grok', planSlug: 'supergrok', appName: 'Grok', planName: 'SuperGrok', displayName: 'SuperGrok', urlSlug: 'grok-supergrok', isDefault: false, displayOrder: 40, countryCode: 'GB', countryLabel: '英国', currencyCode: 'GBP', priceText: '£25.00', priceValue: 25, cnyPrice: 230, usdPrice: 31.8, rubPrice: 2926, sampledAt, isSample: true },
 ];

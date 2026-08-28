@@ -1,5 +1,7 @@
 # Codex 交接 Review：数据展示、示范数据、采集与导航
 
+> 2026-08-29 纠偏：本文的原始“staging → 人工/规则批准 → 快照”方向继续保留，但现行实现合同改为固定统一 raw 格式、后续 merge/import 直接写运行时表即发布。请以 [collection-data-lifecycle.md](collection-data-lifecycle.md) 和 `tasklist08281547` p024–p028 为准；本文不能授权真实来源联网。
+
 **给后续执行者：** 先读 [当前事实文档](data-nav-and-collection.md)。本文保留产品决策原文。  
 **作者：** grok review（用户确认后的交接文档）  
 **日期：** 2026-08-28  

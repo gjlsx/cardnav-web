@@ -1,5 +1,7 @@
 # AI LoveMoney 本地网站总控台设计
 
+> 历史设计记录。2026-08-29 起，采集数据流以 [../../collection-data-lifecycle.md](../../collection-data-lifecycle.md) 为准；本文件中“staging 自动发布”仅描述已废弃的 p011–p019 方案，不能作为实现依据。
+
 ## 目标与边界
 
 把现有 `scripts/collection/gui.py` 扩展为本机 Python/Tkinter 桌面总控台，使日常采集、正式网站数据编辑、合作审核与受控运维不依赖网页后台。它可在本机开发，未来可在远程机器运行；生产网站不运行采集器。

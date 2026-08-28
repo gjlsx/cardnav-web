@@ -50,15 +50,17 @@ pnpm run seed:reference-samples
 
 规则：按规范化站名去重；高优先级覆盖有效字段，低优先级只补空；同优先级选最低价。`site.score=50` 属于网站展示初值，来源配置不得覆盖。
 
-来源配置默认值：`enabled=false`、`interval_minutes=60`、`max_items_per_run=1000`；`0` 表示不限条数。批准状态默认 `draft`。未批准来源只跑 fixture；已批准且 allowlist 明确的来源可真实 HTTP 写入**本机** MySQL，正常 staging 自动发布正式表/快照。手工锁定按稳定键跳过该条 staging/正式更新。本机总控台：`python scripts/collection/gui.py`。
+来源配置默认值：`enabled=false`、`interval_minutes=60`、`max_items_per_run=1000`；`0` 表示不限条数。批准状态默认 `draft`。未批准来源只跑 fixture；已批准且 allowlist 明确的来源可真实 HTTP 写入**本机** MySQL 的统一 raw 表。后续 merge/import 才按稳定键和本节优先级写运行时表/快照；该入库即发布。本机总控台：`python scripts/collection/gui.py`。
 
 ## 已批准的本机总控台方向（p011–p019）
 
-仍禁止：未批准来源联网、Windows 计划任务、在 `ai.lovemoney.live` 上跑采集器、MVP 本机直连远程 MySQL。
+仍禁止：未批准来源联网、在 `ai.lovemoney.live` 上跑采集器、MVP 本机直连远程 MySQL。定时采集和定时 merge/import 均默认关闭，必须分别启用。
 
-已批准、公开且字段白名单明确的来源可由本机 GUI 手工真实 HTTP 采集，先写入本机 MySQL `ailovemoney` 的 raw 表和唯一 staging 表 `collection_staging_observations`，通过质量规则后自动发布到正式表/快照。来源仍默认 `enabled=false`，`interval_minutes=60`、`max_items_per_run=1000`；人工运行忽略 enabled 但不忽略上限。原始公开响应保留 30 天，解析记录和审计长期保留；账号、Cookie、验证码、订单和交付数据均不得保存。
+已批准、公开且字段白名单明确的来源可由本机 GUI 手工真实 HTTP 采集，保存来源 raw payload 与带来源标签的统一 `collection_raw_records`；来源字段缺失时保持 `NULL`。新采集不再把数据双写进 staging 或自动写正式表。人工或独立启用的定时 `merge_import_batch` 才对 raw 按稳定键、来源优先级、同级最低价整合，并在一个事务写入运行时实体表/快照；写入即发布。来源仍默认 `enabled=false`，`interval_minutes=60`、`max_items_per_run=1000`；人工运行忽略 enabled 但不忽略上限。原始公开响应保留 30 天，解析记录和审计长期保留；账号、Cookie、验证码、订单和交付数据均不得保存。
 
-站点级手工覆盖/隐藏按稳定键在清洗阶段生效：批量来源响应可继续保存 raw 和处理其它记录，但覆盖记录不进入 staging、不覆盖正式展示。解除覆盖后必须重新采集，不能恢复旧快照。MVP 只管理本机 MySQL；远程 MySQL 的本机直连读写属于后续独立任务。服务器发布经合作运维 Tab 的二次确认后，遵循项目根目录 `howtorunvpsnew.md` 真执行，并保持 LikeShop 8086/8090/8095 不受影响。
+站点级手工覆盖/隐藏按稳定键在 merge/import 阶段生效：批量来源响应与统一 raw 均继续保存，覆盖记录不覆盖运行时展示。解除覆盖后可重新 merge/import；不恢复旧快照。`collection_staging_observations` 仅保留作唯一历史兼容/查看 staging 表。MVP 只管理本机 MySQL；远程 MySQL 的本机直连读写属于 MVP 后另行批准的任务。服务器发布经合作运维 Tab 的二次确认后，遵循项目根目录 `howtorunvpsnew.md` 真执行，并保持 LikeShop 8086/8090/8095 不受影响。
+
+当前唯一采集生命周期与字段合同见 [collection-data-lifecycle.md](collection-data-lifecycle.md)。
 
 ## 秘密边界
 

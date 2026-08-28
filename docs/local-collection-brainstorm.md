@@ -1,5 +1,7 @@
 # 本机自动采集与发布方案（头脑风暴，待确认，不实施）
 
+> 历史头脑风暴记录。当前实施合同已经由用户在 2026-08-29 确认为“统一 raw 记录 → 独立 merge/import 写运行时表即发布”；请以 [collection-data-lifecycle.md](collection-data-lifecycle.md) 为准，不要从本文的 staging/publish 命令示意推导当前行为。
+
 ## 本文状态
 
 这是采集方案的设计输入，**不是授权**，也不是可直接投入生产的采集器。当前事实与已实现边界见 [data-nav-and-collection.md](data-nav-and-collection.md)。`tasklist08281547.p006` 只允许本机 CLI/GUI、fixture/dry-run 和 MySQL staging 演练；默认 `enabled=false`。没有来源批准时不得发 HTTP，不得安装计划任务，不得自动 publish。

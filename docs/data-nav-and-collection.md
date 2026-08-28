@@ -50,7 +50,7 @@ pnpm run seed:reference-samples
 
 规则：按规范化站名去重；高优先级覆盖有效字段，低优先级只补空；同优先级选最低价。`site.score=50` 属于网站展示初值，来源配置不得覆盖。
 
-来源配置默认值：`enabled=false`、`interval_minutes=60`、`max_items_per_run=1000`；`0` 表示不限条数。批准状态默认 `draft`。未获逐来源批准时，工具只允许 fixture / dry-run，不得发 HTTP。本机 CLI/GUI 在 `scripts/collection/`（见该目录 README）。
+来源配置默认值：`enabled=false`、`interval_minutes=60`、`max_items_per_run=1000`；`0` 表示不限条数。批准状态默认 `draft`。未批准来源只跑 fixture；已批准且 allowlist 明确的来源可真实 HTTP 写入**本机** MySQL，正常 staging 自动发布正式表/快照。手工锁定按稳定键跳过该条 staging/正式更新。本机总控台：`python scripts/collection/gui.py`。
 
 ## 已批准的本机总控台方向（p011–p019）
 

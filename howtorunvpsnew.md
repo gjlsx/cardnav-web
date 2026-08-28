@@ -15,6 +15,8 @@
 7. Windows 上不要用会残留的 `Start-Process ssh.exe` 反复探测；非交互诊断优先 Paramiko，凭据只从本机受控安全文件读取。
 8. SSH 人工登录后如画面无输出，先按 Enter 再操作。
 
+本机日常数据采集与正式数据编辑使用 `python scripts/collection/gui.py`，不要把采集器装到生产机。合作运维 Tab 的发布按钮二次确认后才按本文执行。
+
 ## 0.1 文档分工
 
 ```text

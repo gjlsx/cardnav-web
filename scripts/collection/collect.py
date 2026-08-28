@@ -20,6 +20,7 @@ from collection_lib.config import (  # noqa: E402
     validate_sources,
 )
 from collection_lib.fixtures import fixtures_for_source  # noqa: E402
+from collection_lib.fetch import fetch_approved_json  # noqa: E402
 from collection_lib.merge import merge_observations  # noqa: E402
 from collection_lib.migrations import apply_migrations  # noqa: E402
 from collection_lib.repository import open_local_connection  # noqa: E402
@@ -54,9 +55,8 @@ def collect_rows(sources, ignore_enabled: bool) -> tuple[list[dict], dict]:
             stats["skipped_unapproved"] += 1
             rows = fixtures_for_source(source["id"])
         else:
-            # Approved live HTTP is intentionally not implemented in this MVP.
-            stats["skipped_unapproved"] += 1
-            rows = fixtures_for_source(source["id"])
+            _body, rows, _content_type = fetch_approved_json(source)
+            stats["network_requests"] += 1
         before = len(rows)
         rows = apply_item_cap(rows, int(source.get("max_items_per_run") or 0))
         stats["capped"] += max(0, before - len(rows))

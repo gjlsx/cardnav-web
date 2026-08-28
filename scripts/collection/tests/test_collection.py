@@ -7,6 +7,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -89,6 +90,19 @@ class MergeTests(unittest.TestCase):
 
 
 class CliFixtureTests(unittest.TestCase):
+    def test_approved_source_uses_allowlisted_fetch_instead_of_fixture(self):
+        source = {
+            "id": "approved", "name": "Approved", "source_class": "site_api", "target_domain": "example.com",
+            "priority": 1, "enabled": False, "interval_minutes": 60, "max_items_per_run": 1000,
+            "approval_status": "approved", "public_url": "https://example.com/data", "allowlist_urls": ["https://example.com/data"],
+        }
+        response_rows = [{"normalized_site": "example.com", "model_or_plan": "gpt-plus", "price": 1}]
+        with patch("collect.fetch_approved_json", return_value=("[]", response_rows, "application/json")) as fetch:
+            rows, stats = collect_rows([source], ignore_enabled=True)
+        fetch.assert_called_once_with(source)
+        self.assertEqual(stats["network_requests"], 1)
+        self.assertEqual(rows[0]["normalized_site"], "example.com")
+
     def test_unapproved_sources_use_fixtures_without_network(self):
         sources = load_sources(ROOT / "sources.example.json")
         rows, stats = collect_rows(sources, ignore_enabled=True)

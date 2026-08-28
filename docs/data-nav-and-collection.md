@@ -50,7 +50,7 @@ pnpm run seed:reference-samples
 
 规则：按规范化站名去重；高优先级覆盖有效字段，低优先级只补空；同优先级选最低价。`site.score=50` 属于网站展示初值，来源配置不得覆盖。
 
-来源配置默认值：`enabled=false`、`interval_minutes=60`、`max_items_per_run=1000`；`0` 表示不限条数。批准状态默认 `draft`。未获逐来源批准时，工具只允许 fixture / dry-run，不得发 HTTP。
+来源配置默认值：`enabled=false`、`interval_minutes=60`、`max_items_per_run=1000`；`0` 表示不限条数。批准状态默认 `draft`。未获逐来源批准时，工具只允许 fixture / dry-run，不得发 HTTP。本机 CLI/GUI 在 `scripts/collection/`（见该目录 README）。
 
 ## 必须由用户逐项批准后才能做
 

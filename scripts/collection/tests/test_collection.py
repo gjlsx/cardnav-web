@@ -1,0 +1,117 @@
+#!/usr/bin/env python3
+"""Python tests for collection defaults, skip rules, caps, and merge."""
+from __future__ import annotations
+
+import json
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from collection_lib.config import (  # noqa: E402
+    DEFAULT_ENABLED,
+    DEFAULT_INTERVAL_MINUTES,
+    DEFAULT_MAX_ITEMS_PER_RUN,
+    UNLIMITED_ITEMS,
+    apply_item_cap,
+    default_source,
+    normalize_source,
+    source_may_request_network,
+    validate_sources,
+)
+from collection_lib.merge import merge_observations  # noqa: E402
+from collection_lib.whitelist import filter_observation  # noqa: E402
+from collect import collect_rows, load_sources  # noqa: E402
+
+
+class ConfigTests(unittest.TestCase):
+    def test_defaults(self):
+        source = default_source({"id": "x", "target_domain": "example.invalid"})
+        self.assertEqual(source["enabled"], DEFAULT_ENABLED)
+        self.assertFalse(source["enabled"])
+        self.assertEqual(source["interval_minutes"], DEFAULT_INTERVAL_MINUTES)
+        self.assertEqual(source["max_items_per_run"], DEFAULT_MAX_ITEMS_PER_RUN)
+        self.assertEqual(UNLIMITED_ITEMS, 0)
+
+    def test_zero_means_unlimited_cap(self):
+        rows = list(range(5))
+        self.assertEqual(apply_item_cap(rows, 0), rows)
+        self.assertEqual(apply_item_cap(rows, 2), [0, 1])
+
+    def test_source_cannot_include_or_override_site_score(self):
+        with self.assertRaises(ValueError):
+            normalize_source({"id": "x", "target_domain": "example.invalid", "score": 99})
+        source = default_source({"id": "x", "target_domain": "example.invalid"})
+        self.assertNotIn("score", source)
+        self.assertNotIn("site_score", source)
+
+    def test_unapproved_source_cannot_request_network(self):
+        source = normalize_source({"id": "x", "target_domain": "example.invalid", "approval_status": "draft"})
+        self.assertFalse(source_may_request_network(source))
+        approved = normalize_source({"id": "x", "target_domain": "example.invalid", "approval_status": "approved"})
+        self.assertTrue(source_may_request_network(approved))
+
+
+class MergeTests(unittest.TestCase):
+    def test_same_priority_keeps_lowest_price_and_class_rank(self):
+        sources = {
+            "priceai-channels": {"id": "priceai-channels", "source_class": "aggregator", "priority": 30},
+            "openprice-products": {"id": "openprice-products", "source_class": "aggregator", "priority": 10},
+            "lingxi-api": {"id": "lingxi-api", "source_class": "site_api", "priority": 40},
+            "cardnav-home": {"id": "cardnav-home", "source_class": "aggregator", "priority": 20},
+        }
+        rows = [
+            {"normalized_site": "shop-a", "source_id": "priceai-channels", "price": 10, "currency": "CNY"},
+            {"normalized_site": "shop-a", "source_id": "openprice-products", "price": 1, "currency": "CNY", "region": "CN"},
+            {"normalized_site": "gw-a", "source_id": "cardnav-home", "price": 3, "model_or_plan": "gpt-4o"},
+            {"normalized_site": "gw-a", "source_id": "lingxi-api", "price": 5, "model_or_plan": "gpt-4o"},
+            {"normalized_site": "shop-b", "source_id": "priceai-channels", "price": 8},
+            {"normalized_site": "shop-b", "source_id": "priceai-channels", "price": 4},
+        ]
+        merged = {row["normalized_site"]: row for row in merge_observations(rows, sources)}
+        self.assertEqual(merged["shop-a"]["price"], 10)
+        self.assertEqual(merged["shop-a"]["region"], "CN")
+        self.assertEqual(merged["gw-a"]["source_id"], "lingxi-api")
+        self.assertEqual(merged["shop-b"]["price"], 4)
+
+    def test_whitelist_strips_html(self):
+        cleaned = filter_observation({"normalized_site": "a", "html": "<p>", "cookie": "x", "price": 1})
+        self.assertNotIn("html", cleaned)
+        self.assertNotIn("cookie", cleaned)
+        self.assertEqual(cleaned["price"], 1)
+
+
+class CliFixtureTests(unittest.TestCase):
+    def test_unapproved_sources_use_fixtures_without_network(self):
+        sources = load_sources(ROOT / "sources.example.json")
+        rows, stats = collect_rows(sources, ignore_enabled=True)
+        self.assertEqual(stats["network_requests"], 0)
+        self.assertGreater(stats["skipped_unapproved"], 0)
+        self.assertGreater(stats["merged"], 0)
+        self.assertTrue(all("html" not in row for row in rows))
+
+    def test_example_sources_validate_and_lack_score(self):
+        sources = load_sources(ROOT / "sources.example.json")
+        self.assertEqual(validate_sources(sources), [])
+        self.assertTrue(all("score" not in source for source in sources))
+        self.assertTrue(all(source["enabled"] is False for source in sources))
+        self.assertTrue(all(source["max_items_per_run"] in (0, 1000) for source in sources))
+
+
+class GuiSmokeTests(unittest.TestCase):
+    def test_gui_validate_without_mainloop(self):
+        import tkinter as tk
+        from gui import CollectorGui
+
+        root = tk.Tk()
+        root.withdraw()
+        app = CollectorGui(root)
+        self.assertEqual(validate_sources(app.sources), [])
+        root.destroy()
+
+
+if __name__ == "__main__":
+    unittest.main()

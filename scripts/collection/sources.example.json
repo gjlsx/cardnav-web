@@ -1,0 +1,89 @@
+{
+  "sources": [
+    {
+      "id": "lingxi-api",
+      "name": "Lingxi API (draft)",
+      "category": "gateway",
+      "source_class": "site_api",
+      "target_domain": "example.invalid",
+      "priority": 40,
+      "enabled": false,
+      "interval_minutes": 60,
+      "max_items_per_run": 1000,
+      "approval_status": "draft",
+      "field_whitelist": [
+        "normalized_site", "source_id", "source_class", "source_priority", "platform_family",
+        "model_or_plan", "price", "currency", "billing_unit", "stock_status", "region",
+        "payment_tags", "delivery_tags", "public_perf", "observed_at", "provenance", "confidence"
+      ]
+    },
+    {
+      "id": "huasheng-html",
+      "name": "Independent shop HTML (draft)",
+      "category": "shop",
+      "source_class": "site_html",
+      "target_domain": "example.invalid",
+      "priority": 25,
+      "enabled": false,
+      "interval_minutes": 60,
+      "max_items_per_run": 1000,
+      "approval_status": "draft",
+      "field_whitelist": [
+        "normalized_site", "source_id", "source_class", "source_priority", "platform_family",
+        "model_or_plan", "price", "currency", "billing_unit", "stock_status", "region",
+        "payment_tags", "delivery_tags", "public_perf", "observed_at", "provenance", "confidence"
+      ]
+    },
+    {
+      "id": "priceai-channels",
+      "name": "PriceAI channels (draft supplement)",
+      "category": "aggregator",
+      "source_class": "aggregator",
+      "target_domain": "priceai.cc",
+      "priority": 30,
+      "enabled": false,
+      "interval_minutes": 60,
+      "max_items_per_run": 1000,
+      "approval_status": "draft",
+      "field_whitelist": [
+        "normalized_site", "source_id", "source_class", "source_priority", "platform_family",
+        "model_or_plan", "price", "currency", "billing_unit", "stock_status", "region",
+        "payment_tags", "delivery_tags", "public_perf", "observed_at", "provenance", "confidence"
+      ]
+    },
+    {
+      "id": "cardnav-home",
+      "name": "CardNav public home (draft supplement)",
+      "category": "aggregator",
+      "source_class": "aggregator",
+      "target_domain": "cardnav.xyz",
+      "priority": 20,
+      "enabled": false,
+      "interval_minutes": 60,
+      "max_items_per_run": 1000,
+      "approval_status": "draft",
+      "field_whitelist": [
+        "normalized_site", "source_id", "source_class", "source_priority", "platform_family",
+        "model_or_plan", "price", "currency", "billing_unit", "stock_status", "region",
+        "payment_tags", "delivery_tags", "public_perf", "observed_at", "provenance", "confidence"
+      ]
+    },
+    {
+      "id": "openprice-products",
+      "name": "OpenPrice products (draft supplement)",
+      "category": "aggregator",
+      "source_class": "aggregator",
+      "target_domain": "openprice.cc",
+      "priority": 10,
+      "enabled": false,
+      "interval_minutes": 60,
+      "max_items_per_run": 1000,
+      "approval_status": "draft",
+      "field_whitelist": [
+        "normalized_site", "source_id", "source_class", "source_priority", "platform_family",
+        "model_or_plan", "price", "currency", "billing_unit", "stock_status", "region",
+        "payment_tags", "delivery_tags", "public_perf", "observed_at", "provenance", "confidence"
+      ]
+    }
+  ]
+}

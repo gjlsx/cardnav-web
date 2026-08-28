@@ -155,6 +155,7 @@ pnpm start
 
 - 已完成：三语导航改名、标准 SKU 聚合、中转网站/官方网站/模型排行参考样例、模型与订阅计划的内部关联查询。生产站只读。
 - 可手工验证：`pnpm run seed:reference-samples` 后打开本地 `http://127.0.0.1:3101` 的上述页面；样例带「参考样例 / 非实时」提示，无购买外链。
+- 本机采集 MVP：`scripts/collection/` CLI + GUI，默认 fixture/dry-run 写 staging，不调度、不自动发布。
 - 必须由用户逐来源批准后才能做：真实 HTTP 采集、Windows/远程调度、staging 自动发布到公开快照。未批准来源不得发网。
 - 现有合作/提交表单继续使用，结果不自动公开发布。
 - 来源默认 `enabled=false`、`interval_minutes=60`、`max_items_per_run=1000`（`0` 不限）。`site.score=50` 只是展示初值。

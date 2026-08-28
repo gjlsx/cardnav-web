@@ -13,9 +13,11 @@
 - Root tabs and collection child tabs are exactly those in the approved design.
 - Source scheduling defaults: `enabled=false`, `interval_minutes=60`, `max_items_per_run=1000`; zero means unlimited.
 - Site display score is independent of source priority; default sample score remains 50.
+- `collection_staging_observations` is the only staging table; extend it additively instead of introducing `collection_staging_records`.
 - Raw response retention is 30 days; never retain credentials or private/order data.
 - A manual override/hide blocks staging and formal update for its stable key; cancelling it requires a new collection run.
-- No production-host collection, SSH configuration editor, automatic source enablement or automated irreversible deployment.
+- Approved sources may make real HTTP requests and write to local MySQL; all others remain fixture-only. MVP does not directly connect to remote MySQL.
+- No production-host collection, SSH configuration editor, automatic source enablement or unattended irreversible deployment. A user-confirmed operations release runs the documented server procedure for real.
 
 ## Execution Map
 

@@ -21,13 +21,13 @@
 
 ## 数据流
 
-`collection_sources → collection_runs / raw payloads / raw records → staging → publisher → 既有正式表与 public_snapshot_entries`
+`collection_sources → collection_runs / raw payloads / raw records → collection_staging_observations → publisher → 既有正式表与 public_snapshot_entries`
 
-手工覆盖/隐藏放在独立的覆盖表，不把采集原始数据改写为人工数据。发布器在每条记录处理时检查覆盖表；同一次总快照仍可为未锁定记录获取和处理，锁定记录仅跳过清洗和发布。
+`collection_staging_observations` 是唯一权威 staging 表：p012 以兼容、增量迁移方式扩展它，不新建或并行维护 `collection_staging_records`。手工覆盖/隐藏放在独立的覆盖表，不把采集原始数据改写为人工数据。发布器在每条记录处理时检查覆盖表；同一次总快照仍可为未锁定记录获取和处理，锁定记录仅跳过清洗和发布。
 
 ## 分期
 
-第一阶段先建立可迁移数据库合同、Python 服务层与全部 Tab；随后连接现有 fixture/approved-source 工作流。真实来源的启用仍须每来源在 GUI 中明确批准并配置白名单，定时器默认关闭。生产部署遗留任务 `t08281547.p008` 不成为本总控台的依赖。
+第一阶段先建立可迁移数据库合同、Python 服务层与全部 Tab；随后连接现有 fixture/approved-source 工作流。已批准且字段白名单明确的来源可真实 HTTP 采集并写入**本机** MySQL `ailovemoney`，而不是只输出 fixture；定时器默认关闭。MVP 不直接连接远程 MySQL，服务器发布经合作运维 Tab 的明确发布动作按 `howtorunvpsnew.md` 执行。远程 MySQL 可从本机直连读写是 MVP 后的独立任务。生产部署遗留任务 `t08281547.p008` 不成为本总控台的依赖。
 
 ## 验收
 

@@ -10,8 +10,8 @@ export function formatPositiveScore(value: number | null) {
   return value === null || !Number.isFinite(value) || value <= 0 ? '-' : value.toFixed(2);
 }
 
-export function formatAvailabilityPercent(value: number) {
-  if (!Number.isFinite(value) || value < 0) return '-';
+export function formatAvailabilityPercent(value: number | null) {
+  if (value === null || !Number.isFinite(value) || value < 0) return '-';
   return `${Math.min(100, value).toLocaleString(undefined, { maximumFractionDigits: 1 })}%`;
 }
 

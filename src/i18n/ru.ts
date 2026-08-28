@@ -387,6 +387,7 @@ export const ruMessages: Messages = {
     rank: 'Порядок',
     basicInfo: 'Основное',
     createdAt: 'Добавлено',
+    sampledAt: 'Время выборки',
     modelCount: 'Модели',
     priceCount: 'Цены',
     availability: 'Доступность',

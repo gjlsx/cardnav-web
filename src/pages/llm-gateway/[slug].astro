@@ -110,12 +110,14 @@ function gatewayModelClickAttrs(modelId: string) {
     <div slot="title" class="flex flex-wrap items-center gap-2">
       <h1 class="page-hero-title mt-0">{site.name}</h1>
       {site.sponsor ? <SponsorBadge label={t.sponsors.sponsorLabel} description={t.sponsors.sponsorDescription} href={linkTo('/partnership')} linkLabel={t.sponsors.partnershipLinkLabel} /> : null}
+      {site.isSample ? <span class="badge badge-outline">{t.shops.referenceSample}</span> : null}
       {site.displayFamily ? <span class="badge badge-ghost">{site.displayFamily}</span> : null}
     </div>
     <div slot="meta" class="page-hero-meta">
-      <span class="break-all">{site.url}</span>
-      <span>{t.llmGateway.createdAt}: {site.createdTime || t.labels.notRecorded}</span>
-      <span>{t.labels.latestRefresh}: {site.latestGatewayRefreshTime || t.labels.notRecorded}</span>
+      {site.url ? <span class="break-all">{site.url}</span> : null}
+      <span>{site.isSample ? t.llmGateway.sampledAt : t.llmGateway.createdAt}: {(site.isSample ? site.latestGatewayRefreshTime : site.createdTime) || t.labels.notRecorded}</span>
+      {site.sourceName ? <span>{t.shops.sourcePrefix}: {site.sourceName}</span> : null}
+      {!site.isSample ? <span>{t.labels.latestRefresh}: {site.latestGatewayRefreshTime || t.labels.notRecorded}</span> : null}
     </div>
     <div slot="aside" class="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:min-w-[420px]">
       <div class="rounded border border-base-300 px-3 py-2">
@@ -133,22 +135,22 @@ function gatewayModelClickAttrs(modelId: string) {
         </div>
         <div class="font-mono text-xl font-bold">{formatPositiveScore(site.siteScore)}</div>
       </div>
-      <div class="rounded border border-base-300 px-3 py-2">
+      {!site.isSample ? <div class="rounded border border-base-300 px-3 py-2">
         <div class="text-[11px] font-semibold uppercase text-base-content/45">{t.llmGateway.availability}</div>
         <div class="font-mono text-xl font-bold text-secondary">{formatAvailabilityPercent(site.availabilityPercent)}</div>
-      </div>
-      <div class="rounded border border-base-300 px-3 py-2">
+      </div> : null}
+      {!site.isSample ? <div class="rounded border border-base-300 px-3 py-2">
         <div class="text-[11px] font-semibold uppercase text-base-content/45">{t.llmGateway.averageLatency}</div>
         <div class="font-mono text-xl font-bold">{formatLatencySeconds(site.avgSuccessLatencyMs)}</div>
-      </div>
+      </div> : null}
     </div>
     <div slot="footer">
       <div class="mt-4 flex flex-wrap gap-2">
         {shortList(site.displayModelFamilies, 12).map(family => <span class="badge badge-primary badge-outline">{family}</span>)}
       </div>
-      <div class="mt-4">
+      {site.outboundUrl ? <div class="mt-4">
         <a href={site.outboundUrl} target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" {...gatewaySiteOpenAttrs()}>{t.actions.open}</a>
-      </div>
+      </div> : null}
     </div>
   </PageHero>
 

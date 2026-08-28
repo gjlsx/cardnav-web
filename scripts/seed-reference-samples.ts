@@ -147,7 +147,7 @@ async function main() {
           id: sample.id, slug: sample.id.replace(/^reference-gateway-/, ''), name: sample.name, url: '', outboundUrl: '', host: '',
           family: sample.family, displayFamily: sample.family, createdAt: sample.sampledAt, createdTime: toMySqlDate(sample.sampledAt),
           lastProductRefreshCompleteAt: null, lastProductRefreshCompleteTime: '', siteScore: 50, sponsor: false,
-          availabilityPercent: 0, avgSuccessLatencyMs: null, summary: sample.summary, modelTypes: [], paymentMethods: [],
+          availabilityPercent: null, avgSuccessLatencyMs: null, summary: sample.summary, modelTypes: [], paymentMethods: [],
           modelCount: coverage.length, priceCount: 0, modelFamilies: [...new Set(coverage.map(item => item.modelFamily))],
           displayModelFamilies: [...new Set(coverage.map(item => item.modelFamily))], refreshStatus: '', refreshErrorType: '',
           latestGatewayRefreshAt: sample.sampledAt, latestGatewayRefreshTime: toMySqlDate(sample.sampledAt), sampledAt: sample.sampledAt,

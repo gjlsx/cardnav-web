@@ -34,6 +34,21 @@ test('gateway support coverage is independent of public price rows and snapshots
 
 test('gateway list avoids performance claims and empty reference URLs do not create an open action', () => {
   const siteRowSource = fs.readFileSync(path.resolve('src/components/GatewaySiteTableRow.astro'), 'utf8');
+  const detailPageSource = fs.readFileSync(path.resolve('src/pages/llm-gateway/[slug].astro'), 'utf8');
+  const deferredTableSource = fs.readFileSync(path.resolve('src/scripts/gateway-detail-tables.js'), 'utf8');
   assert.match(siteRowSource, /site\.outboundUrl \?/);
+  assert.match(siteRowSource, /site\.isSample/);
+  assert.match(siteRowSource, /site\.latestGatewayRefreshTime/);
+  assert.match(siteRowSource, /site\.sourceName/);
+  assert.match(detailPageSource, /site\.url \?/);
+  assert.match(detailPageSource, /site\.outboundUrl \?/);
+  assert.match(detailPageSource, /!site\.isSample/);
+  assert.match(deferredTableSource, /if \(site\.outboundUrl \|\| site\.url\)/);
   assert.doesNotMatch(seedSource, /availability_percent|avg_success_latency_ms/);
+  assert.match(seedSource, /availabilityPercent: null/);
+});
+
+test('gateway row mapper turns SQL NULL URLs into an empty public value', () => {
+  assert.match(storeSource, /const url = row\.url == null \? '' : String\(row\.url\)\.trim\(\);/);
+  assert.doesNotMatch(storeSource, /const url = String\(row\.url\);/);
 });

@@ -229,12 +229,17 @@
     siteLink.dataset.umamiEventUrl = detailHref;
     titleWrap.append(siteLink);
     if (site.sponsor) titleWrap.append(window.CardNavSponsorBadge.create(config.sponsorLabel || 'Partner', config.sponsorDescription || '', partnershipUrl, config.partnershipLinkLabel || 'How to partner'));
+    if (site.isSample && config.referenceSampleLabel) titleWrap.append(el('span', 'badge badge-outline badge-sm', config.referenceSampleLabel));
     if (site.displayFamily) titleWrap.append(el('span', 'badge badge-ghost font-medium', site.displayFamily));
     textWrap.append(titleWrap);
     if (site.summary) textWrap.append(el('p', 'max-w-3xl text-sm leading-6 text-base-content/72', site.summary));
-    const urlWrap = el('div', 'text-xs text-base-content/55');
-    urlWrap.append(el('span', 'break-all', site.url || ''));
-    textWrap.append(urlWrap);
+    if (site.isSample && site.latestGatewayRefreshTime && config.sampledAtLabel) textWrap.append(el('p', 'text-xs text-base-content/55', `${config.sampledAtLabel}: ${site.latestGatewayRefreshTime}`));
+    if (site.sourceName && config.sourceLabel) textWrap.append(el('p', 'text-xs text-base-content/55', `${config.sourceLabel}: ${site.sourceName}`));
+    if (site.url) {
+      const urlWrap = el('div', 'text-xs text-base-content/55');
+      urlWrap.append(el('span', 'break-all', site.url));
+      textWrap.append(urlWrap);
+    }
     const actionWrap = el('div', 'inline-flex shrink-0 items-center gap-2 self-start sm:self-center');
     const detailLink = el('a', 'btn btn-primary btn-xs inline-flex h-7 min-h-7 items-center px-3 leading-none', config.detailLabel || '');
     detailLink.href = detailHref;
@@ -242,14 +247,17 @@
     detailLink.dataset.umamiEventName = site.name || '';
     detailLink.dataset.umamiEventTargetPage = detailHref;
     detailLink.dataset.umamiEventUrl = detailHref;
-    const openLink = el('a', 'btn btn-outline btn-xs inline-flex h-7 min-h-7 items-center px-3 leading-none', config.openLabel || '');
-    openLink.href = site.outboundUrl || site.url || '';
-    openLink.target = '_blank';
-    openLink.rel = 'noopener noreferrer';
-    openLink.dataset.umamiEvent = 'gateway-site-open-click';
-    openLink.dataset.umamiEventName = site.name || '';
-    openLink.dataset.umamiEventUrl = site.outboundUrl || site.url || '';
-    actionWrap.append(detailLink, openLink);
+    actionWrap.append(detailLink);
+    if (site.outboundUrl || site.url) {
+      const openLink = el('a', 'btn btn-outline btn-xs inline-flex h-7 min-h-7 items-center px-3 leading-none', config.openLabel || '');
+      openLink.href = site.outboundUrl || site.url;
+      openLink.target = '_blank';
+      openLink.rel = 'noopener noreferrer';
+      openLink.dataset.umamiEvent = 'gateway-site-open-click';
+      openLink.dataset.umamiEventName = site.name || '';
+      openLink.dataset.umamiEventUrl = site.outboundUrl || site.url;
+      actionWrap.append(openLink);
+    }
     infoWrap.append(textWrap, actionWrap);
     infoCell.append(infoWrap);
     row.append(infoCell);

@@ -186,9 +186,12 @@ import { formatPositiveScore, paymentIcon, uniqueLabels } from '../gateway-displ
     setTracking(siteLink, gatewaySiteTracking(site));
     titleWrap.append(siteLink);
     if (site.sponsor) titleWrap.append(window.CardNavSponsorBadge.create(config.sponsorLabel || 'Partner', config.sponsorDescription || '', partnershipUrl, config.partnershipLinkLabel || 'How to partner'));
+    if (site.isSample && config.referenceSampleLabel) titleWrap.append(el('span', 'badge badge-outline badge-sm', config.referenceSampleLabel));
     if (site.displayFamily) titleWrap.append(el('span', 'badge badge-ghost font-medium', site.displayFamily));
     textWrap.append(titleWrap);
     if (site.summary) textWrap.append(el('p', 'max-w-3xl text-sm leading-6 text-base-content/72', site.summary));
+    if (site.isSample && site.latestGatewayRefreshTime && config.sampledAtLabel) textWrap.append(el('p', 'text-xs text-base-content/55', `${config.sampledAtLabel}: ${site.latestGatewayRefreshTime}`));
+    if (site.sourceName && config.sourceLabel) textWrap.append(el('p', 'text-xs text-base-content/55', `${config.sourceLabel}: ${site.sourceName}`));
     if (site.url) {
       const urlWrap = el('div', 'text-xs text-base-content/55');
       urlWrap.append(el('span', 'break-all', site.url));

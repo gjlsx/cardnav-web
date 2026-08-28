@@ -387,6 +387,7 @@ export const enMessages: Messages = {
     rank: 'Rank',
     basicInfo: 'Basic info',
     createdAt: 'Listed time',
+    sampledAt: 'Sampled time',
     modelCount: 'Models',
     priceCount: 'Prices',
     availability: 'Availability',

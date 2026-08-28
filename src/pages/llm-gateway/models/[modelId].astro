@@ -42,6 +42,9 @@ const modelSiteTableConfig = {
   sponsorDescription: t.sponsors.sponsorDescription,
   partnershipUrl: linkTo('/partnership'),
   partnershipLinkLabel: t.sponsors.partnershipLinkLabel,
+  referenceSampleLabel: t.shops.referenceSample,
+  sampledAtLabel: t.llmGateway.sampledAt,
+  sourceLabel: t.shops.sourcePrefix,
   labels: {
     sequence: t.labels.sequence,
     basicInfo: t.llmGateway.basicInfo,
@@ -165,6 +168,9 @@ function isStickyGatewaySite(site: { sponsor?: boolean }) {
             openAttrs={gatewaySiteOpenAttrs(site)}
             sticky={isStickyGatewaySite(site)}
             showScore={false}
+            referenceSampleLabel={t.shops.referenceSample}
+            sampledAtLabel={t.llmGateway.sampledAt}
+            sourceLabel={t.shops.sourcePrefix}
             rowAttrs={{
               'data-sort-name': site.name,
               'data-sort-unit': unitSortValue,

@@ -33,7 +33,7 @@ export type PublicGatewaySiteRow = {
   lastProductRefreshCompleteTime: string;
   siteScore: number | null;
   sponsor: boolean;
-  availabilityPercent: number;
+  availabilityPercent: number | null;
   avgSuccessLatencyMs: number | null;
   summary: string;
   modelTypes: string[];
@@ -254,8 +254,9 @@ function mapGatewaySiteRow(row: Record<string, unknown>): PublicGatewaySiteRow {
   const createdAt = row.created_at ? String(row.created_at) : null;
   const latestGatewayRefreshAt = row.latest_gateway_refresh_at ? String(row.latest_gateway_refresh_at) : null;
   const family = row.family ? String(row.family) : '';
-  const url = String(row.url);
+  const url = row.url == null ? '' : String(row.url).trim();
   const inviteUrl = row.invite_url ? String(row.invite_url).trim() : '';
+  const isSample = row.is_sample === true || row.is_sample === 1 || row.is_sample === '1';
   return {
     id: String(row.id || ''),
     slug: String(row.slug || ''),
@@ -271,7 +272,7 @@ function mapGatewaySiteRow(row: Record<string, unknown>): PublicGatewaySiteRow {
     lastProductRefreshCompleteTime: '',
     siteScore: Number(row.score) || 0,
     sponsor: row.sponsor === true || row.sponsor === 1 || row.sponsor === '1',
-    availabilityPercent: Number(row.availability_percent) || 0,
+    availabilityPercent: isSample || row.availability_percent == null ? null : Number(row.availability_percent),
     avgSuccessLatencyMs: row.avg_success_latency_ms == null ? null : Number(row.avg_success_latency_ms),
     summary: String(row.summary || ''),
     modelTypes: parseStringList(row.model_types),
@@ -285,7 +286,7 @@ function mapGatewaySiteRow(row: Record<string, unknown>): PublicGatewaySiteRow {
     latestGatewayRefreshAt,
     latestGatewayRefreshTime: formatBeijingRefreshTime(latestGatewayRefreshAt),
     sampledAt: row.sampled_at ? String(row.sampled_at) : null,
-    isSample: row.is_sample === true || row.is_sample === 1 || row.is_sample === '1',
+    isSample,
     sourceName: String(row.source_name || ''),
     sourcePageUrl: String(row.source_page_url || ''),
   };

@@ -17,6 +17,9 @@ type GatewaySite = {
   summary?: string;
   siteScore?: number | null;
   sponsor?: boolean;
+  isSample?: boolean;
+  latestGatewayRefreshTime?: string;
+  sourceName?: string;
 };
 
 type Props = {
@@ -39,6 +42,9 @@ type Props = {
   scoreLabel?: string;
   scoreClass?: string;
   scoreAlign?: 'left' | 'center' | 'right';
+  referenceSampleLabel?: string;
+  sampledAtLabel?: string;
+  sourceLabel?: string;
 };
 
 const {
@@ -61,6 +67,9 @@ const {
   scoreLabel = '',
   scoreClass = 'font-mono',
   scoreAlign = 'right',
+  referenceSampleLabel = '',
+  sampledAtLabel = '',
+  sourceLabel = '',
 } = Astro.props;
 
 const mergedRowAttrs = {
@@ -78,9 +87,12 @@ const mergedRowAttrs = {
         <div class="flex flex-wrap items-center gap-2">
           <a href={detailHref} class="link link-hover break-words text-base font-semibold text-primary" {...clickAttrs}>{site.name}</a>
           {site.sponsor ? <SponsorBadge label={sponsorLabel} description={sponsorDescription} href={sponsorHref} linkLabel={sponsorLinkLabel} /> : null}
+          {site.isSample && referenceSampleLabel ? <span class="badge badge-outline badge-sm">{referenceSampleLabel}</span> : null}
           {site.displayFamily ? <span class="badge badge-ghost font-medium">{site.displayFamily}</span> : null}
         </div>
         {site.summary ? <p class="max-w-3xl text-sm leading-6 text-base-content/72">{site.summary}</p> : null}
+        {site.isSample && site.latestGatewayRefreshTime && sampledAtLabel ? <p class="text-xs text-base-content/55">{sampledAtLabel}: {site.latestGatewayRefreshTime}</p> : null}
+        {site.sourceName && sourceLabel ? <p class="text-xs text-base-content/55">{sourceLabel}: {site.sourceName}</p> : null}
         {site.url ? <div class="text-xs text-base-content/55"><span class="break-all">{site.url}</span></div> : null}
       </div>
       <div class="inline-flex shrink-0 items-center gap-2 self-start sm:self-center">

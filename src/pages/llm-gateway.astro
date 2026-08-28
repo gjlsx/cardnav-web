@@ -109,6 +109,9 @@ const gatewayHomeConfig = {
   modelLabel: t.labels.model,
   modelFamilyLabel: t.llmGateway.modelFamily,
   supportedGatewayCountLabel: t.llmGateway.supportedGatewayCount,
+  referenceSampleLabel: t.shops.referenceSample,
+  sampledAtLabel: t.llmGateway.sampledAt,
+  sourceLabel: t.shops.sourcePrefix,
 };
 ---
 
@@ -220,6 +223,9 @@ const gatewayHomeConfig = {
                   openAttrs={gatewaySiteOpenAttrs(site)}
                   sticky={isStickyGatewaySite(site)}
                   scoreLabel={t.labels.score}
+                  referenceSampleLabel={t.shops.referenceSample}
+                  sampledAtLabel={t.llmGateway.sampledAt}
+                  sourceLabel={t.shops.sourcePrefix}
                   rowAttrs={{
                     'data-home-site-card': '',
                     'data-search': `${site.name} ${site.url} ${site.host} ${site.displayModelFamilies.join(' ')} ${site.paymentMethods.map(paymentLabelFor).join(' ')}`.toLowerCase(),

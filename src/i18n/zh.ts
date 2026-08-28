@@ -386,6 +386,7 @@ export const zhMessages = {
     rank: '排序',
     basicInfo: '基本信息',
     createdAt: '收录时间',
+    sampledAt: '采样时间',
     modelCount: '模型数',
     priceCount: '价格数',
     availability: '可访问性',

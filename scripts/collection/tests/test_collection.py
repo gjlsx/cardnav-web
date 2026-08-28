@@ -25,7 +25,7 @@ from collection_lib.config import (  # noqa: E402
 )
 from collection_lib.merge import merge_observations  # noqa: E402
 from collection_lib.whitelist import filter_observation  # noqa: E402
-from collect import collect_rows, load_sources  # noqa: E402
+from collect import cmd_legacy_recover, cmd_legacy_report, cmd_merge_import, collect_rows, load_sources  # noqa: E402
 
 
 class ConfigTests(unittest.TestCase):
@@ -90,6 +90,33 @@ class MergeTests(unittest.TestCase):
 
 
 class CliFixtureTests(unittest.TestCase):
+    def test_legacy_recovery_requires_confirmation_and_exposes_diagnosis(self):
+        class Connection:
+            def close(self):
+                self.closed = True
+
+        connection = Connection()
+        with self.assertRaises(ValueError):
+            cmd_legacy_recover("no", "recovery-1")
+        with patch("collect.open_local_connection", return_value=connection), patch("collect.apply_migrations"), patch("collect.CollectionRepository", return_value="repository"), patch("collect.LegacyDirectPublishRecovery") as recovery:
+            recovery.return_value.diagnose.return_value = {"recoverable": 1, "ambiguous": 2}
+            self.assertEqual(cmd_legacy_report(), 0)
+            recovery.return_value.recover.return_value = {"recovered": 1}
+            self.assertEqual(cmd_legacy_recover("RECOVER_LEGACY", "recovery-1"), 0)
+        recovery.return_value.recover.assert_called_once_with("repository", "recovery-1")
+
+    def test_merge_import_command_requires_explicit_batch_and_delegates(self):
+        class Connection:
+            def close(self):
+                self.closed = True
+
+        connection = Connection()
+        with patch("collect.open_local_connection", return_value=connection), patch("collect.apply_migrations") as migrate, patch("collect.CollectionRepository", return_value="repository"), patch("collect.RuntimeImporter") as importer:
+            importer.return_value.merge_import_batch.return_value = {"batch_id": "batch-1", "runtime_writes": 1}
+            self.assertEqual(cmd_merge_import("batch-1"), 0)
+        migrate.assert_called_once_with(connection)
+        importer.return_value.merge_import_batch.assert_called_once_with("repository", "batch-1")
+
     def test_approved_source_uses_allowlisted_fetch_instead_of_fixture(self):
         source = {
             "id": "approved", "name": "Approved", "source_class": "site_api", "target_domain": "example.com",

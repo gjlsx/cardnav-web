@@ -17,6 +17,10 @@ def _site_id(host: str) -> str:
 
 
 class PublicPublisher:
+    def publish_merged_row(self, repository, row: dict[str, Any]) -> None:
+        """Publish a merge/import winner. The caller owns the encompassing transaction."""
+        self._publish_row(repository, RecordKind(str(row["record_kind"])), row)
+
     def publish_run(self, repository, run_id: str) -> dict[str, int]:
         stats = {"published": 0, "skipped_manual": 0}
         kinds: set[RecordKind] = set()
@@ -59,8 +63,8 @@ class PublicPublisher:
             (site_id, payload.get("site_name") or host, sampled[:19].replace("T", " ")),
         )
         repository.execute(
-            "DELETE FROM shop_products WHERE site_id = %s AND standard_product = %s AND source_id = %s",
-            (site_id, sku, str(payload.get("source_id") or row.get("source_id") or "")),
+            "DELETE FROM shop_products WHERE site_id = %s AND standard_product = %s AND is_sample = FALSE",
+            (site_id, sku),
         )
         repository.execute(
             "INSERT INTO shop_products (site_id, source_id, standard_product, platform, product_type, category_name, name, price, price_number, price_unit, currency_code, in_stock, sampled_at, is_sample, refreshed_at) "
@@ -100,8 +104,8 @@ class PublicPublisher:
         sampled = str(payload.get("observed_at") or _now())[:19].replace("T", " ")
         price = payload.get("price") or 0
         repository.execute(
-            "DELETE FROM official_prices WHERE url_slug = %s AND country_code = %s AND source_id = %s",
-            (plan, country, str(payload.get("source_id") or row.get("source_id") or "")),
+            "DELETE FROM official_prices WHERE url_slug = %s AND country_code = %s AND is_sample = FALSE",
+            (plan, country),
         )
         repository.execute(
             "INSERT INTO official_prices (app_slug, plan_slug, app_name, plan_name, display_name, url_slug, is_default, display_order, country_code, country_label, currency_code, price_text, price_value, cny_price, usd_price, rub_price, source_id, sampled_at, is_sample, fetched_at) "
@@ -116,8 +120,8 @@ class PublicPublisher:
         sampled = str(payload.get("observed_at") or _now())[:19].replace("T", " ")
         score = payload.get("price") or payload.get("confidence") or 0
         repository.execute(
-            "DELETE FROM model_leaderboards WHERE task_slug = %s AND model_name = %s AND source_id = %s",
-            (task, model, str(payload.get("source_id") or row.get("source_id") or "")),
+            "DELETE FROM model_leaderboards WHERE task_slug = %s AND model_name = %s AND is_sample = FALSE",
+            (task, model),
         )
         repository.execute(
             "INSERT INTO model_leaderboards (task_slug, source_name, source_url, source_group_slug, source_board_slug, rank, model_name, model_family, score, source_id, sampled_at, is_sample, fetched_at) "

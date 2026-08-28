@@ -23,6 +23,8 @@ from collection_lib.contracts import RecordKind  # noqa: E402
 from collection_lib.fetch import fetch_approved_json  # noqa: E402
 from collection_lib.migrations import apply_migrations  # noqa: E402
 from collection_lib.pipeline import SourceCapture, run_collection_batch  # noqa: E402
+from collection_lib.runtime_import import RuntimeImporter  # noqa: E402
+from collection_lib.legacy_recovery import LegacyDirectPublishRecovery  # noqa: E402
 from collection_lib.repository import CollectionRepository, open_local_connection  # noqa: E402
 from collection_lib.whitelist import filter_observation  # noqa: E402
 
@@ -110,6 +112,49 @@ def cmd_collect_raw(path: Path, ignore_enabled: bool) -> int:
     return 0 if all(not item.get("error") for item in results) else 1
 
 
+def cmd_merge_import(batch_id: str) -> int:
+    """Explicitly merge one completed local raw batch into runtime tables/snapshots."""
+    if not batch_id:
+        raise ValueError("merge-import requires --batch")
+    load_dotenv()
+    connection = open_local_connection()
+    try:
+        apply_migrations(connection)
+        result = RuntimeImporter().merge_import_batch(CollectionRepository(connection), batch_id)
+    finally:
+        connection.close()
+    print(json.dumps(result, ensure_ascii=False))
+    return 0
+
+
+def cmd_legacy_report() -> int:
+    """Read-only diagnosis of rows created by the superseded direct-publish path."""
+    load_dotenv()
+    connection = open_local_connection()
+    try:
+        apply_migrations(connection)
+        result = LegacyDirectPublishRecovery().diagnose(CollectionRepository(connection))
+    finally:
+        connection.close()
+    print(json.dumps(result, ensure_ascii=False, default=str))
+    return 0
+
+
+def cmd_legacy_recover(confirm: str, recovery_id: str = "") -> int:
+    """Recover only provenance-backed legacy rows after an explicit local confirmation phrase."""
+    if confirm != "RECOVER_LEGACY":
+        raise ValueError("legacy-recover requires --confirm RECOVER_LEGACY")
+    load_dotenv()
+    connection = open_local_connection()
+    try:
+        apply_migrations(connection)
+        result = LegacyDirectPublishRecovery().recover(CollectionRepository(connection), recovery_id or None)
+    finally:
+        connection.close()
+    print(json.dumps(result, ensure_ascii=False, default=str))
+    return 0
+
+
 def cmd_migrate() -> int:
     load_dotenv()
     connection = open_local_connection()
@@ -123,8 +168,11 @@ def cmd_migrate() -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Local collection CLI: fixture or approved HTTP into local unified raw records")
-    parser.add_argument("command", choices=["check-config", "dry-run", "collect-raw", "migrate"])
+    parser.add_argument("command", choices=["check-config", "dry-run", "collect-raw", "merge-import", "legacy-report", "legacy-recover", "migrate"])
     parser.add_argument("--sources", default=str(DEFAULT_SOURCES))
+    parser.add_argument("--batch", default="", help="Completed raw batch id required by merge-import")
+    parser.add_argument("--confirm", default="", help="Required confirmation for destructive recovery actions")
+    parser.add_argument("--recovery-id", default="", help="Optional recovery audit id")
     parser.add_argument("--manual", action="store_true", help="Ignore enabled=false (default for dry-run/collect-raw)")
     parser.add_argument("--scheduled", action="store_true", help="Honor enabled=false (not used; scheduler is not installed)")
     args = parser.parse_args()
@@ -134,6 +182,12 @@ def main() -> int:
         return cmd_check_config(path)
     if args.command == "migrate":
         return cmd_migrate()
+    if args.command == "merge-import":
+        return cmd_merge_import(args.batch)
+    if args.command == "legacy-report":
+        return cmd_legacy_report()
+    if args.command == "legacy-recover":
+        return cmd_legacy_recover(args.confirm, args.recovery_id)
     if args.command == "dry-run":
         return cmd_dry_run(path, ignore_enabled=ignore_enabled)
     return cmd_collect_raw(path, ignore_enabled=True)

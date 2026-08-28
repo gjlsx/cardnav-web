@@ -64,6 +64,104 @@ class CollectionRepository:
             (status, error_summary, batch_id),
         )
 
+    def get_batch(self, batch_id: str) -> dict[str, Any] | None:
+        rows = self.query("SELECT batch_id, trigger_type, status, started_at, finished_at, error_summary FROM collection_batches WHERE batch_id = %s", (batch_id,))
+        return rows[0] if rows else None
+
+    def fetch_raw_batch(self, batch_id: str) -> list[dict[str, Any]]:
+        rows = self.query(
+            "SELECT id, batch_id, run_id, source_id, source_class, source_priority, source_url, source_record_hash, record_key, record_kind, payload, validation_state, validation_reason "
+            "FROM collection_raw_records WHERE batch_id = %s ORDER BY id ASC",
+            (batch_id,),
+        )
+        for row in rows:
+            payload = row.get("payload")
+            row["payload"] = json.loads(payload) if isinstance(payload, str) else (payload or {})
+        return rows
+
+    def mark_batch_imported(self, batch_id: str) -> None:
+        self._execute("UPDATE collection_raw_records SET merged_at = UTC_TIMESTAMP(), imported_at = UTC_TIMESTAMP() WHERE batch_id = %s", (batch_id,))
+        self._execute("UPDATE collection_batches SET status = 'imported', finished_at = UTC_TIMESTAMP() WHERE batch_id = %s", (batch_id,))
+
+    def list_legacy_direct_published(self) -> list[dict[str, Any]]:
+        rows = self.query(
+            "SELECT s.record_kind, s.record_key, s.source_id, s.normalized_site, s.model_or_plan, s.region, s.platform_family, s.observed_at "
+            "FROM collection_staging_observations s LEFT JOIN collection_runs r ON r.run_id = s.run_id "
+            "WHERE s.publish_status = 'published' AND (r.batch_id IS NULL OR r.batch_id = '')"
+        )
+        for row in rows:
+            row["payload"] = {
+                "normalized_site": row.get("normalized_site") or "",
+                "model_or_plan": row.get("model_or_plan") or "",
+                "region": row.get("region") or "",
+                "platform_family": row.get("platform_family") or "",
+                "observed_at": row.get("observed_at") or "",
+            }
+        return rows
+
+    def fetch_imported_raw_records(self) -> list[dict[str, Any]]:
+        rows = self.query(
+            "SELECT raw.record_key, raw.record_kind, raw.source_id, raw.source_class, raw.source_priority, raw.validation_state, raw.payload "
+            "FROM collection_raw_records raw JOIN collection_batches batch ON batch.batch_id = raw.batch_id "
+            "WHERE batch.status = 'imported'"
+        )
+        for row in rows:
+            payload = row.get("payload")
+            row["payload"] = json.loads(payload) if isinstance(payload, str) else (payload or {})
+        return rows
+
+    def backup_legacy_candidate(self, recovery_id: str, candidate: dict[str, Any]) -> None:
+        self._execute(
+            "INSERT INTO collection_legacy_recovery_backups (recovery_id, record_kind, record_key, source_id, payload) VALUES (%s, %s, %s, %s, %s)",
+            (
+                recovery_id,
+                str(candidate["record_kind"]),
+                str(candidate["record_key"]),
+                str(candidate["source_id"]),
+                json.dumps(candidate.get("payload") or {}, ensure_ascii=False),
+            ),
+        )
+
+    def delete_known_legacy_runtime(self, candidate: dict[str, Any]) -> bool:
+        kind = RecordKind(str(candidate["record_kind"]))
+        payload = candidate.get("payload") or {}
+        source_id = str(candidate["source_id"])
+        if kind is RecordKind.SHOP_PRODUCT:
+            host = str(payload.get("normalized_site") or "")
+            sku = str(payload.get("model_or_plan") or "")
+            if not host or not sku:
+                return False
+            site_id = f"collected-{host.replace(':', '-').replace('/', '-')[:50]}"
+            self._execute("DELETE FROM shop_products WHERE site_id = %s AND standard_product = %s AND source_id = %s AND is_sample = FALSE", (site_id, sku, source_id))
+            return True
+        if kind is RecordKind.GATEWAY_SITE:
+            host = str(payload.get("normalized_site") or "")
+            if not host:
+                return False
+            site_id = f"collected-{host.replace(':', '-').replace('/', '-')[:50]}"
+            self._execute("DELETE FROM gateway_model_coverage WHERE site_id = %s AND source_id = %s", (site_id, source_id))
+            self._execute("DELETE FROM gateway_sites WHERE site_id = %s AND source_id = %s AND is_sample = FALSE", (site_id, source_id))
+            return True
+        if kind is RecordKind.OFFICIAL_PLAN:
+            plan = str(payload.get("plan_slug") or payload.get("model_or_plan") or "")
+            country = str(payload.get("country_code") or payload.get("region") or "US")[:2].upper()
+            if not plan:
+                return False
+            self._execute("DELETE FROM official_prices WHERE url_slug = %s AND country_code = %s AND source_id = %s AND is_sample = FALSE", (plan, country, source_id))
+            return True
+        task = str(payload.get("task_slug") or payload.get("platform_family") or "")
+        model = str(payload.get("model_name") or payload.get("model_or_plan") or "")
+        if not task or not model:
+            return False
+        self._execute("DELETE FROM model_leaderboards WHERE task_slug = %s AND model_name = %s AND source_id = %s AND is_sample = FALSE", (task, model, source_id))
+        return True
+
+    def mark_legacy_candidate_recovered(self, candidate: dict[str, Any]) -> None:
+        self._execute(
+            "UPDATE collection_staging_observations SET publish_status = 'recovered' WHERE record_kind = %s AND record_key = %s AND source_id = %s AND publish_status = 'published'",
+            (str(candidate["record_kind"]), str(candidate["record_key"]), str(candidate["source_id"])),
+        )
+
     def create_run(self, run_id: str, source_id: str, trigger: str, batch_id: str | None = None) -> None:
         self._execute(
             "INSERT INTO collection_runs (run_id, source_id, trigger_type, batch_id, status) VALUES (%s, %s, %s, %s, 'running') "

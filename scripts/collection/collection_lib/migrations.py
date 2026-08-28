@@ -59,6 +59,14 @@ CREATE_STATEMENTS = (
       KEY console_activity_logs_page_created (page_key, created_at)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     """,
+    """
+    CREATE TABLE IF NOT EXISTS collection_legacy_recovery_backups (
+      id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, recovery_id VARCHAR(80) NOT NULL,
+      record_kind VARCHAR(32) NOT NULL, record_key VARCHAR(512) NOT NULL, source_id VARCHAR(64) NOT NULL,
+      payload JSON NOT NULL, created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      KEY collection_legacy_recovery_id (recovery_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    """,
 )
 
 STAGING_COLUMNS = {
@@ -82,6 +90,8 @@ RAW_RECORD_COLUMNS = {
     "source_record_hash": "VARCHAR(64) NULL",
     "validation_state": "VARCHAR(32) NOT NULL DEFAULT 'valid'",
     "validation_reason": "VARCHAR(500) NULL",
+    "merged_at": "DATETIME NULL",
+    "imported_at": "DATETIME NULL",
 }
 
 SOURCE_COLUMNS = {

@@ -48,6 +48,8 @@ def default_source(overrides: dict[str, Any] | None = None) -> dict[str, Any]:
         "interval_minutes": DEFAULT_INTERVAL_MINUTES,
         "max_items_per_run": DEFAULT_MAX_ITEMS_PER_RUN,
         "approval_status": "draft",
+        "public_url": "",
+        "allowlist_urls": [],
         "field_whitelist": list(DEFAULT_WHITELIST),
     }
     if overrides:
@@ -83,6 +85,8 @@ def normalize_source(raw: dict[str, Any]) -> dict[str, Any]:
     if source["source_class"] not in SOURCE_CLASSES:
         source["source_class"] = "aggregator"
     source["field_whitelist"] = list(source.get("field_whitelist") or DEFAULT_WHITELIST)
+    source["public_url"] = str(source.get("public_url") or "").strip()
+    source["allowlist_urls"] = [str(url).strip() for url in source.get("allowlist_urls") or [] if str(url).strip()]
     if "score" in source or "site_score" in source:
         raise ValueError("source config must not include score; site.score belongs to the site catalog")
     return source
@@ -138,4 +142,6 @@ def validate_sources(sources: list[dict[str, Any]]) -> list[str]:
             errors.append(f"{source_id}: max_items_per_run must be >= 0")
         if not normalized["target_domain"]:
             errors.append(f"{source_id}: target_domain is required")
+        if is_approved(normalized) and (not normalized["public_url"] or normalized["public_url"] not in normalized["allowlist_urls"]):
+            errors.append(f"{source_id}: approved source requires public_url in allowlist_urls")
     return errors

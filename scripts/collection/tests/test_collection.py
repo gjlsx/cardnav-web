@@ -54,6 +54,10 @@ class ConfigTests(unittest.TestCase):
         approved = normalize_source({"id": "x", "target_domain": "example.invalid", "approval_status": "approved"})
         self.assertTrue(source_may_request_network(approved))
 
+    def test_approved_source_requires_exact_allowlisted_public_url(self):
+        errors = validate_sources([{"id": "approved", "target_domain": "example.com", "approval_status": "approved", "public_url": "https://example.com/data", "allowlist_urls": ["https://example.com/other"]}])
+        self.assertEqual(errors, ["approved: approved source requires public_url in allowlist_urls"])
+
 
 class MergeTests(unittest.TestCase):
     def test_same_priority_keeps_lowest_price_and_class_rank(self):

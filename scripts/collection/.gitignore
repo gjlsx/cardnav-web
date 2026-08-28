@@ -1,3 +1,5 @@
 sources.json
 sources.runtime.json
 out/
+__pycache__/
+*.pyc

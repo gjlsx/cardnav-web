@@ -54,9 +54,7 @@ pnpm run seed:reference-samples
 
 ## 已批准的本机总控台方向（p011–p019）
 
-- 对未批准来源发真实 HTTP / 批量抓取
-- 安装 Windows 计划任务、cron、远程调度
-- 在 `ai.lovemoney.live` 上运行采集器
+仍禁止：未批准来源联网、Windows 计划任务、在 `ai.lovemoney.live` 上跑采集器、MVP 本机直连远程 MySQL。
 
 已批准、公开且字段白名单明确的来源可由本机 GUI 手工真实 HTTP 采集，先写入本机 MySQL `ailovemoney` 的 raw 表和唯一 staging 表 `collection_staging_observations`，通过质量规则后自动发布到正式表/快照。来源仍默认 `enabled=false`，`interval_minutes=60`、`max_items_per_run=1000`；人工运行忽略 enabled 但不忽略上限。原始公开响应保留 30 天，解析记录和审计长期保留；账号、Cookie、验证码、订单和交付数据均不得保存。
 

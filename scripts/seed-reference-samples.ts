@@ -6,7 +6,7 @@ import mysql from 'mysql2/promise';
 import { initializeMySqlSchema } from '../src/database.js';
 import { catalogPlanModels, catalogProducts, aggregateCatalogProducts } from '../src/catalog.js';
 import { packShopProductsData, type PublicShopProductsData } from '../src/shop-products-data.js';
-import { referenceDataSources, referenceProductSamples } from '../src/reference-samples.js';
+import { referenceDataSources, referenceGatewayModelCoverage, referenceGatewaySamples, referenceProductSamples } from '../src/reference-samples.js';
 
 const config = {
   host: process.env.MYSQL_HOST || '127.0.0.1',
@@ -81,6 +81,34 @@ async function main() {
       );
     }
 
+    const gatewayIds = referenceGatewaySamples.map(sample => sample.id);
+    const gatewayPlaceholders = gatewayIds.map(() => '?').join(', ');
+    await connection.execute(`DELETE FROM gateway_model_prices WHERE site_id IN (${gatewayPlaceholders})`, gatewayIds);
+    await connection.execute(`DELETE FROM gateway_model_coverage WHERE site_id IN (${gatewayPlaceholders})`, gatewayIds);
+    await connection.execute(`DELETE FROM gateway_sites WHERE is_sample = TRUE AND site_id IN (${gatewayPlaceholders})`, gatewayIds);
+
+    for (const sample of referenceGatewaySamples) {
+      await connection.execute(
+        `INSERT INTO gateway_sites (
+          site_id, url, api_endpoint, status, name, family, type, slug, host, weight, summary, invite_url, sponsor,
+          score, model_types, payment_methods, source_id, sampled_at, is_sample, created_at
+        ) VALUES (?, NULL, NULL, 'online', ?, ?, 'gateway', ?, '', 0, ?, NULL, FALSE, 50, JSON_ARRAY(), JSON_ARRAY(), ?, ?, TRUE, ?)
+        ON DUPLICATE KEY UPDATE url = NULL, api_endpoint = NULL, status = 'online', name = VALUES(name), family = VALUES(family),
+          type = 'gateway', slug = VALUES(slug), host = '', weight = 0, summary = VALUES(summary), invite_url = NULL,
+          sponsor = FALSE, score = 50, model_types = JSON_ARRAY(), payment_methods = JSON_ARRAY(), source_id = VALUES(source_id),
+          sampled_at = VALUES(sampled_at), is_sample = TRUE, created_at = VALUES(created_at)`,
+        [sample.id, sample.name, sample.family, sample.id.replace(/^reference-gateway-/, ''), sample.summary, sample.sourceId, toMySqlDate(sample.sampledAt), toMySqlDate(sample.sampledAt)],
+      );
+    }
+    for (const coverage of referenceGatewayModelCoverage) {
+      await connection.execute(
+        `INSERT INTO gateway_model_coverage (site_id, model_id, model_family, source_id, observed_at, is_sample)
+         VALUES (?, ?, ?, ?, ?, TRUE)
+         ON DUPLICATE KEY UPDATE model_family = VALUES(model_family), source_id = VALUES(source_id), observed_at = VALUES(observed_at), is_sample = TRUE`,
+        [coverage.siteId, coverage.modelId, coverage.modelFamily, coverage.sourceId, toMySqlDate(coverage.observedAt)],
+      );
+    }
+
     const rawData: PublicShopProductsData = {
       sites: sites.map(site => ({
         id: site.siteId, name: site.siteName, url: '', lastProductRefreshSuccessAt: site.sampledAt,
@@ -111,9 +139,46 @@ async function main() {
       totalProductCount: aggregateCatalogProducts(rawData.products).length,
       totalInStockProductCount: aggregateCatalogProducts(rawData.products).filter(product => product.inStock).length,
     };
+    const gatewaySites = referenceGatewaySamples
+      .map(sample => {
+        const coverage = referenceGatewayModelCoverage.filter(item => item.siteId === sample.id);
+        const source = referenceDataSources.find(item => item.id === sample.sourceId);
+        return {
+          id: sample.id, slug: sample.id.replace(/^reference-gateway-/, ''), name: sample.name, url: '', outboundUrl: '', host: '',
+          family: sample.family, displayFamily: sample.family, createdAt: sample.sampledAt, createdTime: toMySqlDate(sample.sampledAt),
+          lastProductRefreshCompleteAt: null, lastProductRefreshCompleteTime: '', siteScore: 50, sponsor: false,
+          availabilityPercent: 0, avgSuccessLatencyMs: null, summary: sample.summary, modelTypes: [], paymentMethods: [],
+          modelCount: coverage.length, priceCount: 0, modelFamilies: [...new Set(coverage.map(item => item.modelFamily))],
+          displayModelFamilies: [...new Set(coverage.map(item => item.modelFamily))], refreshStatus: '', refreshErrorType: '',
+          latestGatewayRefreshAt: sample.sampledAt, latestGatewayRefreshTime: toMySqlDate(sample.sampledAt), sampledAt: sample.sampledAt,
+          isSample: true, sourceName: source?.name ?? '', sourcePageUrl: source?.sourcePageUrl ?? '',
+        };
+      })
+      .sort((left, right) => right.siteScore - left.siteScore || left.name.localeCompare(right.name));
+    const gatewayModels = [...new Map(referenceGatewayModelCoverage.map(coverage => [coverage.modelId, coverage])).values()]
+      .map(coverage => {
+        const rows = referenceGatewayModelCoverage.filter(item => item.modelId === coverage.modelId);
+        return {
+          id: coverage.modelId, modelId: coverage.modelId, modelFamily: coverage.modelFamily,
+          supportSiteCount: new Set(rows.map(item => item.siteId)).size, priceCount: 0,
+          latestGatewayRefreshAt: rows.map(item => item.observedAt).sort().at(-1) ?? null,
+          latestGatewayRefreshTime: toMySqlDate(rows.map(item => item.observedAt).sort().at(-1) ?? ''),
+        };
+      })
+      .sort((left, right) => right.supportSiteCount - left.supportSiteCount || left.modelId.localeCompare(right.modelId));
+    const gatewaySitesData = {
+      sites: gatewaySites, totalSiteCount: gatewaySites.length, sitesWithPricesCount: 0,
+      totalModelCount: gatewayModels.length, totalPriceCount: 0,
+    };
+    const gatewayModelsData = {
+      models: gatewayModels, totalModelCount: gatewayModels.length,
+      totalSupportCount: gatewayModels.reduce((total, model) => total + model.supportSiteCount, 0),
+    };
     const snapshots = [
       ['shop-products', data],
       ['shop-products-packed', packShopProductsData(data)],
+      ['gateway-sites', gatewaySitesData],
+      ['gateway-models', gatewayModelsData],
     ] as const;
     for (const [key, payload] of snapshots) {
       await connection.execute(

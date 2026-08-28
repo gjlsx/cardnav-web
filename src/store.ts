@@ -46,6 +46,10 @@ export type PublicGatewaySiteRow = {
   refreshErrorType: string;
   latestGatewayRefreshAt: string | null;
   latestGatewayRefreshTime: string;
+  sampledAt: string | null;
+  isSample: boolean;
+  sourceName: string;
+  sourcePageUrl: string;
 };
 
 export type PublicGatewayPriceRow = {
@@ -280,6 +284,10 @@ function mapGatewaySiteRow(row: Record<string, unknown>): PublicGatewaySiteRow {
     refreshErrorType: '',
     latestGatewayRefreshAt,
     latestGatewayRefreshTime: formatBeijingRefreshTime(latestGatewayRefreshAt),
+    sampledAt: row.sampled_at ? String(row.sampled_at) : null,
+    isSample: row.is_sample === true || row.is_sample === 1 || row.is_sample === '1',
+    sourceName: String(row.source_name || ''),
+    sourcePageUrl: String(row.source_page_url || ''),
   };
 }
 
@@ -307,7 +315,7 @@ async function mysqlGatewaySiteRows(options: { slug?: string; modelId?: string; 
   const values: unknown[] = [];
   let modelFilter = '';
   if (options.modelId) {
-    modelFilter = ' AND EXISTS (SELECT 1 FROM gateway_model_prices filtered_prices WHERE filtered_prices.site_id = gateway_sites.site_id AND filtered_prices.model_id = ?)';
+    modelFilter = ' AND EXISTS (SELECT 1 FROM gateway_model_coverage coverage WHERE coverage.site_id = gateway_sites.site_id AND coverage.model_id = ?)';
     values.push(options.modelId);
   }
   if (options.slug) {
@@ -331,18 +339,31 @@ async function mysqlGatewaySiteRows(options: { slug?: string; modelId?: string; 
       gateway_sites.sponsor,
       gateway_sites.model_types,
       gateway_sites.payment_methods,
-      COUNT(DISTINCT prices.model_id) AS model_count,
-      COUNT(prices.id) AS price_count,
-      COALESCE(GROUP_CONCAT(DISTINCT NULLIF(NULLIF(prices.model_family, ''), 'Other') ORDER BY prices.model_family SEPARATOR ','), '') AS model_families,
-      MAX(prices.fetched_at) AS latest_gateway_refresh_at
+      gateway_sites.sampled_at,
+      gateway_sites.is_sample,
+      reference_data_sources.name AS source_name,
+      reference_data_sources.source_page_url,
+      COALESCE(coverage_summary.model_count, 0) AS model_count,
+      COALESCE(price_summary.price_count, 0) AS price_count,
+      COALESCE(coverage_summary.model_families, '') AS model_families,
+      COALESCE(GREATEST(coverage_summary.latest_gateway_refresh_at, price_summary.latest_gateway_refresh_at), coverage_summary.latest_gateway_refresh_at, price_summary.latest_gateway_refresh_at) AS latest_gateway_refresh_at
     FROM gateway_sites
-    LEFT JOIN gateway_model_prices prices ON prices.site_id = gateway_sites.site_id
+    LEFT JOIN reference_data_sources ON reference_data_sources.id = gateway_sites.source_id
+    LEFT JOIN (
+      SELECT site_id, COUNT(DISTINCT model_id) AS model_count,
+        COALESCE(GROUP_CONCAT(DISTINCT NULLIF(model_family, '') ORDER BY model_family SEPARATOR ','), '') AS model_families,
+        MAX(observed_at) AS latest_gateway_refresh_at
+      FROM gateway_model_coverage
+      GROUP BY site_id
+    ) AS coverage_summary ON coverage_summary.site_id = gateway_sites.site_id
+    LEFT JOIN (
+      SELECT site_id, COUNT(*) AS price_count, MAX(fetched_at) AS latest_gateway_refresh_at
+      FROM gateway_model_prices
+      WHERE input_price IS NOT NULL OR output_price IS NOT NULL OR cache_input_price IS NOT NULL OR cache_output_price IS NOT NULL
+      GROUP BY site_id
+    ) AS price_summary ON price_summary.site_id = gateway_sites.site_id
     WHERE gateway_sites.status = 'online' AND gateway_sites.type = 'gateway'${modelFilter}
-    GROUP BY gateway_sites.site_id, gateway_sites.name, gateway_sites.url, gateway_sites.family, gateway_sites.score,
-      gateway_sites.availability_percent, gateway_sites.avg_success_latency_ms, gateway_sites.created_at,
-      gateway_sites.slug, gateway_sites.host, gateway_sites.summary, gateway_sites.invite_url, gateway_sites.sponsor,
-      gateway_sites.model_types, gateway_sites.payment_methods, gateway_sites.weight
-    ORDER BY gateway_sites.sponsor DESC, gateway_sites.score DESC, gateway_sites.weight DESC, gateway_sites.created_at DESC, gateway_sites.name ASC, gateway_sites.site_id ASC
+    ORDER BY gateway_sites.score DESC, gateway_sites.name ASC
     ${options.limit ? 'LIMIT ?' : ''}
   `, options.limit ? [...values, options.limit] : values);
   return result.rows.map(mapMySqlGatewaySiteRow);
@@ -422,8 +443,11 @@ async function loadMySqlGatewaySites(options: PublicListLimitOptions): Promise<P
     SELECT COUNT(*) AS total_site_count, COALESCE(SUM(price_count > 0), 0) AS sites_with_prices_count,
       COALESCE(SUM(model_count), 0) AS total_model_count, COALESCE(SUM(price_count), 0) AS total_price_count
     FROM (
-      SELECT gateway_sites.site_id, COUNT(DISTINCT prices.model_id) AS model_count, COUNT(prices.id) AS price_count
-      FROM gateway_sites LEFT JOIN gateway_model_prices prices ON prices.site_id = gateway_sites.site_id
+      SELECT gateway_sites.site_id, COUNT(DISTINCT coverage.model_id) AS model_count,
+        COUNT(DISTINCT CASE WHEN prices.input_price IS NOT NULL OR prices.output_price IS NOT NULL OR prices.cache_input_price IS NOT NULL OR prices.cache_output_price IS NOT NULL THEN prices.id END) AS price_count
+      FROM gateway_sites
+      LEFT JOIN gateway_model_coverage coverage ON coverage.site_id = gateway_sites.site_id
+      LEFT JOIN gateway_model_prices prices ON prices.site_id = gateway_sites.site_id
       WHERE gateway_sites.status = 'online' AND gateway_sites.type = 'gateway'
       GROUP BY gateway_sites.site_id
     ) AS online_sites
@@ -435,13 +459,16 @@ async function loadMySqlGatewaySites(options: PublicListLimitOptions): Promise<P
 async function loadMySqlGatewayModels(options: PublicListLimitOptions): Promise<PublicGatewayModelsData> {
   const limit = safeListLimit(options.limit);
   const result = await getPool().query(`
-    SELECT prices.model_id, COALESCE(NULLIF(prices.model_family, ''), 'Other') AS model_family,
-      COUNT(DISTINCT prices.site_id) AS support_site_count, COUNT(*) AS price_count,
-      MAX(prices.fetched_at) AS latest_gateway_refresh_at, MAX(gateway_sites.score) AS max_site_score
-    FROM gateway_model_prices prices INNER JOIN gateway_sites ON gateway_sites.site_id = prices.site_id
+    SELECT coverage.model_id, COALESCE(NULLIF(coverage.model_family, ''), 'Other') AS model_family,
+      COUNT(DISTINCT coverage.site_id) AS support_site_count,
+      COUNT(DISTINCT CASE WHEN prices.input_price IS NOT NULL OR prices.output_price IS NOT NULL OR prices.cache_input_price IS NOT NULL OR prices.cache_output_price IS NOT NULL THEN prices.id END) AS price_count,
+      MAX(COALESCE(prices.fetched_at, coverage.observed_at)) AS latest_gateway_refresh_at, MAX(gateway_sites.score) AS max_site_score
+    FROM gateway_model_coverage coverage
+    INNER JOIN gateway_sites ON gateway_sites.site_id = coverage.site_id
+    LEFT JOIN gateway_model_prices prices ON prices.site_id = coverage.site_id AND prices.model_id = coverage.model_id
     WHERE gateway_sites.status = 'online' AND gateway_sites.type = 'gateway'
-    GROUP BY prices.model_id, COALESCE(NULLIF(prices.model_family, ''), 'Other')
-    ORDER BY support_site_count DESC, max_site_score DESC, prices.model_id ASC ${limit ? 'LIMIT ?' : ''}
+    GROUP BY coverage.model_id, COALESCE(NULLIF(coverage.model_family, ''), 'Other')
+    ORDER BY support_site_count DESC, max_site_score DESC, coverage.model_id ASC ${limit ? 'LIMIT ?' : ''}
   `, limit ? [limit] : []);
   const models = result.rows.map(row => { const at = row.latest_gateway_refresh_at ? String(row.latest_gateway_refresh_at) : null; return { id: String(row.model_id), modelId: String(row.model_id), modelFamily: String(row.model_family || 'Other'), supportSiteCount: Number(row.support_site_count) || 0, priceCount: Number(row.price_count) || 0, latestGatewayRefreshAt: at, latestGatewayRefreshTime: formatBeijingRefreshTime(at) }; });
   return { models, totalModelCount: models.length, totalSupportCount: models.reduce((sum, model) => sum + model.supportSiteCount, 0) };
@@ -454,11 +481,15 @@ async function loadMySqlGatewaySiteBySlug(slug: string) {
 
 async function loadMySqlGatewayModelSummary(modelId: string): Promise<PublicGatewayModelRow | null> {
   const result = await getPool().query(`
-    SELECT prices.model_id, COALESCE(NULLIF(prices.model_family, ''), 'Other') AS model_family,
-      COUNT(DISTINCT prices.site_id) AS support_site_count, COUNT(*) AS price_count, MAX(prices.fetched_at) AS latest_gateway_refresh_at
-    FROM gateway_model_prices prices INNER JOIN gateway_sites ON gateway_sites.site_id = prices.site_id
-    WHERE gateway_sites.status = 'online' AND gateway_sites.type = 'gateway' AND prices.model_id = ?
-    GROUP BY prices.model_id, COALESCE(NULLIF(prices.model_family, ''), 'Other') LIMIT 1
+    SELECT coverage.model_id, COALESCE(NULLIF(coverage.model_family, ''), 'Other') AS model_family,
+      COUNT(DISTINCT coverage.site_id) AS support_site_count,
+      COUNT(DISTINCT CASE WHEN prices.input_price IS NOT NULL OR prices.output_price IS NOT NULL OR prices.cache_input_price IS NOT NULL OR prices.cache_output_price IS NOT NULL THEN prices.id END) AS price_count,
+      MAX(COALESCE(prices.fetched_at, coverage.observed_at)) AS latest_gateway_refresh_at
+    FROM gateway_model_coverage coverage
+    INNER JOIN gateway_sites ON gateway_sites.site_id = coverage.site_id
+    LEFT JOIN gateway_model_prices prices ON prices.site_id = coverage.site_id AND prices.model_id = coverage.model_id
+    WHERE gateway_sites.status = 'online' AND gateway_sites.type = 'gateway' AND coverage.model_id = ?
+    GROUP BY coverage.model_id, COALESCE(NULLIF(coverage.model_family, ''), 'Other') LIMIT 1
   `, [modelId]);
   const row = result.rows[0];
   if (!row) return null;

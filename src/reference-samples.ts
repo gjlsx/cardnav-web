@@ -32,6 +32,30 @@ export type ReferenceProductSample = {
   sampledAt: string;
 };
 
+export type ReferenceGatewaySample = {
+  id: string;
+  sourceId: string;
+  sourcePageUrl: string;
+  name: string;
+  family: string;
+  summary: string;
+  score: number;
+  url: '';
+  inviteUrl: '';
+  isSample: true;
+  sampledAt: string;
+};
+
+export type ReferenceGatewayModelCoverage = {
+  siteId: string;
+  modelId: string;
+  modelFamily: string;
+  sourceId: string;
+  observedAt: string;
+  isSample: true;
+  hasPublicPrice: boolean;
+};
+
 const sampledAt = '2026-08-27T22:55:00.000Z';
 
 export const referenceDataSources: ReferenceDataSource[] = [
@@ -107,4 +131,41 @@ export const referenceProductSamples: ReferenceProductSample[] = [
     platform: 'ChatGPT', productType: '兑换码', standardProduct: 'chatgpt-plus-code', categoryName: 'ChatGPT · 兑换码', name: 'ChatGPT Plus 月会员兑换码',
     price: '¥19', priceNumber: 19, priceUnit: '¥', currencyCode: 'CNY', inStock: true, channelCount: null, availableChannelCount: null, outOfStockChannelCount: null, sampledAt,
   },
+];
+
+// The public pages name these services and model families, but this seed does
+// not infer an official URL, invitation, health metric, or commercial action.
+export const referenceGatewaySamples: ReferenceGatewaySample[] = [
+  {
+    id: 'reference-gateway-lingxi-ai', sourceId: 'reference-cardnav-home', sourcePageUrl: 'https://cardnav.xyz/',
+    name: 'Lingxi AI（公开参考）', family: 'New API', summary: '公开页面列出的聚合 API 参考样例；只展示已观察到的模型覆盖。', score: 50, url: '', inviteUrl: '', isSample: true, sampledAt,
+  },
+  {
+    id: 'reference-gateway-genius-coder', sourceId: 'reference-cardnav-home', sourcePageUrl: 'https://cardnav.xyz/',
+    name: 'Genius Coder（公开参考）', family: 'Sub2API', summary: '公开页面列出的 API 中转参考样例；价格与可用性需自行核对。', score: 50, url: '', inviteUrl: '', isSample: true, sampledAt,
+  },
+  {
+    id: 'reference-gateway-packy-code', sourceId: 'reference-cardnav-home', sourcePageUrl: 'https://cardnav.xyz/',
+    name: 'Packy Code（公开参考）', family: 'New API', summary: '公开页面列出的 API 中转参考样例；不代表实时状态。', score: 50, url: '', inviteUrl: '', isSample: true, sampledAt,
+  },
+  {
+    id: 'reference-gateway-mfapi', sourceId: 'reference-priceai-channels', sourcePageUrl: 'https://priceai.cc/channels',
+    name: 'MFAPI（公开参考）', family: 'Sub2API', summary: '公开频道列表中的中转站参考样例；只保留公开模型标识。', score: 50, url: '', inviteUrl: '', isSample: true, sampledAt,
+  },
+  {
+    id: 'reference-gateway-beibei', sourceId: 'reference-priceai-channels', sourcePageUrl: 'https://priceai.cc/channels',
+    name: '贝贝（公开参考）', family: 'Sub2API', summary: '公开频道列表中的中转站参考样例；不含性能、购买或邀请信息。', score: 50, url: '', inviteUrl: '', isSample: true, sampledAt,
+  },
+];
+
+export const referenceGatewayModelCoverage: ReferenceGatewayModelCoverage[] = [
+  { siteId: 'reference-gateway-lingxi-ai', modelId: 'gpt-4o', modelFamily: 'GPT', sourceId: 'reference-cardnav-home', observedAt: sampledAt, isSample: true, hasPublicPrice: false },
+  { siteId: 'reference-gateway-lingxi-ai', modelId: 'claude-3-5-sonnet', modelFamily: 'Claude', sourceId: 'reference-cardnav-home', observedAt: sampledAt, isSample: true, hasPublicPrice: false },
+  { siteId: 'reference-gateway-lingxi-ai', modelId: 'deepseek-v3', modelFamily: 'DeepSeek', sourceId: 'reference-cardnav-home', observedAt: sampledAt, isSample: true, hasPublicPrice: false },
+  { siteId: 'reference-gateway-genius-coder', modelId: 'gpt-4o', modelFamily: 'GPT', sourceId: 'reference-cardnav-home', observedAt: sampledAt, isSample: true, hasPublicPrice: false },
+  { siteId: 'reference-gateway-packy-code', modelId: 'claude-3-5-sonnet', modelFamily: 'Claude', sourceId: 'reference-cardnav-home', observedAt: sampledAt, isSample: true, hasPublicPrice: false },
+  { siteId: 'reference-gateway-packy-code', modelId: 'gemini-1.5-pro', modelFamily: 'Gemini', sourceId: 'reference-cardnav-home', observedAt: sampledAt, isSample: true, hasPublicPrice: false },
+  { siteId: 'reference-gateway-mfapi', modelId: 'deepseek-v3', modelFamily: 'DeepSeek', sourceId: 'reference-priceai-channels', observedAt: sampledAt, isSample: true, hasPublicPrice: false },
+  { siteId: 'reference-gateway-mfapi', modelId: 'qwen-max', modelFamily: 'Qwen', sourceId: 'reference-priceai-channels', observedAt: sampledAt, isSample: true, hasPublicPrice: false },
+  { siteId: 'reference-gateway-beibei', modelId: 'qwen-max', modelFamily: 'Qwen', sourceId: 'reference-priceai-channels', observedAt: sampledAt, isSample: true, hasPublicPrice: false },
 ];

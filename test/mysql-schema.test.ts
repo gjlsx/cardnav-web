@@ -24,7 +24,7 @@ test('MySQL schema creates every public runtime table', async () => {
     const tables = new Set(rows.map(row => Object.values(row)[0]));
     for (const table of [
       'public_snapshot_entries', 'shop_sites', 'shop_products', 'shop_search_terms',
-      'gateway_sites', 'gateway_model_prices', 'official_prices', 'model_leaderboards', 'reference_data_sources',
+      'gateway_sites', 'gateway_model_prices', 'gateway_model_coverage', 'official_prices', 'model_leaderboards', 'reference_data_sources',
       'catalog_products', 'catalog_plan_models', 'shop_site_model_coverage', 'catalog_unknown_aliases',
     ]) {
       assert.ok(tables.has(table), `missing ${table}`);
@@ -66,6 +66,21 @@ test('MySQL schema keeps reference sample provenance columns on shop products', 
     for (const column of ['source_id', 'standard_product', 'platform', 'product_type', 'currency_code', 'channel_count', 'available_channel_count', 'out_of_stock_channel_count', 'sampled_at', 'is_sample']) {
       assert.ok(columns.has(column), `missing ${column}`);
     }
+  } finally {
+    await connection.end();
+  }
+});
+
+test('MySQL schema keeps gateway coverage separate from optional price records', async () => {
+  await initializeMySqlSchema(config);
+  const connection = await mysql.createConnection(config);
+  try {
+    const [siteRows] = await connection.query<RowDataPacket[]>('SHOW COLUMNS FROM gateway_sites');
+    const siteColumns = new Set(siteRows.map(row => String(row.Field)));
+    for (const column of ['source_id', 'sampled_at', 'is_sample']) assert.ok(siteColumns.has(column), `missing ${column}`);
+    const [coverageRows] = await connection.query<RowDataPacket[]>('SHOW COLUMNS FROM gateway_model_coverage');
+    const coverageColumns = new Set(coverageRows.map(row => String(row.Field)));
+    for (const column of ['site_id', 'model_id', 'model_family', 'source_id', 'observed_at', 'is_sample']) assert.ok(coverageColumns.has(column), `missing ${column}`);
   } finally {
     await connection.end();
   }

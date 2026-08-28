@@ -189,19 +189,24 @@ import { formatPositiveScore, paymentIcon, uniqueLabels } from '../gateway-displ
     if (site.displayFamily) titleWrap.append(el('span', 'badge badge-ghost font-medium', site.displayFamily));
     textWrap.append(titleWrap);
     if (site.summary) textWrap.append(el('p', 'max-w-3xl text-sm leading-6 text-base-content/72', site.summary));
-    const urlWrap = el('div', 'text-xs text-base-content/55');
-    urlWrap.append(el('span', 'break-all', site.url));
-    textWrap.append(urlWrap);
+    if (site.url) {
+      const urlWrap = el('div', 'text-xs text-base-content/55');
+      urlWrap.append(el('span', 'break-all', site.url));
+      textWrap.append(urlWrap);
+    }
     const actionWrap = el('div', 'inline-flex shrink-0 items-center gap-2 self-start sm:self-center');
     const detailLink = el('a', 'btn btn-primary btn-xs inline-flex h-7 min-h-7 items-center px-3 leading-none', config.detailLabel);
     detailLink.href = `${gatewayLinkPrefix}/${site.slug}`;
     setTracking(detailLink, gatewaySiteTracking(site));
-    const openLink = el('a', 'btn btn-outline btn-xs inline-flex h-7 min-h-7 items-center px-3 leading-none', config.openLabel);
-    openLink.href = site.outboundUrl || site.url;
-    openLink.target = '_blank';
-    openLink.rel = 'noopener noreferrer';
-    setTracking(openLink, gatewaySiteOpenTracking(site));
-    actionWrap.append(detailLink, openLink);
+    actionWrap.append(detailLink);
+    if (site.outboundUrl || site.url) {
+      const openLink = el('a', 'btn btn-outline btn-xs inline-flex h-7 min-h-7 items-center px-3 leading-none', config.openLabel);
+      openLink.href = site.outboundUrl || site.url;
+      openLink.target = '_blank';
+      openLink.rel = 'noopener noreferrer';
+      setTracking(openLink, gatewaySiteOpenTracking(site));
+      actionWrap.append(openLink);
+    }
     infoWrap.append(textWrap, actionWrap);
     infoCell.append(infoWrap);
     row.append(infoCell);

@@ -44,9 +44,9 @@ test('aggregate rows keep the canonical product identity visible after price sor
   assert.match(browserSource, /currentFlatRows\.slice\(0, currentFlatVisibleLimit\)\.forEach\(\(\{ indexCell \}, index\) => \{[\s\S]*String\(index \+ 1\)/);
 });
 
-test('public gateway sites expose sponsor marker and pin sponsors before score sorting', () => {
-  assert.match(storeSource, /gateway_sites\.sponsor/);
-  assert.match(storeSource, /ORDER BY gateway_sites\.sponsor DESC, gateway_sites\.score DESC/);
+test('public gateway sites use the approved stable display order without a sponsor override', () => {
+  assert.match(storeSource, /ORDER BY gateway_sites\.score DESC, gateway_sites\.name ASC/);
+  assert.doesNotMatch(storeSource.match(/async function mysqlGatewaySiteRows[\s\S]+?return result\.rows\.map/)?.[0] ?? '', /gateway_sites\.sponsor DESC/);
 });
 
 test('public shop products expose sponsor marker and prioritize sponsored products', () => {

@@ -38,6 +38,7 @@ const officialPriceCatalog = await loadOfficialPriceCatalog();
 const leaderboardTaskSlugs = await loadModelLeaderboardTaskSlugs();
 const gatewayData = await loadGatewaySites();
 const gatewayModelData = await loadGatewayModels();
+const hasGatewayReferenceSamples = gatewayData.sites.some(site => site.isSample);
 const matchedOfficialEntries = matchOfficialPriceCatalogEntries(officialPriceCatalog, preferredOfficialPlans);
 const officialPrices: PublicOfficialPriceRow[] = [];
 for (const entry of matchedOfficialEntries) {
@@ -287,6 +288,7 @@ function homeCtaClickAttrs(targetPage: string, name: string) {
             <h3 class="text-lg font-bold text-base-content">
               <a href={linkTo('/llm-gateway')} class="text-base-content no-underline hover:text-primary" {...homeCtaClickAttrs('/llm-gateway', t.home.openGateway)}>{t.home.gatewayHighlightsTitle}</a>
             </h3>
+            {hasGatewayReferenceSamples ? <p class="mt-1 text-xs leading-5 text-base-content/60">{t.shops.referenceNoticeDescription}</p> : null}
           </div>
           <a href={linkTo('/llm-gateway')} class="btn btn-outline btn-sm shrink-0" {...homeCtaClickAttrs('/llm-gateway', t.home.openGateway)}>{t.home.openGateway}</a>
         </div>

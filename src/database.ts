@@ -100,7 +100,7 @@ const statements = [
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
   `CREATE TABLE IF NOT EXISTS gateway_sites (
     site_id VARCHAR(64) NOT NULL PRIMARY KEY,
-    url TEXT NOT NULL,
+    url TEXT NULL,
     api_endpoint TEXT NULL,
     status VARCHAR(32) NOT NULL DEFAULT 'online',
     name VARCHAR(255) NOT NULL DEFAULT '',
@@ -117,6 +117,9 @@ const statements = [
     avg_success_latency_ms INT NULL,
     model_types JSON NULL,
     payment_methods JSON NULL,
+    source_id VARCHAR(64) NULL,
+    sampled_at DATETIME NULL,
+    is_sample BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME NULL,
     UNIQUE KEY gateway_sites_url_unique (url(255)),
     UNIQUE KEY gateway_sites_slug_unique (slug),
@@ -135,6 +138,16 @@ const statements = [
     fetched_at DATETIME NULL,
     KEY gateway_model_prices_site_id (site_id),
     KEY gateway_model_prices_model_id (model_id)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+  `CREATE TABLE IF NOT EXISTS gateway_model_coverage (
+    site_id VARCHAR(64) NOT NULL,
+    model_id VARCHAR(255) NOT NULL,
+    model_family VARCHAR(255) NOT NULL DEFAULT '',
+    source_id VARCHAR(64) NULL,
+    observed_at DATETIME NULL,
+    is_sample BOOLEAN NOT NULL DEFAULT FALSE,
+    PRIMARY KEY (site_id, model_id),
+    KEY gateway_model_coverage_model_id (model_id)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
   `CREATE TABLE IF NOT EXISTS official_prices (
     id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -206,6 +219,23 @@ async function ensureReferenceSourceColumns(connection: mysql.Connection) {
   await connection.query('ALTER TABLE shop_sites MODIFY COLUMN url TEXT NULL');
 }
 
+const gatewaySiteColumns = [
+  ['source_id', 'VARCHAR(64) NULL'],
+  ['sampled_at', 'DATETIME NULL'],
+  ['is_sample', 'BOOLEAN NOT NULL DEFAULT FALSE'],
+] as const;
+
+async function ensureGatewaySiteColumns(connection: mysql.Connection) {
+  for (const [name, definition] of gatewaySiteColumns) {
+    const [rows] = await connection.query<mysql.RowDataPacket[]>(
+      `SELECT 1 FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = 'gateway_sites' AND column_name = ? LIMIT 1`,
+      [name],
+    );
+    if (rows.length === 0) await connection.query(`ALTER TABLE gateway_sites ADD COLUMN \`${name}\` ${definition}`);
+  }
+  await connection.query('ALTER TABLE gateway_sites MODIFY COLUMN url TEXT NULL');
+}
+
 async function ensureShopProductNaturalKey(connection: mysql.Connection) {
   const [rows] = await connection.query<mysql.RowDataPacket[]>(
     `SELECT 1 FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = 'shop_products' AND index_name = 'shop_products_source_standard_site' LIMIT 1`,
@@ -240,6 +270,7 @@ export async function initializeMySqlSchema(config: MySqlConnectionConfig) {
     for (const statement of statements) await connection.query(statement);
     await ensureShopProductColumns(connection);
     await ensureReferenceSourceColumns(connection);
+    await ensureGatewaySiteColumns(connection);
     await ensureShopProductNaturalKey(connection);
   } finally {
     await connection.end();

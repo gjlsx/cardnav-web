@@ -81,11 +81,11 @@ const mergedRowAttrs = {
           {site.displayFamily ? <span class="badge badge-ghost font-medium">{site.displayFamily}</span> : null}
         </div>
         {site.summary ? <p class="max-w-3xl text-sm leading-6 text-base-content/72">{site.summary}</p> : null}
-        <div class="text-xs text-base-content/55"><span class="break-all">{site.url}</span></div>
+        {site.url ? <div class="text-xs text-base-content/55"><span class="break-all">{site.url}</span></div> : null}
       </div>
       <div class="inline-flex shrink-0 items-center gap-2 self-start sm:self-center">
         <a href={detailHref} class="btn btn-primary btn-xs inline-flex h-7 min-h-7 items-center px-3 leading-none" {...clickAttrs}>{detailLabel}</a>
-        <a href={site.outboundUrl} target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-xs inline-flex h-7 min-h-7 items-center px-3 leading-none" {...openAttrs}>{openLabel}</a>
+        {site.outboundUrl ? <a href={site.outboundUrl} target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-xs inline-flex h-7 min-h-7 items-center px-3 leading-none" {...openAttrs}>{openLabel}</a> : null}
       </div>
     </div>
   </DataTableCell>

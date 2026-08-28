@@ -60,9 +60,9 @@ function compareOffer(a: PublicProductRow, b: PublicProductRow) {
 }
 
 /**
- * One public row per declared standard SKU. The best available source tier wins;
- * duplicate offers inside that tier are represented by the cheapest one, while
- * the channel details remain available for a local drill-down.
+ * One public row per declared standard SKU. Source priority resolves duplicate
+ * observations for the same merchant only; separate merchants remain separate
+ * public channels. The lowest selected offer becomes the display reference.
  */
 export function aggregateCatalogProducts(rows: PublicProductRow[]): PublicProductRow[] {
   const grouped = new Map<string, PublicProductRow[]>();
@@ -73,8 +73,16 @@ export function aggregateCatalogProducts(rows: PublicProductRow[]): PublicProduc
   }
 
   return [...grouped.entries()].map(([standardProduct, candidates]) => {
-    const highestPriority = Math.max(...candidates.map(sourcePriority));
-    const selected = candidates.filter(candidate => sourcePriority(candidate) === highestPriority).sort(compareOffer);
+    const candidatesBySite = new Map<string, PublicProductRow[]>();
+    for (const candidate of candidates) {
+      const siteKey = String(candidate.siteId || '').trim();
+      if (!siteKey) continue;
+      candidatesBySite.set(siteKey, [...(candidatesBySite.get(siteKey) ?? []), candidate]);
+    }
+    const selected = [...candidatesBySite.values()].map(siteCandidates => {
+      const highestPriority = Math.max(...siteCandidates.map(sourcePriority));
+      return siteCandidates.filter(candidate => sourcePriority(candidate) === highestPriority).sort(compareOffer)[0];
+    }).sort(compareOffer);
     const cheapest = selected[0];
     const detailRows = selected.map(row => ({
       siteId: row.siteId,

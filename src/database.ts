@@ -211,6 +211,25 @@ async function ensureShopProductNaturalKey(connection: mysql.Connection) {
     `SELECT 1 FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = 'shop_products' AND index_name = 'shop_products_source_standard_site' LIMIT 1`,
   );
   if (rows.length === 0) {
+    // Legacy rows predate this natural key. Retain the newest deterministic
+    // observation per non-null source/SKU/site triple before adding the index.
+    await connection.query(`
+      DELETE duplicate FROM shop_products AS duplicate
+      INNER JOIN shop_products AS retained
+        ON duplicate.source_id = retained.source_id
+        AND duplicate.standard_product = retained.standard_product
+        AND duplicate.site_id = retained.site_id
+        AND (
+          COALESCE(duplicate.refreshed_at, '1000-01-01 00:00:00') < COALESCE(retained.refreshed_at, '1000-01-01 00:00:00')
+          OR (
+            COALESCE(duplicate.refreshed_at, '1000-01-01 00:00:00') = COALESCE(retained.refreshed_at, '1000-01-01 00:00:00')
+            AND duplicate.id < retained.id
+          )
+        )
+      WHERE duplicate.source_id IS NOT NULL
+        AND duplicate.standard_product <> ''
+        AND duplicate.site_id IS NOT NULL
+    `);
     await connection.query('CREATE UNIQUE INDEX shop_products_source_standard_site ON shop_products (source_id, standard_product, site_id)');
   }
 }

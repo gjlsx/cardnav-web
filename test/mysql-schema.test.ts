@@ -2,6 +2,8 @@
  * 文件说明: 验证本地 MySQL 初始化会创建公开站点运行所需的数据表。
  */
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import test from 'node:test';
 import mysql, { type RowDataPacket } from 'mysql2/promise';
 import { initializeMySqlSchema } from '../src/database.js';
@@ -45,6 +47,14 @@ test('MySQL schema keeps source priority separate from site display score and de
   } finally {
     await connection.end();
   }
+});
+
+test('MySQL natural-key migration removes deterministic legacy duplicates before adding its unique index', async () => {
+  const source = await fs.promises.readFile(path.resolve('src/database.ts'), 'utf8');
+  const migration = source.match(/async function ensureShopProductNaturalKey[\s\S]+?^}/m)?.[0] ?? '';
+  assert.match(migration, /DELETE duplicate FROM shop_products AS duplicate/);
+  assert.match(migration, /duplicate\.source_id IS NOT NULL/);
+  assert.match(migration, /CREATE UNIQUE INDEX shop_products_source_standard_site/);
 });
 
 test('MySQL schema keeps reference sample provenance columns on shop products', async () => {

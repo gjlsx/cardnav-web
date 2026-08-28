@@ -18,10 +18,12 @@ test('public shop reads and interactions require online card shops', () => {
 
 test('shop default applies canonical aggregation and keeps merchant/product details internal', () => {
   const browserSource = fs.readFileSync(path.resolve('src/scripts/index.js'), 'utf8');
+  const merchantViewSource = fs.readFileSync(path.resolve('src/scripts/shops-merchant-view.js'), 'utf8');
   assert.match(storeSource, /aggregateCatalogProducts\(rawProducts\)/);
   assert.match(browserSource, /shopProductChannelDetails/);
   assert.match(browserSource, /document\.createElement\('span'\)/);
   assert.doesNotMatch(browserSource.match(/function createTrackedProductLink[\s\S]+?function tableLabel/)?.[0] ?? '', /\.href\s*=/);
+  assert.doesNotMatch(merchantViewSource, /document\.createElement\('a'\)|\.href\s*=/);
 });
 
 test('public gateway sites expose sponsor marker and pin sponsors before score sorting', () => {

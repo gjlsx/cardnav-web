@@ -78,22 +78,12 @@ function priceValueForSort(priceNumber, priceUnit) {
   return priceNumber;
 }
 
-function createTrackedMerchantLink(siteUrl, siteName, createTrackedLink, options = {}) {
-  return createTrackedLink(siteUrl, 'merchant-link merchant-text', siteName, siteName, {
-    umamiEvent: 'merchant-click',
-    productClick: false,
-    sponsor: options.sponsor === true,
-  });
-}
-
-function createProductChip(item, shopProductsData, shopsMessages, createTrackedLink, accessors) {
+function createProductChip(item, shopProductsData, shopsMessages, accessors) {
   const site = accessors.shopProductSite(shopProductsData, item);
-  const siteSponsor = accessors.shopSiteSponsor(site);
   const categoryName = text(accessors.shopProductCategoryName(shopProductsData, item));
   const productName = text(accessors.shopProductName(item));
   const priceNumber = accessors.shopProductPriceNumber(item);
   const priceUnit = accessors.shopProductPriceUnit(shopProductsData, item);
-  const productUrl = accessors.shopProductUrl(item);
   const inStock = accessors.shopProductInStock(item);
   const isSample = accessors.shopProductIsSample(item);
   const sourceName = text(accessors.shopProductSourceName(item));
@@ -105,7 +95,7 @@ function createProductChip(item, shopProductsData, shopsMessages, createTrackedL
   const productTitle = `${categoryName}-${productName}`;
   const shortCategory = categoryName.length > 10 ? `${categoryName.slice(0, 10)}...` : categoryName;
   const shortName = productName.length > 14 ? `${productName.slice(0, 14)}...` : productName;
-  const chip = productUrl ? document.createElement('a') : document.createElement('div');
+  const chip = document.createElement('div');
 
   chip.title = productTitle;
   chip.dataset.productTitle = productTitle.toLowerCase();
@@ -115,23 +105,7 @@ function createProductChip(item, shopProductsData, shopsMessages, createTrackedL
   chip.dataset.inStock = inStock ? '1' : '0';
   chip.dataset.stockValue = String(productStockValue(item, accessors));
   chip.dataset.productRefreshedAt = String(accessors.shopProductRefreshedMs(item) || 0);
-  chip.className = productUrl
-    ? (inStock ? 'product-chip-link-in-stock' : 'product-chip-link-sold-out')
-    : (inStock ? 'product-chip-static-in-stock' : 'product-chip-static-sold-out');
-
-  if (productUrl) {
-    chip.href = productUrl;
-    chip.target = '_blank';
-    chip.rel = 'noopener noreferrer';
-    if (siteSponsor) chip.rel = 'noopener noreferrer sponsored';
-    chip.dataset.umamiEvent = 'product-click';
-    chip.dataset.umamiEventUrl = productUrl;
-    chip.dataset.umamiEventName = productTitle;
-    chip.dataset.productClickSiteId = text(accessors.shopSiteId(site));
-    chip.dataset.productClickUrl = productUrl;
-    chip.dataset.productClickCategory = categoryName;
-    chip.dataset.productClickName = productName;
-  }
+  chip.className = inStock ? 'product-chip-static-in-stock' : 'product-chip-static-sold-out';
 
   appendTextElement(chip, 'span', 'product-category', shortCategory);
   appendTextElement(chip, 'span', 'product-name', shortName);
@@ -158,7 +132,6 @@ export function renderMerchantRows({
   shopDataAccessors,
   shopsMessages,
   createFavoriteButton,
-  createTrackedLink,
   initializeFavorites,
   getFavoriteButtons,
   setFavoriteButtons,
@@ -192,14 +165,13 @@ export function renderMerchantRows({
       })
       .slice(0, 10);
     const siteName = text(accessors.shopSiteName(site));
-    const siteUrl = text(accessors.shopSiteUrl(site)).trim();
     const siteSponsor = accessors.shopSiteSponsor(site);
     const siteFavoriteKey = siteId || siteName;
     const row = document.createElement('div');
     row.className = 'merchant-row';
     row.dataset.siteId = siteFavoriteKey;
     row.dataset.siteText = siteName.toLowerCase();
-    row.dataset.siteUrl = siteUrl.toLowerCase();
+    row.dataset.siteUrl = '';
     row.dataset.siteName = siteName;
     row.dataset.siteScore = String(accessors.shopSiteScore(site));
     row.dataset.sponsor = siteSponsor ? '1' : '0';
@@ -216,11 +188,7 @@ export function renderMerchantRows({
     const merchantHeader = document.createElement('div');
     merchantHeader.className = 'merchant-header';
     merchantHeader.appendChild(createFavoriteButton('site', siteFavoriteKey, `${shopsMessages.merchantFavorite || 'Favorite merchant'} ${siteName}`));
-    if (siteUrl) {
-      merchantHeader.appendChild(createTrackedMerchantLink(siteUrl, siteName, createTrackedLink, { sponsor: siteSponsor }));
-    } else {
-      appendTextElement(merchantHeader, 'span', 'merchant-primary-text', siteName);
-    }
+    appendTextElement(merchantHeader, 'span', 'merchant-primary-text', siteName);
     if (siteSponsor) merchantHeader.appendChild(window.CardNavSponsorBadge.create(shopsMessages.sponsorLabel || 'Partner', shopsMessages.sponsorDescription || '', shopsMessages.partnershipUrl || localizedFallbackPath('/partnership'), shopsMessages.partnershipLinkLabel || 'How to partner'));
     merchantCell.appendChild(merchantHeader);
     row.appendChild(merchantCell);
@@ -246,7 +214,7 @@ export function renderMerchantRows({
       const list = document.createElement('div');
       list.className = 'product-list';
       hotProducts.forEach(item => {
-        const chip = createProductChip(item, shopProductsData, shopsMessages, createTrackedLink, accessors);
+        const chip = createProductChip(item, shopProductsData, shopsMessages, accessors);
         chips.push(chip);
         list.appendChild(chip);
       });

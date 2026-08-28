@@ -80,6 +80,21 @@ class CollectionRepository:
             (kind.value, stable_key, state.value, json.dumps(payload, ensure_ascii=False) if payload is not None else None),
         )
 
+    def has_manual_override(self, kind: RecordKind, stable_key: str) -> bool:
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT 1 FROM collection_manual_overrides WHERE record_kind = %s AND record_key = %s LIMIT 1", (kind.value, stable_key))
+            return cursor.fetchone() is not None
+        finally:
+            cursor.close()
+
+    def write_staging_record(self, record) -> None:
+        payload = dict(record.payload)
+        self._execute(
+            "INSERT INTO collection_staging_observations (run_id, normalized_site, source_id, source_class, source_priority, platform_family, model_or_plan, price, currency, billing_unit, stock_status, region, payment_tags, delivery_tags, public_perf, observed_at, provenance, confidence, record_key, record_kind, quality_status, publish_status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'approved', 'pending')",
+            (record.run_id, payload.get("normalized_site", ""), payload.get("source_id", ""), payload.get("source_class", ""), payload.get("source_priority", 0), payload.get("platform_family", ""), payload.get("model_or_plan", ""), payload.get("price"), payload.get("currency", ""), payload.get("billing_unit", ""), payload.get("stock_status", ""), payload.get("region", ""), payload.get("payment_tags", ""), payload.get("delivery_tags", ""), payload.get("public_perf", ""), payload.get("observed_at", ""), payload.get("provenance", ""), payload.get("confidence"), record.record_key, record.record_kind.value),
+        )
+
     def purge_expired_payload_bodies(self) -> None:
         self._execute("UPDATE collection_raw_payloads SET body = NULL WHERE body_expires_at < UTC_TIMESTAMP() AND body IS NOT NULL")
 

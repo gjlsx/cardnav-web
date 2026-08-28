@@ -70,6 +70,14 @@ class CollectionRun:
     run_id: str
     source_id: str
     trigger: str
+    batch_id: str | None = None
+    started_at: str | None = None
+
+
+@dataclass(frozen=True)
+class CollectionBatch:
+    batch_id: str
+    trigger: str
     started_at: str | None = None
 
 
@@ -88,6 +96,7 @@ class RawRecord:
     source_id: str
     record_key: str
     payload: Mapping[str, Any]
+    batch_id: str | None = None
 
 
 @dataclass(frozen=True)

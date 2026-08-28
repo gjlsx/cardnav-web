@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Collection pipeline policy tests: raw is retained while locked rows are skipped."""
+"""Collection pipeline policy tests: raw is retained and runtime import is separate."""
 from __future__ import annotations
 
 import sys
@@ -25,7 +25,7 @@ class MemoryRepository:
         self.raw_payloads += 1
         return self.raw_payloads
 
-    def write_raw_record(self, _run, _source, key, _kind, payload, _payload_id):
+    def write_raw_record(self, _run, _source, key, _kind, payload, _payload_id, **_kwargs):
         self.raw_records.append((key, payload))
         return len(self.raw_records)
 
@@ -43,6 +43,13 @@ class PipelineRepo(MemoryRepository):
         self.committed = False
         self.rolled_back = False
         self.finished = []
+        self.batches = []
+
+    def create_batch(self, batch_id, trigger):
+        self.batches.append((batch_id, trigger, "running"))
+
+    def finish_batch(self, batch_id, status, error=None):
+        self.batches.append((batch_id, status, error))
 
     def create_run(self, *_args):
         return None
@@ -58,20 +65,8 @@ class PipelineRepo(MemoryRepository):
         self.staging.clear()
 
 
-class FakePublisher:
-    def __init__(self, fail=False):
-        self.fail = fail
-        self.calls = []
-
-    def publish_run(self, repository, run_id):
-        if self.fail:
-            raise RuntimeError("publish exploded")
-        self.calls.append(run_id)
-        return {"published": len(repository.staging)}
-
-
 class PipelineTests(unittest.TestCase):
-    def test_batch_retains_raw_but_skips_locked_product_from_staging(self):
+    def test_batch_retains_raw_for_locked_product_without_staging(self):
         key = "shop_product:shop.example.com:chatgpt-plus"
         repository = MemoryRepository(locked=[key])
         rows = [
@@ -80,52 +75,48 @@ class PipelineTests(unittest.TestCase):
         ]
         result = process_batch(repository, "run-1", "source-a", "application/json", "{}", rows)
         self.assertEqual(result["raw_records"], 2)
-        self.assertEqual(result["skipped_manual"], 1)
+        self.assertEqual(result["manual_marked"], 1)
         self.assertEqual(len(repository.raw_records), 2)
-        self.assertEqual(len(repository.staging), 1)
+        self.assertEqual(len(repository.staging), 0)
 
-    def test_invalid_price_stays_out_of_staging(self):
+    def test_invalid_price_is_retained_as_invalid_raw(self):
         repository = MemoryRepository()
         result = process_batch(repository, "run-1", "source-a", "application/json", "{}", [{"normalized_site": "shop.example.com", "model_or_plan": "chatgpt-plus", "price": "bad"}])
-        self.assertEqual(result["invalid"], 1)
+        self.assertEqual(result["invalid"], 0)
+        self.assertEqual(len(repository.raw_records), 1)
         self.assertEqual(repository.staging, [])
 
-    def test_hidden_override_is_skipped_like_manual_lock(self):
+    def test_hidden_override_is_marked_but_retained_in_raw(self):
         key = "shop_product:shop.example.com:chatgpt-plus"
         repository = MemoryRepository(locked=[key])
         result = process_batch(repository, "run-1", "source-a", "application/json", "{}", [{"normalized_site": "shop.example.com", "model_or_plan": "chatgpt-plus", "price": 10}])
-        self.assertEqual(result["skipped_manual"], 1)
+        self.assertEqual(result["manual_marked"], 1)
+        self.assertEqual(len(repository.raw_records), 1)
         self.assertEqual(repository.staging, [])
 
-    def test_stop_flag_keeps_raw_payload_but_skips_staging_and_publish(self):
+    def test_stop_flag_creates_no_runtime_writes(self):
         repository = PipelineRepo()
         result = run_source_pipeline(
             repository, {"id": "stop-source"}, "[]",
             [{"normalized_site": "shop.example.com", "model_or_plan": "chatgpt-plus", "price": 9}],
-            "application/json", "manual", RecordKind.SHOP_PRODUCT, FakePublisher(), should_stop=lambda: True,
+            "application/json", "manual", RecordKind.SHOP_PRODUCT, should_stop=lambda: True,
         )
         self.assertTrue(result["stopped"])
         self.assertEqual(result["published"]["published"], 0)
-        self.assertEqual(repository.raw_payloads, 1)
+        self.assertEqual(result["runtime_writes"], 0)
         self.assertEqual(repository.staging, [])
 
-    def test_publish_failure_rolls_back_and_does_not_commit_half_snapshot(self):
-        from collection_lib.pipeline import run_source_pipeline
-
+    def test_source_capture_finishes_as_raw_completed_without_a_publisher(self):
         repository = PipelineRepo()
         result = run_source_pipeline(
-            repository,
-            {"id": "source-a"},
-            "{}",
+            repository, {"id": "source-a"}, "{}",
             [{"normalized_site": "shop.example.com", "model_or_plan": "chatgpt-plus", "price": 9}],
-            "application/json",
-            "manual",
-            RecordKind.SHOP_PRODUCT,
-            FakePublisher(fail=True),
+            "application/json", "manual", RecordKind.SHOP_PRODUCT,
         )
-        self.assertTrue(repository.rolled_back)
-        self.assertEqual(result["published"]["published"], 0)
-        self.assertIn("publish exploded", result["error"] or "")
+        self.assertIsNone(result["error"])
+        self.assertEqual(result["runtime_writes"], 0)
+        self.assertTrue(repository.committed)
+        self.assertIn("raw_completed", [row[1] for row in repository.batches])
 
 
 class LiveMysqlHttpTests(unittest.TestCase):
@@ -155,7 +146,7 @@ class LiveMysqlHttpTests(unittest.TestCase):
         finally:
             connection.close()
 
-    def test_approved_local_http_ingests_to_local_mysql(self):
+    def test_approved_local_http_ingests_raw_only_to_local_mysql(self):
         import json
         import os
         import threading
@@ -194,14 +185,15 @@ class LiveMysqlHttpTests(unittest.TestCase):
             from collection_lib.fetch import fetch_approved_json
             source = {"id": "p013-http", "approval_status": "approved", "allowlist_urls": [url], "public_url": url, "record_kind": "shop_product"}
             body, rows, content_type = fetch_approved_json(source)
-            result = run_source_pipeline(repository, source, body, rows, content_type, "manual", RecordKind.SHOP_PRODUCT, PublicPublisher())
+            result = run_source_pipeline(repository, source, body, rows, content_type, "manual", RecordKind.SHOP_PRODUCT)
             self.assertIsNone(result["error"])
-            self.assertGreaterEqual(result["published"]["published"], 1)
+            self.assertEqual(result["runtime_writes"], 0)
             stored = repository.query("SELECT standard_product, price_number FROM shop_products WHERE site_id = %s AND standard_product = %s", ("collected-p013-test.example", "chatgpt-plus"))
-            self.assertEqual(len(stored), 1)
-            self.assertEqual(float(stored[0]["price_number"]), 12.5)
-            snap = repository.query("SELECT `key` FROM public_snapshot_entries WHERE `key` = 'shop-products'")
-            self.assertEqual(len(snap), 1)
+            self.assertEqual(stored, [])
+            raw = repository.query("SELECT batch_id, validation_state FROM collection_raw_records WHERE source_id = %s", ("p013-http",))
+            self.assertEqual(len(raw), 1)
+            self.assertTrue(raw[0]["batch_id"])
+            self.assertEqual(raw[0]["validation_state"], "valid")
         finally:
             server.shutdown()
             server.server_close()

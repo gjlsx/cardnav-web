@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-"""Local collection CLI. Fixture/dry-run only unless a source is approved; never publishes."""
+"""Local collection CLI. Capture writes unified raw records; merge/import is separate."""
 from __future__ import annotations
 
 import argparse
 import json
 import os
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -22,10 +21,8 @@ from collection_lib.config import (  # noqa: E402
 from collection_lib.fixtures import fixtures_for_source  # noqa: E402
 from collection_lib.contracts import RecordKind  # noqa: E402
 from collection_lib.fetch import fetch_approved_json  # noqa: E402
-from collection_lib.merge import merge_observations  # noqa: E402
 from collection_lib.migrations import apply_migrations  # noqa: E402
-from collection_lib.pipeline import run_source_pipeline  # noqa: E402
-from collection_lib.publisher import PublicPublisher  # noqa: E402
+from collection_lib.pipeline import SourceCapture, run_collection_batch  # noqa: E402
 from collection_lib.repository import CollectionRepository, open_local_connection  # noqa: E402
 from collection_lib.whitelist import filter_observation  # noqa: E402
 
@@ -47,7 +44,6 @@ def load_dotenv() -> None:
 def collect_rows(sources, ignore_enabled: bool) -> tuple[list[dict], dict]:
     stats = {"considered": 0, "skipped_unapproved": 0, "skipped_disabled": 0, "capped": 0, "network_requests": 0}
     collected: list[dict] = []
-    sources_by_id = {source["id"]: source for source in sources}
     for source in sources:
         stats["considered"] += 1
         if not ignore_enabled and not source.get("enabled"):
@@ -68,8 +64,7 @@ def collect_rows(sources, ignore_enabled: bool) -> tuple[list[dict], dict]:
             observation["source_class"] = source["source_class"]
             observation["source_priority"] = source["priority"]
             collected.append(observation)
-    merged = merge_observations(collected, sources_by_id)
-    return merged, {**stats, "raw": len(collected), "merged": len(merged)}
+    return collected, {**stats, "raw": len(collected)}
 
 
 def cmd_check_config(path: Path) -> int:
@@ -86,7 +81,7 @@ def cmd_dry_run(path: Path, ignore_enabled: bool) -> int:
     return 0
 
 
-def cmd_write_staging(path: Path, ignore_enabled: bool) -> int:
+def cmd_collect_raw(path: Path, ignore_enabled: bool) -> int:
     load_dotenv()
     sources = load_sources(path)
     connection = open_local_connection()
@@ -94,7 +89,7 @@ def cmd_write_staging(path: Path, ignore_enabled: bool) -> int:
     try:
         apply_migrations(connection)
         repository = CollectionRepository(connection)
-        publisher = PublicPublisher()
+        captures = []
         for source in sources:
             if not ignore_enabled and not source.get("enabled"):
                 continue
@@ -106,10 +101,12 @@ def cmd_write_staging(path: Path, ignore_enabled: bool) -> int:
                 body = json.dumps(rows, ensure_ascii=False)
                 content_type = "application/json"
             rows = apply_item_cap(rows, int(source.get("max_items_per_run") or 0))
-            results.append(run_source_pipeline(repository, source, body, rows, content_type, "manual", kind, publisher))
+            captures.append(SourceCapture(source=source, body=body, rows=rows, content_type=content_type, kind=kind))
+        if captures:
+            results.append(run_collection_batch(repository, captures, trigger="manual"))
     finally:
         connection.close()
-    print(json.dumps({"runs": results, "published": all(not item.get("error") for item in results)}, ensure_ascii=False))
+    print(json.dumps({"batches": results, "raw_completed": all(not item.get("error") for item in results)}, ensure_ascii=False))
     return 0 if all(not item.get("error") for item in results) else 1
 
 
@@ -125,10 +122,10 @@ def cmd_migrate() -> int:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Local collection CLI: fixture or approved HTTP into local MySQL")
-    parser.add_argument("command", choices=["check-config", "dry-run", "write-staging", "migrate"])
+    parser = argparse.ArgumentParser(description="Local collection CLI: fixture or approved HTTP into local unified raw records")
+    parser.add_argument("command", choices=["check-config", "dry-run", "collect-raw", "migrate"])
     parser.add_argument("--sources", default=str(DEFAULT_SOURCES))
-    parser.add_argument("--manual", action="store_true", help="Ignore enabled=false (default for dry-run/write-staging)")
+    parser.add_argument("--manual", action="store_true", help="Ignore enabled=false (default for dry-run/collect-raw)")
     parser.add_argument("--scheduled", action="store_true", help="Honor enabled=false (not used; scheduler is not installed)")
     args = parser.parse_args()
     path = Path(args.sources)
@@ -139,7 +136,7 @@ def main() -> int:
         return cmd_migrate()
     if args.command == "dry-run":
         return cmd_dry_run(path, ignore_enabled=ignore_enabled)
-    return cmd_write_staging(path, ignore_enabled=True)
+    return cmd_collect_raw(path, ignore_enabled=True)
 
 
 if __name__ == "__main__":

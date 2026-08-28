@@ -108,7 +108,7 @@ class CliFixtureTests(unittest.TestCase):
         rows, stats = collect_rows(sources, ignore_enabled=True)
         self.assertEqual(stats["network_requests"], 0)
         self.assertGreater(stats["skipped_unapproved"], 0)
-        self.assertGreater(stats["merged"], 0)
+        self.assertGreater(stats["raw"], 0)
         self.assertTrue(all("html" not in row for row in rows))
 
     def test_example_sources_validate_and_lack_score(self):

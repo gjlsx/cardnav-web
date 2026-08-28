@@ -22,6 +22,14 @@ CREATE_STATEMENTS = (
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     """,
     """
+    CREATE TABLE IF NOT EXISTS collection_batches (
+      batch_id VARCHAR(64) NOT NULL PRIMARY KEY, trigger_type VARCHAR(32) NOT NULL,
+      status VARCHAR(32) NOT NULL DEFAULT 'running', started_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      finished_at DATETIME NULL, error_summary VARCHAR(500) NULL,
+      KEY collection_batches_started (started_at)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    """,
+    """
     CREATE TABLE IF NOT EXISTS collection_raw_payloads (
       id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, run_id VARCHAR(64) NOT NULL, source_id VARCHAR(64) NOT NULL,
       content_type VARCHAR(128) NOT NULL DEFAULT '', body_hash CHAR(64) NOT NULL, body LONGTEXT NULL,
@@ -62,6 +70,20 @@ STAGING_COLUMNS = {
     "published_at": "DATETIME NULL",
 }
 
+RUN_COLUMNS = {
+    "batch_id": "VARCHAR(64) NULL",
+}
+
+RAW_RECORD_COLUMNS = {
+    "batch_id": "VARCHAR(64) NULL",
+    "source_class": "VARCHAR(32) NULL",
+    "source_priority": "INT NULL",
+    "source_url": "TEXT NULL",
+    "source_record_hash": "VARCHAR(64) NULL",
+    "validation_state": "VARCHAR(32) NOT NULL DEFAULT 'valid'",
+    "validation_reason": "VARCHAR(500) NULL",
+}
+
 SOURCE_COLUMNS = {
     "public_url": "TEXT NULL",
     "allowlist_urls": "JSON NULL",
@@ -73,6 +95,12 @@ STAGING_INDEXES = {
     "collection_staging_publish_status": "(publish_status, quality_status)",
 }
 
+BATCH_INDEXES = {
+    "collection_runs_batch": ("collection_runs", "(batch_id)"),
+    "collection_raw_records_batch": ("collection_raw_records", "(batch_id)"),
+    "collection_raw_records_batch_key": ("collection_raw_records", "(batch_id, record_key)"),
+}
+
 
 def apply_migrations(connection) -> None:
     """Create new tables and extend the one canonical staging table, never deleting data."""
@@ -80,7 +108,12 @@ def apply_migrations(connection) -> None:
     try:
         for statement in CREATE_STATEMENTS:
             cursor.execute(statement)
-        for table, columns in (("collection_staging_observations", STAGING_COLUMNS), ("collection_sources", SOURCE_COLUMNS)):
+        for table, columns in (
+            ("collection_staging_observations", STAGING_COLUMNS),
+            ("collection_sources", SOURCE_COLUMNS),
+            ("collection_runs", RUN_COLUMNS),
+            ("collection_raw_records", RAW_RECORD_COLUMNS),
+        ):
             for name, definition in columns.items():
                 cursor.execute(
                     "SELECT 1 FROM information_schema.columns WHERE table_schema = DATABASE() "
@@ -97,6 +130,14 @@ def apply_migrations(connection) -> None:
             )
             if cursor.fetchone() is None:
                 cursor.execute(f"CREATE INDEX `{name}` ON collection_staging_observations {definition}")
+        for name, (table, definition) in BATCH_INDEXES.items():
+            cursor.execute(
+                "SELECT 1 FROM information_schema.statistics WHERE table_schema = DATABASE() "
+                "AND table_name = %s AND index_name = %s LIMIT 1",
+                (table, name),
+            )
+            if cursor.fetchone() is None:
+                cursor.execute(f"CREATE INDEX `{name}` ON `{table}` {definition}")
         connection.commit()
     except Exception:
         connection.rollback()

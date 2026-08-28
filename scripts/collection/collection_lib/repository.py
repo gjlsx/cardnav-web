@@ -51,11 +51,24 @@ class CollectionRepository:
         finally:
             cursor.close()
 
-    def create_run(self, run_id: str, source_id: str, trigger: str) -> None:
+    def create_batch(self, batch_id: str, trigger: str) -> None:
         self._execute(
-            "INSERT INTO collection_runs (run_id, source_id, trigger_type, status) VALUES (%s, %s, %s, 'running') "
+            "INSERT INTO collection_batches (batch_id, trigger_type, status) VALUES (%s, %s, 'running') "
             "ON DUPLICATE KEY UPDATE trigger_type = VALUES(trigger_type), status = 'running', finished_at = NULL, error_summary = NULL",
-            (run_id, source_id, trigger),
+            (batch_id, trigger),
+        )
+
+    def finish_batch(self, batch_id: str, status: str, error_summary: str | None = None) -> None:
+        self._execute(
+            "UPDATE collection_batches SET status = %s, finished_at = UTC_TIMESTAMP(), error_summary = %s WHERE batch_id = %s",
+            (status, error_summary, batch_id),
+        )
+
+    def create_run(self, run_id: str, source_id: str, trigger: str, batch_id: str | None = None) -> None:
+        self._execute(
+            "INSERT INTO collection_runs (run_id, source_id, trigger_type, batch_id, status) VALUES (%s, %s, %s, %s, 'running') "
+            "ON DUPLICATE KEY UPDATE trigger_type = VALUES(trigger_type), batch_id = VALUES(batch_id), status = 'running', finished_at = NULL, error_summary = NULL",
+            (run_id, source_id, trigger, batch_id),
         )
 
     def finish_run(self, run_id: str, status: str, error_summary: str | None = None) -> None:
@@ -75,12 +88,31 @@ class CollectionRepository:
             or 0
         )
 
-    def write_raw_record(self, run_id: str, source_id: str, stable_key: str, kind: RecordKind, payload: dict[str, Any], raw_payload_id: int | None) -> int:
+    def write_raw_record(
+        self,
+        run_id: str,
+        source_id: str,
+        stable_key: str,
+        kind: RecordKind,
+        payload: dict[str, Any],
+        raw_payload_id: int | None,
+        *,
+        batch_id: str | None = None,
+        source_class: str | None = None,
+        source_priority: int | None = None,
+        source_url: str | None = None,
+        source_record_hash: str | None = None,
+        validation_state: str = "valid",
+        validation_reason: str | None = None,
+    ) -> int:
         return int(
             self._execute(
-                "INSERT INTO collection_raw_records (run_id, source_id, record_key, record_kind, raw_payload_id, payload) "
-                "VALUES (%s, %s, %s, %s, %s, %s)",
-                (run_id, source_id, stable_key, kind.value, raw_payload_id, json.dumps(payload, ensure_ascii=False)),
+                "INSERT INTO collection_raw_records (run_id, source_id, record_key, record_kind, raw_payload_id, payload, batch_id, source_class, source_priority, source_url, source_record_hash, validation_state, validation_reason) "
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                (
+                    run_id, source_id, stable_key, kind.value, raw_payload_id, json.dumps(payload, ensure_ascii=False),
+                    batch_id, source_class, source_priority, source_url, source_record_hash, validation_state, validation_reason,
+                ),
             )
             or 0
         )

@@ -305,7 +305,7 @@ export const ruMessages: Messages = {
     headerSort: 'Сортировка по заголовку',
     hotSearchTags: 'Популярные теги',
     quickPlanSearch: 'Быстрый поиск',
-    officialPriceTip: 'Открыть сравнение официальных цен подписки {term}',
+    officialPriceTip: 'Посмотреть цены официальных сайтов для {term}',
     gatewayTip: 'Смотреть gateway с поддержкой {term}',
     moreQuickPlans: 'Еще',
     lessQuickPlans: 'Свернуть',

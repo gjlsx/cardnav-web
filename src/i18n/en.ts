@@ -305,7 +305,7 @@ export const enMessages: Messages = {
     headerSort: 'Header sorting',
     hotSearchTags: 'Popular search tags',
     quickPlanSearch: 'Quick search',
-    officialPriceTip: 'View official subscription price comparison for {term}',
+    officialPriceTip: 'View official site prices for {term}',
     gatewayTip: 'View gateway sites that support {term}',
     moreQuickPlans: 'More',
     lessQuickPlans: 'Show less',

@@ -165,6 +165,8 @@ class LiveMysqlHttpTests(unittest.TestCase):
             self.assertEqual(len(snap), 1)
         finally:
             server.shutdown()
+            server.server_close()
+            thread.join(timeout=2)
             connection.close()
 
 

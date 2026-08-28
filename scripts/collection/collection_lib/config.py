@@ -50,6 +50,7 @@ def default_source(overrides: dict[str, Any] | None = None) -> dict[str, Any]:
         "approval_status": "draft",
         "public_url": "",
         "allowlist_urls": [],
+        "record_kind": "shop_product",
         "field_whitelist": list(DEFAULT_WHITELIST),
     }
     if overrides:
@@ -87,6 +88,7 @@ def normalize_source(raw: dict[str, Any]) -> dict[str, Any]:
     source["field_whitelist"] = list(source.get("field_whitelist") or DEFAULT_WHITELIST)
     source["public_url"] = str(source.get("public_url") or "").strip()
     source["allowlist_urls"] = [str(url).strip() for url in source.get("allowlist_urls") or [] if str(url).strip()]
+    source["record_kind"] = str(source.get("record_kind") or "shop_product").strip() or "shop_product"
     if "score" in source or "site_score" in source:
         raise ValueError("source config must not include score; site.score belongs to the site catalog")
     return source

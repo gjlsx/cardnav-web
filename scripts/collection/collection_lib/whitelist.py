@@ -18,6 +18,15 @@ ALLOWED_FIELDS = (
     "observed_at",
     "provenance",
     "confidence",
+    "site_name",
+    "summary",
+    "model_family",
+    "model_name",
+    "task_slug",
+    "plan_slug",
+    "country_code",
+    "rank",
+    "url",
 )
 
 FORBIDDEN_FIELD_MARKERS = (

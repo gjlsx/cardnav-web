@@ -20,11 +20,13 @@ from collection_lib.config import (  # noqa: E402
     validate_sources,
 )
 from collection_lib.fixtures import fixtures_for_source  # noqa: E402
+from collection_lib.contracts import RecordKind  # noqa: E402
 from collection_lib.fetch import fetch_approved_json  # noqa: E402
 from collection_lib.merge import merge_observations  # noqa: E402
 from collection_lib.migrations import apply_migrations  # noqa: E402
-from collection_lib.repository import open_local_connection  # noqa: E402
-from collection_lib.staging import dump_jsonl, write_staging  # noqa: E402
+from collection_lib.pipeline import run_source_pipeline  # noqa: E402
+from collection_lib.publisher import PublicPublisher  # noqa: E402
+from collection_lib.repository import CollectionRepository, open_local_connection  # noqa: E402
 from collection_lib.whitelist import filter_observation  # noqa: E402
 
 DEFAULT_SOURCES = ROOT / "sources.example.json"
@@ -87,16 +89,28 @@ def cmd_dry_run(path: Path, ignore_enabled: bool) -> int:
 def cmd_write_staging(path: Path, ignore_enabled: bool) -> int:
     load_dotenv()
     sources = load_sources(path)
-    rows, stats = collect_rows(sources, ignore_enabled=ignore_enabled)
-    run_id = datetime.now(timezone.utc).strftime("fixture-%Y%m%d%H%M%S")
-    dump_jsonl(ROOT / "out" / f"{run_id}.jsonl", rows)
-    mysql_counts = {}
+    connection = open_local_connection()
+    results = []
     try:
-        mysql_counts = write_staging(run_id, rows)
-    except Exception as exc:  # noqa: BLE001
-        mysql_counts = {"mysql_error": str(exc).split("using password")[0].strip()}
-    print(json.dumps({"run_id": run_id, "stats": stats, "mysql": mysql_counts, "published": False}, ensure_ascii=False))
-    return 0
+        apply_migrations(connection)
+        repository = CollectionRepository(connection)
+        publisher = PublicPublisher()
+        for source in sources:
+            if not ignore_enabled and not source.get("enabled"):
+                continue
+            kind = RecordKind(str(source.get("record_kind") or "shop_product"))
+            if source_may_request_network(source):
+                body, rows, content_type = fetch_approved_json(source)
+            else:
+                rows = fixtures_for_source(source["id"])
+                body = json.dumps(rows, ensure_ascii=False)
+                content_type = "application/json"
+            rows = apply_item_cap(rows, int(source.get("max_items_per_run") or 0))
+            results.append(run_source_pipeline(repository, source, body, rows, content_type, "manual", kind, publisher))
+    finally:
+        connection.close()
+    print(json.dumps({"runs": results, "published": all(not item.get("error") for item in results)}, ensure_ascii=False))
+    return 0 if all(not item.get("error") for item in results) else 1
 
 
 def cmd_migrate() -> int:
@@ -111,7 +125,7 @@ def cmd_migrate() -> int:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Local collection CLI (fixture/dry-run, no scheduler, no auto-publish)")
+    parser = argparse.ArgumentParser(description="Local collection CLI: fixture or approved HTTP into local MySQL")
     parser.add_argument("command", choices=["check-config", "dry-run", "write-staging", "migrate"])
     parser.add_argument("--sources", default=str(DEFAULT_SOURCES))
     parser.add_argument("--manual", action="store_true", help="Ignore enabled=false (default for dry-run/write-staging)")

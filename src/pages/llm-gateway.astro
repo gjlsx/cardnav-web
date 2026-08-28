@@ -25,7 +25,8 @@ const t = Astro.locals.messages;
 const linkTo = Astro.locals.localizePath;
 const GATEWAY_SITE_PAGE_SIZE = 20;
 const GATEWAY_MODEL_PAGE_SIZE = 100;
-const gatewayData = await loadGatewaySites({ limit: GATEWAY_SITE_PAGE_SIZE });
+const requestedModelFamily = Astro.url.searchParams.get('model')?.trim().toLowerCase() || '';
+const gatewayData = await loadGatewaySites({ limit: GATEWAY_SITE_PAGE_SIZE, modelFamily: requestedModelFamily });
 const gatewayModelData = await loadGatewayModels({ limit: GATEWAY_MODEL_PAGE_SIZE });
 const topSites = gatewayData.sites;
 const topModels = gatewayModelData.models;
@@ -91,7 +92,7 @@ const gatewayHomeConfig = {
   siteTotalCount: gatewayData.totalSiteCount,
   modelTotalCount: gatewayModelData.totalModelCount,
   displaySummary: t.labels.displaySummary,
-  sitesApi: `/api/llm-gateway/sites.json?offset=${GATEWAY_SITE_PAGE_SIZE}&locale=${encodeURIComponent(Astro.locals.locale)}`,
+  sitesApi: `/api/llm-gateway/sites.json?offset=${GATEWAY_SITE_PAGE_SIZE}&locale=${encodeURIComponent(Astro.locals.locale)}${requestedModelFamily ? `&model=${encodeURIComponent(requestedModelFamily)}` : ''}`,
   modelsApi: `/api/llm-gateway/models.json?offset=${GATEWAY_MODEL_PAGE_SIZE}&locale=${encodeURIComponent(Astro.locals.locale)}`,
   detailLabel: t.llmGateway.viewDetail,
   openLabel: t.actions.open,

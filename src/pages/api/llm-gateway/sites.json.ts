@@ -11,7 +11,7 @@ import { loadGatewaySites } from '../../../store.js';
 export const GET: APIRoute = async ({ request }) => {
   const url = new URL(request.url);
   const offset = Math.max(0, Number(url.searchParams.get('offset') || '0') || 0);
-  const data = await loadGatewaySites();
+  const data = await loadGatewaySites({ modelFamily: url.searchParams.get('model') || '' });
   return new Response(JSON.stringify({ offset, totalCount: data.totalSiteCount, items: data.sites.slice(offset) }), {
     headers: {
       'content-type': 'application/json; charset=utf-8',

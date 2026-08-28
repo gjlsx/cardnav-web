@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 import { referenceGatewaySamples, referenceGatewayModelCoverage } from '../src/reference-samples.js';
-import { formatBeijingRefreshTime } from '../src/store.js';
+import { filterGatewaySitesByModelFamily, formatBeijingRefreshTime, type PublicGatewaySiteRow } from '../src/store.js';
 
 const storeSource = fs.readFileSync(path.resolve('src/store.ts'), 'utf8');
 const seedSource = fs.readFileSync(path.resolve('scripts/seed-reference-samples.ts'), 'utf8');
@@ -58,4 +58,19 @@ test('gateway sample snapshots use the same Beijing display time as the detail q
   assert.equal(formatBeijingRefreshTime('2026-08-27T22:55:00.000Z'), '2026-08-28 06:55:00');
   assert.match(seedSource, /formatBeijingRefreshTime/);
   assert.doesNotMatch(seedSource, /latestGatewayRefreshTime: toMySqlDate/);
+});
+
+test('model query keeps only case-insensitive observed family matches', () => {
+  const site = (name: string, displayModelFamilies: string[]): PublicGatewaySiteRow => ({
+    id: name, slug: name, name, url: '', outboundUrl: '', host: '', family: '', displayFamily: '', createdAt: null, createdTime: '',
+    lastProductRefreshCompleteAt: null, lastProductRefreshCompleteTime: '', siteScore: 50, sponsor: false,
+    availabilityPercent: null, avgSuccessLatencyMs: null, summary: '', modelTypes: [], paymentMethods: [], modelCount: displayModelFamilies.length,
+    priceCount: 0, modelFamilies: displayModelFamilies, displayModelFamilies, refreshStatus: '', refreshErrorType: '',
+    latestGatewayRefreshAt: null, latestGatewayRefreshTime: '', sampledAt: null, isSample: true, sourceName: '', sourcePageUrl: '',
+  });
+  const selected = filterGatewaySitesByModelFamily([
+    site('GPT reference', ['GPT', 'Claude']),
+    site('Gemini reference', ['Gemini']),
+  ], 'gPt');
+  assert.deepEqual(selected.map(item => item.name), ['GPT reference']);
 });

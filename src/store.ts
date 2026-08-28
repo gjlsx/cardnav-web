@@ -160,6 +160,8 @@ type PublicSnapshotKey =
 
 type PublicListLimitOptions = {
   limit?: number;
+  /** Explicit observed gateway model-family filter for /llm-gateway?model=. */
+  modelFamily?: string;
 };
 type PublicGatewaySitesData = { sites: PublicGatewaySiteRow[]; totalSiteCount: number; sitesWithPricesCount: number; totalModelCount: number; totalPriceCount: number };
 type PublicGatewayModelsData = { models: PublicGatewayModelRow[]; totalModelCount: number; totalSupportCount: number };
@@ -312,12 +314,21 @@ function mapMySqlGatewaySiteRow(row: Record<string, unknown>) {
   };
 }
 
-async function mysqlGatewaySiteRows(options: { slug?: string; modelId?: string; limit?: number | null } = {}) {
+async function mysqlGatewaySiteRows(options: { slug?: string; modelId?: string; modelFamily?: string; limit?: number | null } = {}) {
   const values: unknown[] = [];
   let modelFilter = '';
   if (options.modelId) {
     modelFilter = ' AND EXISTS (SELECT 1 FROM gateway_model_coverage coverage WHERE coverage.site_id = gateway_sites.site_id AND coverage.model_id = ?)';
     values.push(options.modelId);
+  }
+  const normalizedModelFamily = options.modelFamily?.trim().toLowerCase();
+  if (normalizedModelFamily) {
+    modelFilter += ` AND EXISTS (
+      SELECT 1 FROM gateway_model_coverage coverage
+      WHERE coverage.site_id = gateway_sites.site_id
+        AND LOWER(TRIM(COALESCE(coverage.model_family, ''))) = ?
+    )`;
+    values.push(normalizedModelFamily);
   }
   if (options.slug) {
     modelFilter += ' AND gateway_sites.slug = ?';
@@ -439,7 +450,13 @@ async function loadMySqlShopProductsData(options: ShopProductsOptions): Promise<
 
 async function loadMySqlGatewaySites(options: PublicListLimitOptions): Promise<PublicGatewaySitesData> {
   const limit = safeListLimit(options.limit);
-  const sites = await mysqlGatewaySiteRows({ limit });
+  const normalizedModelFamily = options.modelFamily?.trim().toLowerCase();
+  const sites = await mysqlGatewaySiteRows({ limit, modelFamily: normalizedModelFamily });
+  const modelFamilyCondition = normalizedModelFamily ? ` AND EXISTS (
+    SELECT 1 FROM gateway_model_coverage filtered_coverage
+    WHERE filtered_coverage.site_id = gateway_sites.site_id
+      AND LOWER(TRIM(COALESCE(filtered_coverage.model_family, ''))) = ?
+  )` : '';
   const summaryResult = await getPool().query(`
     SELECT COUNT(*) AS total_site_count, COALESCE(SUM(price_count > 0), 0) AS sites_with_prices_count,
       COALESCE(SUM(model_count), 0) AS total_model_count, COALESCE(SUM(price_count), 0) AS total_price_count
@@ -449,10 +466,10 @@ async function loadMySqlGatewaySites(options: PublicListLimitOptions): Promise<P
       FROM gateway_sites
       LEFT JOIN gateway_model_coverage coverage ON coverage.site_id = gateway_sites.site_id
       LEFT JOIN gateway_model_prices prices ON prices.site_id = gateway_sites.site_id
-      WHERE gateway_sites.status = 'online' AND gateway_sites.type = 'gateway'
+      WHERE gateway_sites.status = 'online' AND gateway_sites.type = 'gateway'${modelFamilyCondition}
       GROUP BY gateway_sites.site_id
     ) AS online_sites
-  `);
+  `, normalizedModelFamily ? [normalizedModelFamily] : []);
   const summary = summaryResult.rows[0] ?? {};
   return { sites, totalSiteCount: Number(summary.total_site_count) || 0, sitesWithPricesCount: Number(summary.sites_with_prices_count) || 0, totalModelCount: Number(summary.total_model_count) || 0, totalPriceCount: Number(summary.total_price_count) || 0 };
 }
@@ -595,12 +612,22 @@ export async function loadGatewaySites(options: PublicListLimitOptions = {}): Pr
   const snapshot = await loadPublicSnapshot<PublicGatewaySitesData>('gateway-sites');
   if (snapshot) {
     const limit = safeListLimit(options.limit);
+    const sites = filterGatewaySitesByModelFamily(snapshot.sites, options.modelFamily);
     return {
       ...snapshot,
-      sites: snapshot.sites.slice(0, limit ?? snapshot.sites.length).map(site => ({ ...site, sponsor: site.sponsor === true })),
+      sites: sites.slice(0, limit ?? sites.length).map(site => ({ ...site, sponsor: site.sponsor === true })),
+      totalSiteCount: sites.length,
+      sitesWithPricesCount: sites.filter(site => site.priceCount > 0).length,
     };
   }
   return loadMySqlGatewaySites(options);
+}
+
+/** Keeps only sites with an explicit observed coverage family; no name inference. */
+export function filterGatewaySitesByModelFamily(sites: PublicGatewaySiteRow[], modelFamily?: string) {
+  const normalized = modelFamily?.trim().toLowerCase();
+  if (!normalized) return sites.slice();
+  return sites.filter(site => site.modelFamilies.some(family => family.trim().toLowerCase() === normalized));
 }
 
 export async function loadGatewayModels(options: PublicListLimitOptions = {}): Promise<PublicGatewayModelsData> {

@@ -183,7 +183,11 @@ const statements = [
     source_board_slug VARCHAR(255) NOT NULL DEFAULT '',
     rank INT NOT NULL,
     model_name VARCHAR(255) NOT NULL DEFAULT '',
+    model_family VARCHAR(100) NOT NULL DEFAULT '',
     score DECIMAL(18,6) NOT NULL DEFAULT 0,
+    source_id VARCHAR(64) NULL,
+    sampled_at DATETIME NULL,
+    is_sample BOOLEAN NOT NULL DEFAULT FALSE,
     fetched_at DATETIME NULL,
     KEY model_leaderboards_task_rank (task_slug, rank)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
@@ -255,6 +259,23 @@ async function ensureOfficialPriceColumns(connection: mysql.Connection) {
   }
 }
 
+const modelLeaderboardColumns = [
+  ['model_family', "VARCHAR(100) NOT NULL DEFAULT ''"],
+  ['source_id', 'VARCHAR(64) NULL'],
+  ['sampled_at', 'DATETIME NULL'],
+  ['is_sample', 'BOOLEAN NOT NULL DEFAULT FALSE'],
+] as const;
+
+async function ensureModelLeaderboardColumns(connection: mysql.Connection) {
+  for (const [name, definition] of modelLeaderboardColumns) {
+    const [rows] = await connection.query<mysql.RowDataPacket[]>(
+      `SELECT 1 FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = 'model_leaderboards' AND column_name = ? LIMIT 1`,
+      [name],
+    );
+    if (rows.length === 0) await connection.query(`ALTER TABLE model_leaderboards ADD COLUMN \`${name}\` ${definition}`);
+  }
+}
+
 async function ensureShopProductNaturalKey(connection: mysql.Connection) {
   const [rows] = await connection.query<mysql.RowDataPacket[]>(
     `SELECT 1 FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = 'shop_products' AND index_name = 'shop_products_source_standard_site' LIMIT 1`,
@@ -291,6 +312,7 @@ export async function initializeMySqlSchema(config: MySqlConnectionConfig) {
     await ensureReferenceSourceColumns(connection);
     await ensureGatewaySiteColumns(connection);
     await ensureOfficialPriceColumns(connection);
+    await ensureModelLeaderboardColumns(connection);
     await ensureShopProductNaturalKey(connection);
   } finally {
     await connection.end();

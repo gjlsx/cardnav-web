@@ -1,6 +1,7 @@
 /**
- * 文件说明: 维护模型排行榜页的任务分组、排序和独立 URL 规则。
+ * 文件说明: 维护模型排行榜页的任务分组、排序、关联查询和独立 URL 规则。
  */
+import { catalogProductSlugsForTarget } from './catalog.js';
 import type { PublicModelLeaderboardRow } from './store.js';
 
 export type ModelLeaderboardGroup<Row extends PublicModelLeaderboardRow = PublicModelLeaderboardRow> = {
@@ -10,7 +11,15 @@ export type ModelLeaderboardGroup<Row extends PublicModelLeaderboardRow = Public
   rows: Row[];
 };
 
-const taskOrder = ['coding', 'creative-writing', 'math', 'text-to-image'];
+export const MODEL_LEADERBOARD_TASK_SLUGS = [
+  'coding',
+  'creative-writing',
+  'math',
+  'text-to-image',
+  'video-generation',
+] as const;
+
+const taskOrder = [...MODEL_LEADERBOARD_TASK_SLUGS];
 
 function orderedIndex(values: string[], value: string) {
   const index = values.indexOf(value);
@@ -19,6 +28,38 @@ function orderedIndex(values: string[], value: string) {
 
 export function modelLeaderboardPathname(taskSlug: string) {
   return `/model-leaderboard/${taskSlug}`;
+}
+
+/** Canonical task tabs always include video-generation, even with zero rows. */
+export function mergeModelLeaderboardTaskSlugs(observed: Iterable<string> = []): string[] {
+  const extras = [...new Set(
+    [...observed]
+      .map(slug => slug.trim().toLowerCase())
+      .filter(Boolean)
+      .filter(slug => !taskOrder.includes(slug as (typeof MODEL_LEADERBOARD_TASK_SLUGS)[number])),
+  )].sort((a, b) => a.localeCompare(b, 'zh-Hans-CN', { numeric: true }));
+  return [...taskOrder, ...extras];
+}
+
+/**
+ * Shop links require a declared catalog target. Gateway links use the stored
+ * family as an explicit filter and never infer a family from the display name.
+ */
+export function leaderboardRelatedPaths(modelFamily: string): { shopPath: string; gatewayPath: string } {
+  const family = modelFamily.trim().toLowerCase();
+  if (!family) return { shopPath: '', gatewayPath: '' };
+  return {
+    shopPath: catalogProductSlugsForTarget(family).length > 0
+      ? `/shops?target=${encodeURIComponent(family)}`
+      : '',
+    gatewayPath: `/llm-gateway?model=${encodeURIComponent(family)}`,
+  };
+}
+
+function compareTaskSlug(a: string, b: string) {
+  const orderDiff = orderedIndex(taskOrder, a) - orderedIndex(taskOrder, b);
+  if (orderDiff !== 0) return orderDiff;
+  return a.localeCompare(b, 'zh-Hans-CN', { numeric: true });
 }
 
 export function buildModelLeaderboardGroups(rows: PublicModelLeaderboardRow[]): ModelLeaderboardGroup[] {
@@ -43,20 +84,33 @@ export function buildModelLeaderboardGroups(rows: PublicModelLeaderboardRow[]): 
       ...group,
       rows: group.rows.sort((a, b) => a.rank - b.rank),
     }))
-    .sort((a, b) => {
-      const orderDiff = orderedIndex(taskOrder, a.taskSlug) - orderedIndex(taskOrder, b.taskSlug);
-      if (orderDiff !== 0) return orderDiff;
-      return a.taskSlug.localeCompare(b.taskSlug, 'zh-Hans-CN', { numeric: true });
-    });
+    .sort((a, b) => compareTaskSlug(a.taskSlug, b.taskSlug));
+}
+
+export function buildModelLeaderboardGroupsFromSlugs(
+  taskSlugs: readonly string[],
+  rows: PublicModelLeaderboardRow[],
+): ModelLeaderboardGroup[] {
+  const byTask = new Map<string, PublicModelLeaderboardRow[]>();
+  for (const row of rows) {
+    const slug = row.taskSlug.trim().toLowerCase();
+    byTask.set(slug, [...(byTask.get(slug) ?? []), row]);
+  }
+  return mergeModelLeaderboardTaskSlugs(taskSlugs).map(taskSlug => ({
+    taskSlug,
+    displayName: taskSlug,
+    pathname: modelLeaderboardPathname(taskSlug),
+    rows: (byTask.get(taskSlug) ?? []).slice().sort((a, b) => a.rank - b.rank),
+  }));
 }
 
 export function buildModelLeaderboardGroupsForActiveTask(
-  taskSlugs: string[],
+  taskSlugs: readonly string[],
   activeRows: PublicModelLeaderboardRow[],
   activeTaskSlug: string,
 ): ModelLeaderboardGroup[] {
   const normalizedActiveTask = activeTaskSlug.trim().toLowerCase();
-  return taskSlugs
+  return mergeModelLeaderboardTaskSlugs(taskSlugs)
     .map(taskSlug => ({
       taskSlug,
       displayName: taskSlug,
@@ -64,10 +118,5 @@ export function buildModelLeaderboardGroupsForActiveTask(
       rows: taskSlug === normalizedActiveTask
         ? activeRows.slice().sort((a, b) => a.rank - b.rank)
         : [],
-    }))
-    .sort((a, b) => {
-      const orderDiff = orderedIndex(taskOrder, a.taskSlug) - orderedIndex(taskOrder, b.taskSlug);
-      if (orderDiff !== 0) return orderDiff;
-      return a.taskSlug.localeCompare(b.taskSlug, 'zh-Hans-CN', { numeric: true });
-    });
+    }));
 }

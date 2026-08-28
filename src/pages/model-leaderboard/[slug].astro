@@ -21,6 +21,7 @@ const activeRows = activePage.rows;
 const groups = localizeModelLeaderboardGroups(
   buildModelLeaderboardGroupsForActiveTask(taskSlugs, activeRows, taskSlug),
   Astro.locals.messages,
+  Astro.locals.locale,
 );
 const currentGroup = groups.find(group => group.taskSlug === taskSlug) || null;
 

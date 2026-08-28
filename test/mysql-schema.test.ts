@@ -85,3 +85,17 @@ test('MySQL schema keeps gateway coverage separate from optional price records',
     await connection.end();
   }
 });
+
+test('MySQL schema keeps leaderboard provenance and model family columns', async () => {
+  await initializeMySqlSchema(config);
+  const connection = await mysql.createConnection(config);
+  try {
+    const [rows] = await connection.query<RowDataPacket[]>('SHOW COLUMNS FROM model_leaderboards');
+    const columns = new Set(rows.map(row => String(row.Field)));
+    for (const column of ['task_slug', 'rank', 'model_name', 'model_family', 'score', 'source_id', 'sampled_at', 'is_sample']) {
+      assert.ok(columns.has(column), `missing ${column}`);
+    }
+  } finally {
+    await connection.end();
+  }
+});

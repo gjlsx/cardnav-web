@@ -10,9 +10,11 @@ import {
   referenceDataSources,
   referenceGatewayModelCoverage,
   referenceGatewaySamples,
+  referenceLeaderboardSamples,
   referenceOfficialPriceSamples,
   referenceProductSamples,
 } from '../src/reference-samples.js';
+import { MODEL_LEADERBOARD_TASK_SLUGS } from '../src/model-leaderboard.js';
 import { formatBeijingRefreshTime } from '../src/store.js';
 
 const config = {
@@ -113,6 +115,21 @@ async function main() {
          VALUES (?, ?, ?, ?, ?, TRUE)
          ON DUPLICATE KEY UPDATE model_family = VALUES(model_family), source_id = VALUES(source_id), observed_at = VALUES(observed_at), is_sample = TRUE`,
         [coverage.siteId, coverage.modelId, coverage.modelFamily, coverage.sourceId, toMySqlDate(coverage.observedAt)],
+      );
+    }
+
+    await connection.execute('DELETE FROM model_leaderboards WHERE is_sample = TRUE');
+    for (const sample of referenceLeaderboardSamples) {
+      await connection.execute(
+        `INSERT INTO model_leaderboards (
+          task_slug, source_name, source_url, source_group_slug, source_board_slug,
+          rank, model_name, model_family, score, source_id, sampled_at, is_sample, fetched_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, TRUE, ?)`,
+        [
+          sample.taskSlug, sample.sourceName, sample.sourceUrl, sample.sourceGroupSlug, sample.sourceBoardSlug,
+          sample.rank, sample.modelName, sample.modelFamily, sample.score, sample.sourceId,
+          toMySqlDate(sample.sampledAt), toMySqlDate(sample.sampledAt),
+        ],
       );
     }
 
@@ -218,6 +235,21 @@ async function main() {
         displayName: price.displayName, urlSlug: price.urlSlug, isDefault: price.isDefault, displayOrder: price.displayOrder,
       },
     ])).values()].sort((left, right) => left.displayOrder - right.displayOrder || left.displayName.localeCompare(right.displayName));
+    const modelLeaderboards = referenceLeaderboardSamples.map(sample => ({
+      taskSlug: sample.taskSlug,
+      sourceName: sample.sourceName,
+      sourceUrl: sample.sourceUrl,
+      sourceGroupSlug: sample.sourceGroupSlug,
+      sourceBoardSlug: sample.sourceBoardSlug,
+      rank: sample.rank,
+      modelName: sample.modelName,
+      modelFamily: sample.modelFamily,
+      score: sample.score,
+      sourceId: sample.sourceId,
+      sampledAt: sample.sampledAt,
+      isSample: true,
+      fetchedAt: sample.sampledAt,
+    }));
     const snapshots = [
       ['shop-products', data],
       ['shop-products-packed', packShopProductsData(data)],
@@ -225,6 +257,8 @@ async function main() {
       ['gateway-models', gatewayModelsData],
       ['official-price-catalog', officialPriceCatalog],
       ['official-prices', officialPrices],
+      ['model-leaderboard-task-slugs', [...MODEL_LEADERBOARD_TASK_SLUGS]],
+      ['model-leaderboards', modelLeaderboards],
     ] as const;
     for (const [key, payload] of snapshots) {
       await connection.execute(

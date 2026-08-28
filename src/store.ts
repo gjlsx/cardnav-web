@@ -5,6 +5,7 @@ import 'dotenv/config';
 import { createHash } from 'node:crypto';
 import mysql from 'mysql2/promise';
 import { aggregateCatalogProducts, catalogProductSlugsForTarget } from './catalog.js';
+import { mergeModelLeaderboardTaskSlugs } from './model-leaderboard.js';
 import type { PackedShopProductsData, PublicShopProductsData } from './shop-products-data.js';
 import { validatePublicSubmittedUrl, type PublicSubmittedUrlRejectReason } from './submitted-url.js';
 
@@ -807,7 +808,11 @@ export type PublicModelLeaderboardRow = {
   sourceBoardSlug: string;
   rank: number;
   modelName: string;
+  modelFamily: string;
   score: number;
+  sourceId: string;
+  sampledAt: string;
+  isSample: boolean;
   fetchedAt: string;
 };
 
@@ -889,7 +894,7 @@ export async function loadOfficialPrices(): Promise<PublicOfficialPriceRow[]> {
 
 export async function loadModelLeaderboardTaskSlugs(): Promise<string[]> {
   const snapshot = await loadPublicSnapshot<string[]>('model-leaderboard-task-slugs');
-  if (snapshot) return snapshot;
+  if (snapshot) return mergeModelLeaderboardTaskSlugs(snapshot);
 
   const result = await getPool().query(`
     SELECT task_slug
@@ -901,11 +906,12 @@ export async function loadModelLeaderboardTaskSlugs(): Promise<string[]> {
         WHEN 'creative-writing' THEN 2
         WHEN 'math' THEN 3
         WHEN 'text-to-image' THEN 4
+        WHEN 'video-generation' THEN 5
         ELSE 999
       END ASC,
       task_slug ASC
   `);
-  return result.rows.map(row => String(row.task_slug));
+  return mergeModelLeaderboardTaskSlugs(result.rows.map(row => String(row.task_slug)));
 }
 
 export async function loadModelLeaderboardRowsForTask(taskSlug: string, options: PublicListLimitOptions = {}): Promise<PublicModelLeaderboardRow[]> {
@@ -915,6 +921,7 @@ export async function loadModelLeaderboardRowsForTask(taskSlug: string, options:
   if (snapshot) {
     return snapshot
       .filter(row => row.taskSlug.trim().toLowerCase() === normalizedTaskSlug)
+      .map(normalizeModelLeaderboardRow)
       .sort((a, b) => a.rank - b.rank)
       .slice(0, limit ?? snapshot.length);
   }
@@ -928,7 +935,11 @@ export async function loadModelLeaderboardRowsForTask(taskSlug: string, options:
       source_board_slug,
       rank,
       model_name,
+      model_family,
       score,
+      source_id,
+      sampled_at,
+      is_sample,
       fetched_at
     FROM model_leaderboards
     WHERE lower(trim(task_slug)) = ?
@@ -943,29 +954,51 @@ export async function loadModelLeaderboardRowsForTaskPage(taskSlug: string, opti
   const limit = safeListLimit(options.limit);
   const snapshot = await loadPublicSnapshot<PublicModelLeaderboardRow[]>('model-leaderboards');
   const allRows = snapshot
-    ? snapshot.filter(row => row.taskSlug.trim().toLowerCase() === normalizedTaskSlug).sort((a, b) => a.rank - b.rank)
-    : (await getPool().query(`SELECT task_slug, source_name, source_url, source_group_slug, source_board_slug, rank, model_name, score, fetched_at FROM model_leaderboards WHERE lower(trim(task_slug)) = ? ORDER BY rank ASC`, [normalizedTaskSlug])).rows.map(mapModelLeaderboardRow);
+    ? snapshot.filter(row => row.taskSlug.trim().toLowerCase() === normalizedTaskSlug).map(normalizeModelLeaderboardRow).sort((a, b) => a.rank - b.rank)
+    : (await getPool().query(`SELECT task_slug, source_name, source_url, source_group_slug, source_board_slug, rank, model_name, model_family, score, source_id, sampled_at, is_sample, fetched_at FROM model_leaderboards WHERE lower(trim(task_slug)) = ? ORDER BY rank ASC`, [normalizedTaskSlug])).rows.map(mapModelLeaderboardRow);
   const latestFetchedAt = allRows.reduce<string | null>((latest, row) => !latest || new Date(row.fetchedAt).getTime() > new Date(latest).getTime() ? row.fetchedAt : latest, null);
   return { rows: allRows.slice(0, limit ?? allRows.length), totalCount: allRows.length, latestFetchedAt };
 }
 
 function mapModelLeaderboardRow(row: Record<string, unknown>): PublicModelLeaderboardRow {
-  return {
-    taskSlug: String(row.task_slug),
-    sourceName: String(row.source_name),
-    sourceUrl: String(row.source_url),
-    sourceGroupSlug: String(row.source_group_slug),
-    sourceBoardSlug: String(row.source_board_slug),
+  return normalizeModelLeaderboardRow({
+    taskSlug: String(row.task_slug ?? row.taskSlug ?? ''),
+    sourceName: String(row.source_name ?? row.sourceName ?? ''),
+    sourceUrl: String(row.source_url ?? row.sourceUrl ?? ''),
+    sourceGroupSlug: String(row.source_group_slug ?? row.sourceGroupSlug ?? ''),
+    sourceBoardSlug: String(row.source_board_slug ?? row.sourceBoardSlug ?? ''),
     rank: Number(row.rank),
-    modelName: String(row.model_name),
+    modelName: String(row.model_name ?? row.modelName ?? ''),
+    modelFamily: String(row.model_family ?? row.modelFamily ?? ''),
     score: Number(row.score),
-    fetchedAt: String(row.fetched_at),
+    sourceId: row.source_id == null && row.sourceId == null ? '' : String(row.source_id ?? row.sourceId),
+    sampledAt: row.sampled_at == null && row.sampledAt == null ? '' : String(row.sampled_at ?? row.sampledAt),
+    isSample: row.is_sample === true || row.is_sample === 1 || row.is_sample === '1' || row.isSample === true,
+    fetchedAt: String(row.fetched_at ?? row.fetchedAt ?? ''),
+  });
+}
+
+function normalizeModelLeaderboardRow(row: PublicModelLeaderboardRow): PublicModelLeaderboardRow {
+  return {
+    taskSlug: String(row.taskSlug || ''),
+    sourceName: String(row.sourceName || ''),
+    sourceUrl: String(row.sourceUrl || ''),
+    sourceGroupSlug: String(row.sourceGroupSlug || ''),
+    sourceBoardSlug: String(row.sourceBoardSlug || ''),
+    rank: Number(row.rank) || 0,
+    modelName: String(row.modelName || ''),
+    modelFamily: String(row.modelFamily || ''),
+    score: Number(row.score) || 0,
+    sourceId: String(row.sourceId || ''),
+    sampledAt: String(row.sampledAt || ''),
+    isSample: row.isSample === true,
+    fetchedAt: String(row.fetchedAt || ''),
   };
 }
 
 export async function loadModelLeaderboards(): Promise<PublicModelLeaderboardRow[]> {
   const snapshot = await loadPublicSnapshot<PublicModelLeaderboardRow[]>('model-leaderboards');
-  if (snapshot) return snapshot;
+  if (snapshot) return snapshot.map(normalizeModelLeaderboardRow);
 
   const db = getPool();
   const result = await db.query(`
@@ -977,7 +1010,11 @@ export async function loadModelLeaderboards(): Promise<PublicModelLeaderboardRow
       source_board_slug,
       rank,
       model_name,
+      model_family,
       score,
+      source_id,
+      sampled_at,
+      is_sample,
       fetched_at
     FROM model_leaderboards
     ORDER BY
@@ -986,6 +1023,7 @@ export async function loadModelLeaderboards(): Promise<PublicModelLeaderboardRow
         WHEN 'creative-writing' THEN 2
         WHEN 'math' THEN 3
         WHEN 'text-to-image' THEN 4
+        WHEN 'video-generation' THEN 5
         ELSE 999
       END ASC,
       rank ASC

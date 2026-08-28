@@ -4,24 +4,27 @@
 import type { APIRoute } from 'astro';
 import { isLocale } from '../../../i18n/config.js';
 import { getMessages } from '../../../i18n/messages.js';
+import { localizePath } from '../../../i18n/paths.js';
 import { localizeModelLeaderboardGroups } from '../../../localized-display.js';
-import { buildModelLeaderboardGroups } from '../../../model-leaderboard.js';
+import { buildModelLeaderboardGroups, leaderboardRelatedPaths } from '../../../model-leaderboard.js';
 import {
   publicReadApiCacheControl,
   publicReadApiCloudflareCacheControl,
 } from '../../../public-data-cache.js';
-import { loadModelLeaderboardRowsForTask } from '../../../store.js';
+import { formatBeijingRefreshTime, loadModelLeaderboardRowsForTask } from '../../../store.js';
 
 export const GET: APIRoute = async ({ params, request }) => {
   const url = new URL(request.url);
   const offset = Math.max(0, Number(url.searchParams.get('offset') || '0') || 0);
   const rawLocale = url.searchParams.get('locale') || '';
-  const messages = getMessages(isLocale(rawLocale) ? rawLocale : 'zh');
+  const locale = isLocale(rawLocale) ? rawLocale : 'zh';
+  const messages = getMessages(locale);
   const taskSlug = params.taskSlug || '';
   const activeRows = await loadModelLeaderboardRowsForTask(taskSlug);
   const groups = localizeModelLeaderboardGroups(
     buildModelLeaderboardGroups(activeRows),
     messages,
+    locale,
   );
   const currentGroup = groups.find(group => group.taskSlug === taskSlug);
 
@@ -38,11 +41,25 @@ export const GET: APIRoute = async ({ params, request }) => {
 
   return new Response(JSON.stringify({
     totalCount: currentGroup.rows.length,
-    rows: currentGroup.rows.slice(offset).map(row => ({
-      rank: row.rank,
-      modelName: row.modelName,
-      score: row.score,
-    })),
+    emptySample: messages.leaderboard.emptySample,
+    rows: currentGroup.rows.slice(offset).map(row => {
+      const related = leaderboardRelatedPaths(row.modelFamily);
+      return {
+        rank: row.rank,
+        modelName: row.modelName,
+        modelFamily: row.modelFamily,
+        score: row.score,
+        isSample: row.isSample,
+        sourceName: row.localizedSourceName,
+        sampledAt: row.sampledAt ? formatBeijingRefreshTime(row.sampledAt) : '',
+        shopPath: related.shopPath ? localizePath(related.shopPath, locale) : '',
+        gatewayPath: related.gatewayPath ? localizePath(related.gatewayPath, locale) : '',
+        shopTip: messages.leaderboard.shopProductsTip,
+        gatewayTip: messages.leaderboard.gatewayTip,
+        relatedEmpty: messages.leaderboard.relatedEmpty,
+        sampleBadge: messages.leaderboard.sampleBadge,
+      };
+    }),
   }), {
     headers: {
       'content-type': 'application/json; charset=utf-8',

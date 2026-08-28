@@ -7,6 +7,8 @@ import DataTable from './DataTable.astro';
 import DataTableCell from './DataTableCell.astro';
 import DataTableHeader from './DataTableHeader.astro';
 import type { LocalizedModelLeaderboardGroup } from '../localized-display.js';
+import { leaderboardRelatedPaths } from '../model-leaderboard.js';
+import { formatBeijingRefreshTime } from '../store.js';
 
 type Props = {
   groups: LocalizedModelLeaderboardGroup[];
@@ -21,15 +23,25 @@ const linkTo = Astro.locals.localizePath;
 const initialRowCount = 30;
 const visibleRows = currentGroup?.rows.slice(0, initialRowCount) ?? [];
 const hasMoreRows = currentGroupTotalCount > visibleRows.length;
+const emptyText = currentGroup && currentGroup.rows.length === 0 ? t.leaderboard.emptySample : t.leaderboard.empty;
 const leaderboardApiUrl = currentGroup
   ? `/api/model-leaderboard/${encodeURIComponent(currentGroup.taskSlug)}.json?offset=${initialRowCount}&locale=${encodeURIComponent(Astro.locals.locale)}`
   : '';
+
+function relatedLinks(modelFamily: string) {
+  const paths = leaderboardRelatedPaths(modelFamily);
+  return {
+    shopPath: paths.shopPath ? linkTo(paths.shopPath) : '',
+    gatewayPath: paths.gatewayPath ? linkTo(paths.gatewayPath) : '',
+  };
+}
 ---
 
 <PageHero
   title={currentGroup ? `${currentGroup.displayName}${t.leaderboard.titleSuffix}` : t.leaderboard.title}
   description={t.leaderboard.description}
 >
+  <p slot="note" class="page-hero-note">{t.leaderboard.note}</p>
   <p slot="meta" class="page-hero-meta">
     <span>{t.labels.latestRefreshBeijing}：{updateTime}</span>
   </p>
@@ -69,8 +81,9 @@ const leaderboardApiUrl = currentGroup
         <DataTable
           sortable={false}
           variant="compact"
-          emptyText={t.leaderboard.empty}
+          emptyText={emptyText}
           emptyHidden={currentGroup.rows.length > 0}
+          emptyDataAttrs={{ 'data-model-leaderboard-empty': '' }}
           summaryText={currentGroupTotalCount > 0 ? t.labels.displaySummary : ''}
           summaryRenderedCount={visibleRows.length}
           totalCount={currentGroupTotalCount}
@@ -83,15 +96,58 @@ const leaderboardApiUrl = currentGroup
           <Fragment slot="head">
             <DataTableHeader label={t.labels.sequence} sortKey="sequence" sortType="number" align="center" />
             <DataTableHeader label={t.labels.model} sortable={false} />
-            <DataTableHeader label={t.labels.score} sortable={false} />
+            <DataTableHeader label={t.leaderboard.referenceScore} sortable={false} />
           </Fragment>
-          {visibleRows.map(item => (
+          {visibleRows.map(item => {
+            const related = relatedLinks(item.modelFamily);
+            const sampledAt = item.sampledAt ? formatBeijingRefreshTime(item.sampledAt) : '';
+            return (
             <tr data-sort-sequence={String(item.rank)}>
               <DataTableCell label={t.labels.sequence} align="center" sequence>{item.rank}</DataTableCell>
-              <DataTableCell label={t.labels.model} class="font-semibold text-base-content break-all">{item.modelName}</DataTableCell>
-              <DataTableCell label={t.labels.score} class="font-mono font-bold text-primary">{item.score.toFixed(2)}</DataTableCell>
+              <DataTableCell label={t.labels.model} class="text-base-content">
+                <div class="flex min-w-0 flex-col gap-1">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="font-semibold break-all">{item.modelName}</span>
+                    {item.isSample && <span class="badge badge-ghost badge-sm">{t.leaderboard.sampleBadge}</span>}
+                  </div>
+                  {(item.localizedSourceName || sampledAt) && (
+                    <span class="text-xs leading-5 text-base-content/60">
+                      {item.localizedSourceName}{sampledAt ? ` · ${sampledAt}` : ''}
+                    </span>
+                  )}
+                  <div class="flex flex-row flex-wrap items-center gap-2">
+                    {related.shopPath && (
+                      <a
+                        href={related.shopPath}
+                        class="inline-flex w-fit items-center gap-1 rounded-md bg-info/10 px-2 py-1 text-xs leading-5 text-info-content hover:bg-info/15"
+                        data-umami-event="leaderboard-shop-tip-click"
+                        data-umami-event-url={related.shopPath}
+                        data-umami-event-name={item.modelFamily}
+                      >
+                        <span>{t.leaderboard.shopProductsTip}</span>
+                      </a>
+                    )}
+                    {related.gatewayPath && (
+                      <a
+                        href={related.gatewayPath}
+                        class="inline-flex w-fit items-center gap-1 rounded-md bg-info/10 px-2 py-1 text-xs leading-5 text-info-content hover:bg-info/15"
+                        data-umami-event="leaderboard-gateway-tip-click"
+                        data-umami-event-url={related.gatewayPath}
+                        data-umami-event-name={item.modelFamily}
+                      >
+                        <span>{t.leaderboard.gatewayTip}</span>
+                      </a>
+                    )}
+                    {!related.shopPath && !related.gatewayPath && (
+                      <span class="text-xs leading-5 text-base-content/55">{t.leaderboard.relatedEmpty}</span>
+                    )}
+                  </div>
+                </div>
+              </DataTableCell>
+              <DataTableCell label={t.leaderboard.referenceScore} class="font-mono font-bold text-primary">{item.score.toFixed(2)}</DataTableCell>
             </tr>
-          ))}
+            );
+          })}
         </DataTable>
       </>
     )}

@@ -7,9 +7,11 @@ import path from 'node:path';
 import test from 'node:test';
 import {
   referenceDataSources,
+  referenceLeaderboardSamples,
   referenceOfficialPriceSamples,
   referenceProductSamples,
 } from '../src/reference-samples.js';
+import { MODEL_LEADERBOARD_TASK_SLUGS } from '../src/model-leaderboard.js';
 import { officialPlanRelation } from '../src/official-price.js';
 
 test('reference product samples are few, sourced, and explicitly non-transactional', () => {
@@ -51,6 +53,26 @@ test('official price reference samples cover four apps, regional rows, provenanc
   assert.match(source, /'official-prices'/);
   assert.match(source, /referenceOfficialPriceSamples/);
   assert.match(source, /ON DUPLICATE KEY UPDATE/);
+});
+
+test('leaderboard reference samples fill four tasks, keep video-generation empty, and stay sourced', async () => {
+  const sourceIds = new Set(referenceDataSources.map(source => source.id));
+  assert.ok(sourceIds.has('reference-cardnav-leaderboard'));
+  const tasks = new Set(referenceLeaderboardSamples.map(sample => sample.taskSlug));
+  assert.deepEqual([...tasks].sort(), ['coding', 'creative-writing', 'math', 'text-to-image']);
+  assert.ok(!tasks.has('video-generation'));
+  assert.ok(MODEL_LEADERBOARD_TASK_SLUGS.includes('video-generation'));
+  for (const sample of referenceLeaderboardSamples) {
+    assert.ok(sourceIds.has(sample.sourceId));
+    assert.equal(sample.isSample, true);
+    assert.match(sample.sourceUrl, /^https:\/\//);
+    assert.ok(sample.rank >= 1);
+  }
+  const source = await fs.promises.readFile(path.resolve('scripts/seed-reference-samples.ts'), 'utf8');
+  assert.match(source, /'model-leaderboard-task-slugs'/);
+  assert.match(source, /'model-leaderboards'/);
+  assert.match(source, /referenceLeaderboardSamples/);
+  assert.doesNotMatch(source, /video-generation.*rank/);
 });
 
 test('official plan details use only declared internal catalog and model-family relations', () => {

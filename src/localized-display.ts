@@ -16,7 +16,9 @@ export type LocalizedOfficialPriceRow = PublicOfficialPriceRow & {
 
 export type LocalizedOfficialPriceGroup = OfficialPriceGroup<LocalizedOfficialPriceRow>;
 
-export type LocalizedModelLeaderboardRow = PublicModelLeaderboardRow;
+export type LocalizedModelLeaderboardRow = PublicModelLeaderboardRow & {
+  localizedSourceName: string;
+};
 
 export type LocalizedModelLeaderboardGroup = ModelLeaderboardGroup<LocalizedModelLeaderboardRow>;
 
@@ -66,15 +68,27 @@ export function localizeTaskLabel(taskSlug: string, messages: Messages) {
   return taskLabels[taskSlug] ?? taskSlug;
 }
 
+function localizeLeaderboardSource(sourceId: string, fallback: string, locale: Locale) {
+  if (sourceId !== 'reference-cardnav-leaderboard') return fallback;
+  if (locale === 'en') return 'CardNav public model ranking reference';
+  if (locale === 'ru') return 'Публичная справка CardNav по рейтингу моделей';
+  return 'CardNav 公开模型排行参考';
+}
+
 export function localizeModelLeaderboardGroups(
   groups: ModelLeaderboardGroup[],
   messages: Messages,
+  locale: Locale = 'zh',
 ): LocalizedModelLeaderboardGroup[] {
   return groups.map(group => {
     const displayName = localizeTaskLabel(group.taskSlug, messages);
     return {
       ...group,
       displayName,
+      rows: group.rows.map(row => ({
+        ...row,
+        localizedSourceName: localizeLeaderboardSource(row.sourceId, row.sourceName, locale),
+      })),
     };
   });
 }

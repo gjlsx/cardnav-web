@@ -344,6 +344,58 @@ function initModelLeaderboard() {
     return cell;
   }
 
+  function tipLink(href, label, eventName, modelFamily) {
+    const link = document.createElement('a');
+    link.href = href;
+    link.className = 'inline-flex w-fit items-center gap-1 rounded-md bg-info/10 px-2 py-1 text-xs leading-5 text-info-content hover:bg-info/15';
+    link.dataset.umamiEvent = eventName;
+    link.dataset.umamiEventUrl = href;
+    if (modelFamily) link.dataset.umamiEventName = modelFamily;
+    const text = document.createElement('span');
+    text.textContent = label;
+    link.append(text);
+    return link;
+  }
+
+  function modelCell(item) {
+    const cell = document.createElement('td');
+    cell.className = 'data-table-cell data-table-cell-align-left text-base-content';
+    const wrap = document.createElement('div');
+    wrap.className = 'flex min-w-0 flex-col gap-1';
+    const titleRow = document.createElement('div');
+    titleRow.className = 'flex flex-wrap items-center gap-2';
+    const name = document.createElement('span');
+    name.className = 'font-semibold break-all';
+    name.textContent = item.modelName ?? '';
+    titleRow.append(name);
+    if (item.isSample && item.sampleBadge) {
+      const badge = document.createElement('span');
+      badge.className = 'badge badge-ghost badge-sm';
+      badge.textContent = item.sampleBadge;
+      titleRow.append(badge);
+    }
+    wrap.append(titleRow);
+    if (item.sourceName || item.sampledAt) {
+      const source = document.createElement('span');
+      source.className = 'text-xs leading-5 text-base-content/60';
+      source.textContent = [item.sourceName, item.sampledAt].filter(Boolean).join(' · ');
+      wrap.append(source);
+    }
+    const links = document.createElement('div');
+    links.className = 'flex flex-row flex-wrap items-center gap-2';
+    if (item.shopPath) links.append(tipLink(item.shopPath, item.shopTip || '', 'leaderboard-shop-tip-click', item.modelFamily));
+    if (item.gatewayPath) links.append(tipLink(item.gatewayPath, item.gatewayTip || '', 'leaderboard-gateway-tip-click', item.modelFamily));
+    if (!item.shopPath && !item.gatewayPath && item.relatedEmpty) {
+      const empty = document.createElement('span');
+      empty.className = 'text-xs leading-5 text-base-content/55';
+      empty.textContent = item.relatedEmpty;
+      links.append(empty);
+    }
+    wrap.append(links);
+    cell.append(wrap);
+    return cell;
+  }
+
   function rowElement(item) {
     const row = document.createElement('tr');
     row.className = 'hover';
@@ -354,7 +406,7 @@ function initModelLeaderboard() {
     sequenceCell.setAttribute('data-table-sequence-cell', '');
     row.append(
       sequenceCell,
-      textCell('font-semibold text-base-content break-all', item.modelName ?? ''),
+      modelCell(item),
       textCell('font-mono font-bold text-primary', Number.isFinite(score) ? score.toFixed(2) : '-'),
     );
     return row;

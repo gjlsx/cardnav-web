@@ -62,6 +62,12 @@ STAGING_COLUMNS = {
     "published_at": "DATETIME NULL",
 }
 
+SOURCE_COLUMNS = {
+    "public_url": "TEXT NULL",
+    "allowlist_urls": "JSON NULL",
+    "record_kind": "VARCHAR(32) NOT NULL DEFAULT 'shop_product'",
+}
+
 STAGING_INDEXES = {
     "collection_staging_record_key": "(record_key)",
     "collection_staging_publish_status": "(publish_status, quality_status)",
@@ -74,14 +80,15 @@ def apply_migrations(connection) -> None:
     try:
         for statement in CREATE_STATEMENTS:
             cursor.execute(statement)
-        for name, definition in STAGING_COLUMNS.items():
-            cursor.execute(
-                "SELECT 1 FROM information_schema.columns WHERE table_schema = DATABASE() "
-                "AND table_name = 'collection_staging_observations' AND column_name = %s LIMIT 1",
-                (name,),
-            )
-            if cursor.fetchone() is None:
-                cursor.execute(f"ALTER TABLE collection_staging_observations ADD COLUMN `{name}` {definition}")
+        for table, columns in (("collection_staging_observations", STAGING_COLUMNS), ("collection_sources", SOURCE_COLUMNS)):
+            for name, definition in columns.items():
+                cursor.execute(
+                    "SELECT 1 FROM information_schema.columns WHERE table_schema = DATABASE() "
+                    "AND table_name = %s AND column_name = %s LIMIT 1",
+                    (table, name),
+                )
+                if cursor.fetchone() is None:
+                    cursor.execute(f"ALTER TABLE `{table}` ADD COLUMN `{name}` {definition}")
         for name, definition in STAGING_INDEXES.items():
             cursor.execute(
                 "SELECT 1 FROM information_schema.statistics WHERE table_schema = DATABASE() "

@@ -138,6 +138,7 @@ class PublicPublisher:
             self._rebuild_rank_snapshot(repository)
 
     def _rebuild_shop_snapshot(self, repository) -> None:
+        hidden = repository.hidden_keys(RecordKind.SHOP_PRODUCT.value)
         products = repository.query(
             "SELECT shop_products.site_id, shop_sites.name AS site_name, shop_sites.score AS site_score, shop_products.standard_product, shop_products.platform, shop_products.product_type, shop_products.category_name, shop_products.name, shop_products.price, shop_products.price_number, shop_products.price_unit, shop_products.currency_code, shop_products.in_stock, shop_products.sampled_at, shop_products.is_sample, shop_products.source_id "
             "FROM shop_products LEFT JOIN shop_sites ON shop_sites.id = shop_products.site_id"
@@ -154,6 +155,7 @@ class PublicPublisher:
                 for site in sites
             ],
             "products": [
+                item for item in [
                 {
                     "categoryName": product.get("category_name") or "", "name": product.get("name") or "",
                     "price": product.get("price") or "", "priceNumber": float(product["price_number"]) if product.get("price_number") is not None else None,
@@ -166,8 +168,10 @@ class PublicPublisher:
                     "productType": product.get("product_type") or "", "currencyCode": product.get("currency_code") or "CNY",
                     "sampledAt": str(product.get("sampled_at") or ""), "isSample": bool(product.get("is_sample")),
                     "sourceName": "", "sourcePageUrl": "", "sourcePriority": 0,
+                    "_key": f"shop_product:{(product.get('site_id') or '').replace('collected-','')}:{product.get('standard_product') or ''}",
                 }
                 for product in products
+                ] if item["_key"] not in hidden
             ],
             "totalSiteCount": len(sites),
             "totalProductCount": len(products),

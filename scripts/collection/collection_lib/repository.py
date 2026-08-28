@@ -150,6 +150,35 @@ class CollectionRepository:
             (key, json.dumps(payload, ensure_ascii=False, default=str)),
         )
 
+    def upsert_source(self, source: dict[str, Any]) -> None:
+        self._execute(
+            "INSERT INTO collection_sources (source_id, name, source_class, target_domain, priority, enabled, interval_minutes, max_items_per_run, approval_status, field_whitelist, public_url, allowlist_urls, record_kind) "
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE name = VALUES(name), source_class = VALUES(source_class), target_domain = VALUES(target_domain), priority = VALUES(priority), enabled = VALUES(enabled), interval_minutes = VALUES(interval_minutes), max_items_per_run = VALUES(max_items_per_run), approval_status = VALUES(approval_status), field_whitelist = VALUES(field_whitelist), public_url = VALUES(public_url), allowlist_urls = VALUES(allowlist_urls), record_kind = VALUES(record_kind)",
+            (
+                source["id"], source.get("name") or "", source.get("source_class") or "aggregator",
+                source.get("target_domain") or "", int(source.get("priority") or 0), bool(source.get("enabled")),
+                int(source.get("interval_minutes") or 60), int(source.get("max_items_per_run") or 1000),
+                source.get("approval_status") or "draft", json.dumps(source.get("field_whitelist") or [], ensure_ascii=False),
+                source.get("public_url") or "", json.dumps(source.get("allowlist_urls") or [], ensure_ascii=False),
+                source.get("record_kind") or "shop_product",
+            ),
+        )
+
+    def list_sources(self) -> list[dict[str, Any]]:
+        return self.query("SELECT source_id AS id, name, source_class, target_domain, priority, enabled, interval_minutes, max_items_per_run, approval_status, public_url, allowlist_urls, record_kind FROM collection_sources ORDER BY source_id")
+
+    def list_staging(self, kind: str, limit: int = 200) -> list[dict[str, Any]]:
+        return self.query(
+            "SELECT id, record_key, record_kind, normalized_site, model_or_plan, price, currency, quality_status, publish_status, observed_at FROM collection_staging_observations WHERE record_kind = %s ORDER BY id DESC LIMIT %s",
+            (kind, limit),
+        )
+
+    def list_overrides(self, kind: str) -> list[dict[str, Any]]:
+        return self.query("SELECT record_kind, record_key, state, updated_at FROM collection_manual_overrides WHERE record_kind = %s ORDER BY updated_at DESC", (kind,))
+
+    def hidden_keys(self, kind: str) -> set[str]:
+        return {str(row["record_key"]) for row in self.query("SELECT record_key FROM collection_manual_overrides WHERE record_kind = %s AND state = 'hidden'", (kind,))}
+
     def append_activity(self, page_key: str, action: str, message: str, details: dict[str, Any] | None = None) -> None:
         self._execute(
             "INSERT INTO console_activity_logs (page_key, action, message, details) VALUES (%s, %s, %s, %s)",

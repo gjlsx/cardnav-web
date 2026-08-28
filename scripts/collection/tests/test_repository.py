@@ -65,7 +65,7 @@ class MigrationTests(unittest.TestCase):
         apply_migrations(connection)
         sql = "\n".join(call[0] for call in connection.cursor_instance.calls)
         self.assertIn("CREATE TABLE IF NOT EXISTS collection_sources", sql)
-        self.assertIn("ALTER TABLE collection_staging_observations ADD COLUMN `record_key`", sql)
+        self.assertIn("ALTER TABLE `collection_staging_observations` ADD COLUMN `record_key`", sql)
         self.assertNotIn("collection_staging_records", sql)
         self.assertNotIn(" DROP ", sql.upper())
         self.assertEqual(connection.commits, 1)

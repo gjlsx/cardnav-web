@@ -5,9 +5,15 @@ from __future__ import annotations
 import tkinter as tk
 from tkinter import ttk
 
+from pathlib import Path
+
 from console_lib.page_log import PageLogs
+from console_lib.scheduler import LocalScheduler
 from console_lib.task_runner import TaskRunner
 from console_lib.widgets import WorkPage
+from console_tabs.collection_tab import KIND_BY_PAGE, CollectionWorkspace
+from console_tabs.operations_tab import OperationsWorkspace
+from console_tabs.site_config_tab import SiteConfigWorkspace
 
 COLLECT_PAGES = (
     ("collect.gateway", "中转网站"),
@@ -24,9 +30,12 @@ class ConsoleApp:
         self.root.minsize(1100, 720)
         self.logs = PageLogs()
         self.runner = TaskRunner(self.root.after)
+        self.scheduler = LocalScheduler(self.root.after, lambda source: None)
         self.pages: dict[str, WorkPage] = {}
+        self.workspaces = []
         self.db_error = None
         self.repository = None
+        self.sources_path = Path(__file__).resolve().parent / "sources.example.json"
         self._try_db()
         self._build()
 
@@ -59,18 +68,15 @@ class ConsoleApp:
             page = WorkPage(inner, key, title)
             inner.add(page, text=title)
             self.pages[key] = page
-            ttk.Label(page.left, text="来源 / 运行").pack(anchor="w", padx=6, pady=6)
-            ttk.Label(page.right, text="配置与记录（p015 接入）").pack(anchor="w", padx=6, pady=6)
+            self.workspaces.append(CollectionWorkspace(self, page, KIND_BY_PAGE[key], self.sources_path))
         site_page = WorkPage(site, "site_config", "网站配置")
         site_page.pack(fill=tk.BOTH, expand=True)
         self.pages["site_config"] = site_page
-        ttk.Label(site_page.left, text="正式数据").pack(anchor="w", padx=6, pady=6)
-        ttk.Label(site_page.right, text="精确编辑 / 隐藏（p016 接入）").pack(anchor="w", padx=6, pady=6)
+        self.workspaces.append(SiteConfigWorkspace(self, site_page))
         ops_page = WorkPage(ops, "operations", "合作运维")
         ops_page.pack(fill=tk.BOTH, expand=True)
         self.pages["operations"] = ops_page
-        ttk.Label(ops_page.left, text="维护动作").pack(anchor="w", padx=6, pady=6)
-        ttk.Label(ops_page.right, text="备份 / 恢复 / 发布（p017 接入）").pack(anchor="w", padx=6, pady=6)
+        self.workspaces.append(OperationsWorkspace(self, ops_page))
         if self.db_error:
             self.log("operations", f"数据库不可用：{self.db_error}")
             self.log("collect.shops", f"数据库不可用：{self.db_error}")

@@ -21,6 +21,8 @@ from collection_lib.config import (  # noqa: E402
 )
 from collection_lib.fixtures import fixtures_for_source  # noqa: E402
 from collection_lib.merge import merge_observations  # noqa: E402
+from collection_lib.migrations import apply_migrations  # noqa: E402
+from collection_lib.repository import open_local_connection  # noqa: E402
 from collection_lib.staging import dump_jsonl, write_staging  # noqa: E402
 from collection_lib.whitelist import filter_observation  # noqa: E402
 
@@ -97,9 +99,20 @@ def cmd_write_staging(path: Path, ignore_enabled: bool) -> int:
     return 0
 
 
+def cmd_migrate() -> int:
+    load_dotenv()
+    connection = open_local_connection()
+    try:
+        apply_migrations(connection)
+    finally:
+        connection.close()
+    print(json.dumps({"migrated": True, "staging_table": "collection_staging_observations"}, ensure_ascii=False))
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Local collection CLI (fixture/dry-run, no scheduler, no auto-publish)")
-    parser.add_argument("command", choices=["check-config", "dry-run", "write-staging"])
+    parser.add_argument("command", choices=["check-config", "dry-run", "write-staging", "migrate"])
     parser.add_argument("--sources", default=str(DEFAULT_SOURCES))
     parser.add_argument("--manual", action="store_true", help="Ignore enabled=false (default for dry-run/write-staging)")
     parser.add_argument("--scheduled", action="store_true", help="Honor enabled=false (not used; scheduler is not installed)")
@@ -108,6 +121,8 @@ def main() -> int:
     ignore_enabled = not args.scheduled
     if args.command == "check-config":
         return cmd_check_config(path)
+    if args.command == "migrate":
+        return cmd_migrate()
     if args.command == "dry-run":
         return cmd_dry_run(path, ignore_enabled=ignore_enabled)
     return cmd_write_staging(path, ignore_enabled=True)

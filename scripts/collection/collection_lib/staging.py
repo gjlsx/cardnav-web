@@ -7,6 +7,8 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+from .migrations import apply_migrations
+from .repository import open_local_connection
 from .whitelist import ALLOWED_FIELDS, filter_observation
 
 CREATE_SQL = """
@@ -86,6 +88,11 @@ def run_mysql(sql: str) -> str:
 
 def ensure_staging_table() -> None:
     run_mysql(CREATE_SQL)
+    connection = open_local_connection()
+    try:
+        apply_migrations(connection)
+    finally:
+        connection.close()
 
 
 def write_staging(run_id: str, rows: list[dict[str, Any]]) -> dict[str, int]:

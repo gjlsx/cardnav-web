@@ -159,9 +159,9 @@ function navClickAttrs(targetPage: string, name: string) {
 ]}>
 <div id="publicAnnouncementDesktop" data-announcement-desktop hidden class="public-announcement public-announcement-pending border-b border-primary/20 bg-primary/5 px-2 py-2.5 md:px-3">
   <div class="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-2 text-sm">
-    <div class="min-w-0 max-w-full justify-self-center overflow-x-auto whitespace-nowrap text-center font-semibold leading-5 text-base-content/75">
-          <span>{homepageAnnouncement.message}</span>
-          <button type="button" data-announcement-qq-group data-copy-text={qqGroupNumber} class="ml-2 underline decoration-primary/50 underline-offset-2 hover:text-primary" title={t.external.copyQqGroup}>{t.external.qqGroup} · {qqGroupNumber}</button>
+    <div class="flex flex-wrap justify-center gap-x-2 gap-y-0.5 min-w-0 max-w-full justify-self-center text-center font-semibold leading-5 text-base-content/75">
+      <span>{homepageAnnouncement.message}</span>
+      <button type="button" data-announcement-qq-group data-copy-text={qqGroupNumber} class="underline decoration-primary/50 underline-offset-2 hover:text-primary" title={t.external.copyQqGroup}>{t.external.qqGroup} · {qqGroupNumber}</button>
     </div>
     <button type="button" data-dismiss-announcement class="btn btn-ghost btn-circle btn-xs shrink-0 text-base-content/70 hover:bg-base-200 hover:text-base-content" aria-label={t.announcement.close} title={t.announcement.close}>
       <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2" stroke-linecap="round">

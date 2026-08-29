@@ -10,7 +10,7 @@ import DataTableCell from '../components/DataTableCell.astro';
 import DataTableHeader from '../components/DataTableHeader.astro';
 import { collectFilterOptions, uniqueLabels } from '../gateway-display.js';
 import { buildSeoContext } from '../seo.js';
-import { publicSiteUrl, telegramGroupUrl } from '../site.js';
+import { gatewaySubmissionEmail, publicSiteUrl, telegramGroupUrl } from '../site.js';
 import { loadGatewayModels, loadGatewaySites } from '../store.js';
 import dataTableScriptUrl from '../scripts/data-table.js?url';
 import pageWidgetsScriptUrl from '../scripts/page-widgets.js?url';
@@ -103,7 +103,6 @@ const gatewayHomeConfig = {
   sampledAtLabel: t.llmGateway.sampledAt,
   sourceLabel: t.shops.sourcePrefix,
 };
-const gatewaySubmissionEmail = 'xiu.juan2love@gmail.com';
 const gatewaySubmissionChecklist: string[] = t.llmGateway.emailSubmissionChecklist;
 const gatewayMailto = `mailto:${gatewaySubmissionEmail}?subject=${encodeURIComponent(t.llmGateway.emailSubmissionSubject)}&body=${encodeURIComponent(`${t.llmGateway.emailSubmissionBody}\n${gatewaySubmissionChecklist.map(item => `- ${item}`).join('\n')}`)}`;
 ---

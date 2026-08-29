@@ -16,7 +16,8 @@ test('gateway list keeps only useful comparison columns and provides review cont
   assert.doesNotMatch(source, /label=\{t\.llmGateway\.paymentMethods\}/);
   assert.doesNotMatch(source, /data-home-site-payment/);
   assert.doesNotMatch(clientSource, /sitePaymentSelect|paymentBadges|sortModelCount/);
-  assert.match(source, /xiu\.juan2love@gmail\.com/);
+  assert.match(source, /gatewaySubmissionEmail/);
+  assert.match(siteSource, /gatewaySubmissionEmail = 'xiu\.juan2love@gmail\.com'/);
   assert.match(source, /href=\{telegramGroupUrl\}/);
   assert.match(siteSource, /https:\/\/t\.me\/\+AX9TXrzMaS04OWI1/);
 });

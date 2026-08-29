@@ -11,14 +11,29 @@ const siteSource = readSource('src/site.ts');
 const publicPageSource = readSource('src/layouts/PublicPage.astro');
 const sponsorsSource = readSource('src/components/Sponsors.astro');
 const supportSource = readSource('src/components/SponsorSupport.astro');
+const gatewaySource = readSource('src/pages/llm-gateway.astro');
+const englishReadme = readSource('README.en.md');
+const russianReadme = readSource('README.ru.md');
 
 test('public runtime uses the approved sponsor, Telegram, and QQ community values', () => {
   assert.match(siteSource, /publicSiteUrl = process\.env\.PUBLIC_SITE_URL \|\| 'https:\/\/ai\.lovemoney\.live'/);
   assert.match(siteSource, /telegramGroupUrl = 'https:\/\/t\.me\/\+AX9TXrzMaS04OWI1'/);
   assert.match(siteSource, /sponsorUrl = 'https:\/\/buy\.stripe\.com\/cNi8wRgiq26I1Ese0V0Fi00'/);
   assert.match(siteSource, /qqGroupNumber = '1106704568'/);
+  assert.match(siteSource, /gatewaySubmissionEmail = 'xiu\.juan2love@gmail\.com'/);
   assert.match(siteSource, /xProfileUrl = ''/);
   assert.doesNotMatch(siteSource, /cardnav\.xyz|t\.me\/cardnav_xyz_group|github\.com\/charleslee8266|x\.com\/CharlesLee8266/);
+});
+
+test('gateway submission and translated README files use the centralized public contacts', () => {
+  assert.match(gatewaySource, /import \{ gatewaySubmissionEmail, publicSiteUrl, telegramGroupUrl \} from '\.\.\/site\.js'/);
+  assert.doesNotMatch(gatewaySource, /const gatewaySubmissionEmail =/);
+  for (const readme of [englishReadme, russianReadme]) {
+    assert.match(readme, /https:\/\/t\.me\/\+AX9TXrzMaS04OWI1/);
+    assert.match(readme, /https:\/\/buy\.stripe\.com\/cNi8wRgiq26I1Ese0V0Fi00/);
+    assert.match(readme, /1106704568/);
+    assert.match(readme, /xiu\.juan2love@gmail\.com/);
+  }
 });
 
 test('shared page shell removes the hero and GitHub while keeping empty community placeholders', () => {

@@ -11,6 +11,7 @@ const siteSource = readSource('src/site.ts');
 const publicPageSource = readSource('src/layouts/PublicPage.astro');
 const sponsorsSource = readSource('src/components/Sponsors.astro');
 const supportSource = readSource('src/components/SponsorSupport.astro');
+const gatewaySource = readSource('src/pages/llm-gateway.astro');
 const packageSource = readSource('package.json');
 
 test('public runtime uses the approved sponsor, Telegram, and QQ community values', () => {
@@ -18,8 +19,14 @@ test('public runtime uses the approved sponsor, Telegram, and QQ community value
   assert.match(siteSource, /telegramGroupUrl = 'https:\/\/t\.me\/\+AX9TXrzMaS04OWI1'/);
   assert.match(siteSource, /sponsorUrl = 'https:\/\/buy\.stripe\.com\/cNi8wRgiq26I1Ese0V0Fi00'/);
   assert.match(siteSource, /qqGroupNumber = '1106704568'/);
+  assert.match(siteSource, /gatewaySubmissionEmail = 'xiu\.juan2love@gmail\.com'/);
   assert.match(siteSource, /xProfileUrl = ''/);
   assert.doesNotMatch(siteSource, /cardnav\.xyz|t\.me\/cardnav_xyz_group|github\.com\/charleslee8266|x\.com\/CharlesLee8266/);
+});
+
+test('gateway submission imports the centralized public email instead of duplicating it', () => {
+  assert.match(gatewaySource, /gatewaySubmissionEmail/);
+  assert.doesNotMatch(gatewaySource, /const gatewaySubmissionEmail =/);
 });
 
 test('shared page shell removes the hero and GitHub while keeping empty community placeholders', () => {

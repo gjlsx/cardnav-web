@@ -1,4 +1,6 @@
-# 本机采集 CLI / GUI MVP
+# Legacy 本机采集 CLI / GUI MVP
+
+> 此目录保留供历史回溯，暂不删除；新的正式采集入口是 `scripts/crawlee_collection/` 的 Crawlee + Playwright 程序。新 CLI 和新 worker 不调用本目录的旧采集入口。
 
 本机网站总控台（Python/Tkinter）。入口：`python gui.py`。根 Tab：采集数据、网站配置、合作运维。采集子 Tab：中转网站、卡网商品、官方网站、模型排行。每页底部独立日志。
 

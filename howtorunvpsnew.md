@@ -104,15 +104,40 @@ Apache 反代只转到回环 3101，不要把 Node 绑到公网。
 
 ## 4. 正式发布与恢复本地调试
 
-推荐顺序：本机验证通过后再覆盖远程 `dist` 与必要时的样例快照，然后重启 `ai-lovemoney`，最后恢复本机 `pnpm run dev`。
+标准发布脚本（仓库内，可复用；凭据仍只从本机受控文件读取）：
+
+```powershell
+cd D:\work\dock\cardnav-web
+pnpm test
+pnpm run typecheck
+pnpm run build
+python scripts/deploy/publish_ai_lovemoney.py
+```
+
+脚本行为（默认只发 `dist`，这是日常发布）：
+
+| 项 | 值 |
+|---|---|
+| 目标 | `206.119.177.74`，用户 `root` |
+| 凭据 | `D:\temp\aws\177.74 server.txt`；远程 MySQL 密码从 LikeShop 本机 deploy config 读取 |
+| 上传 | 仅 `dist/` tar，不上传 `.env`、不导入本机 SQL |
+| 备份 | `/www/wwwroot/ai.lovemoney.live-backups/ai.lovemoney.live-<timestamp>.tar.gz` |
+| 缺列 | 幂等补 `gateway_sites.region`、`benefit_text` |
+| 重启 | 只 `systemctl restart ai-lovemoney` |
+| 验证 | origin 80/443 Host 头、LikeShop 8086/8090/8095、无采集进程/timer |
+| 禁止 | 改 LikeShop vhost、覆盖远程 `.env`、在生产跑采集器 |
+
+控制台「发布」二次确认短语 `CONFIRM PUBLISH AI.LOVEMONEY.LIVE` 也调用同一脚本。旧的 `D:\temp\ailovemoney-p005\publish_p008.py` 会整库导入本机 SQL，**不要当日常发布**。
+
+2026-08-30 04:50 Asia/Hong_Kong 按上表发布：备份 `ai.lovemoney.live-20260830-050029.tar.gz`；origin HTTP/HTTPS 200；`/llm-gateway` 可见「最近刷新」与「即将上线」；LikeShop 三端口 200；无采集器。本机 `https://ai.lovemoney.live/` 与 `dtch.yg2022.top:8086/8090/8095` 均为 HTTP 200。
+
+推荐手工顺序与脚本一致：本机验证通过后再覆盖远程 `dist`，然后重启 `ai-lovemoney`，最后恢复本机 `pnpm run dev`。
 
 1. 本机完成第 2 节命令，浏览器检查 `http://127.0.0.1:3101` 的 `/`、`/shops`、`/llm-gateway`、`/official-price`、`/model-leaderboard`、`/guide`。
-2. 备份远程 `/www/wwwroot/ai.lovemoney.live` 到 `/www/wwwroot/ai.lovemoney.live-backups/<timestamp>`。
-3. 同步新的 `dist/` 和 `package.json` / 运行所需 `node_modules`（或按既有远程安装方式安装生产依赖）。不要上传本机 `.env`。
-4. 如需更新样例快照，导入脱敏后的 `ailovemoney` 增量/种子结果，核对 `public_snapshot_entries` 计数后再切流量。
-5. `systemctl restart ai-lovemoney`，确认 `is-active` 为 active。
-6. 不要重载或改写 LikeShop vhost。
-7. 发布结束后回到本机：
+2. 运行 `python scripts/deploy/publish_ai_lovemoney.py`（内含远程备份、同步 `dist`、缺列迁移、重启与端口验证）。不要上传本机 `.env`。
+3. 如需更新样例快照，另做脱敏 SQL 导入，核对 `public_snapshot_entries` 计数后再切流量；这不是默认发布步骤。
+4. 不要重载或改写 LikeShop vhost。
+5. 发布结束后回到本机：
 
 ```powershell
 cd D:\work\dock\cardnav-web

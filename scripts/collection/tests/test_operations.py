@@ -18,6 +18,8 @@ class OperationsTests(unittest.TestCase):
             run_confirmed("backup", "nope")
         self.assertIn("howtorunvpsnew.md", preview("publish"))
         self.assertIn("export-mysql", preview("backup"))
+        repo = Path(__file__).resolve().parents[3]
+        self.assertTrue((repo / "scripts" / "deploy" / "publish_ai_lovemoney.py").exists())
 
 
 class SchedulerTests(unittest.TestCase):

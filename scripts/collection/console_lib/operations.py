@@ -50,7 +50,7 @@ def run_confirmed(action: str, confirm_phrase: str) -> str:
     )
     if completed.returncode != 0:
         return _ok(completed)
-    publish = Path(r"D:\temp\ailovemoney-p005\publish_p008.py")
+    publish = REPO / "scripts" / "deploy" / "publish_ai_lovemoney.py"
     if not publish.exists():
         return "build ok; publish helper missing. Follow howtorunvpsnew.md manually. LikeShop ports were not touched."
     published = subprocess.run(["python", str(publish)], capture_output=True, text=True, env=env, cwd=str(REPO))

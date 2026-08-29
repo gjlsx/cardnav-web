@@ -1,6 +1,6 @@
 ---
 scope: cardnav-web
-updated_at: 2026-08-30 04:47 Asia/Hong_Kong
+updated_at: 2026-08-30 05:05 Asia/Hong_Kong
 timezone: Asia/Hong_Kong
 tags: [collection, crawlee, playwright, taskexec]
 summary: PriceAI Crawlee CLI exists; collect/merge programs stay hardcoded and share scripts/crawlee_collection/catch.config for source set, recrawl sleep, and merge intervals.
@@ -27,6 +27,7 @@ summary: PriceAI Crawlee CLI exists; collect/merge programs stay hardcoded and s
 
 - Crawlee unit tests 20 passed; legacy `python -m unittest discover -s scripts/collection/tests` 55 passed, 2026-08-29.
 - Local PriceAI collect `--all` wrote batch `batch-20260829153013-239622` (67 valid raw records) and merge-once imported 67 runtime rows. Transit raw payload was stored with 0 parsed gateway rows because the public listing JSON has no site homepage.
+- 2026-08-30 publish to `206.119.177.74`: dist-only via `scripts/deploy/publish_ai_lovemoney.py`; origin 80/443 200; LikeShop 8086/8090/8095 200; no collector. Public `https://ai.lovemoney.live/llm-gateway` shows 最近刷新. Backup `ai.lovemoney.live-20260830-050029.tar.gz`.
 
 ## Constraints and open work
 

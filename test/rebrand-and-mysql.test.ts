@@ -35,7 +35,7 @@ test('shared page shell removes the hero and GitHub while keeping empty communit
   assert.match(publicPageSource, /xProfileUrl/);
   assert.match(publicPageSource, /qqGroupNumber/);
   assert.doesNotMatch(publicPageSource, /shouldShowHero/);
-  assert.match(publicPageSource, /<span[^>]*>\s*\{t\.announcement\.message\}/);
+  assert.match(publicPageSource, /loadHomepageAnnouncement\(t\.announcement\.message\)/);
 });
 
 test('sponsors render images only without outbound links or copy', () => {

@@ -5,7 +5,7 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 
 from collection_lib.contracts import RecordKind
-from collection_lib.public_data import hide_row, list_public_rows, save_manual_row
+from collection_lib.public_data import hide_row, list_public_rows, load_homepage_announcement, save_homepage_announcement, save_manual_row
 
 
 def parse_editor_payload(row: dict, editor_text: str) -> dict:
@@ -23,10 +23,15 @@ class SiteConfigWorkspace:
         self.app = app
         self.page = page
         self.kind = tk.StringVar(value=RecordKind.SHOP_PRODUCT.value)
+        self.announcement_message = tk.StringVar()
         self._build()
         self.reload()
 
     def _build(self) -> None:
+        announcement = ttk.LabelFrame(self.page.right, text="首页公告（发布到公开快照）")
+        announcement.pack(fill=tk.X, padx=6, pady=(6, 2))
+        ttk.Entry(announcement, textvariable=self.announcement_message).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=6, pady=6)
+        ttk.Button(announcement, text="发布公告", command=self.publish_homepage_announcement).pack(side=tk.LEFT, padx=(0, 6), pady=6)
         ttk.Label(self.page.left, text="实体类型").pack(anchor="w", padx=6)
         combo = ttk.Combobox(self.page.left, textvariable=self.kind, values=[kind.value for kind in RecordKind], state="readonly")
         combo.pack(fill=tk.X, padx=6, pady=4)
@@ -45,12 +50,25 @@ class SiteConfigWorkspace:
         self.listbox.bind("<<ListboxSelect>>", lambda _e: self._show())
         self.rows = []
 
+    def publish_homepage_announcement(self) -> None:
+        if not self.app.repository:
+            self.app.log(self.page.page_key, "无数据库，无法发布首页公告")
+            return
+        try:
+            message = save_homepage_announcement(self.app.repository, self.announcement_message.get())
+        except ValueError as exc:
+            messagebox.showwarning("公告不能为空", str(exc))
+            return
+        self.announcement_message.set(message)
+        self.app.log(self.page.page_key, "首页公告已发布到公开快照")
+
     def reload(self) -> None:
         self.listbox.delete(0, tk.END)
         self.rows = []
         if not self.app.repository:
             self.app.log(self.page.page_key, "无数据库，无法加载正式数据")
             return
+        self.announcement_message.set(load_homepage_announcement(self.app.repository))
         kind = RecordKind(self.kind.get())
         self.rows = list_public_rows(self.app.repository, kind)
         for row in self.rows:

@@ -8,6 +8,7 @@ import { getLocaleHtmlLang, localeLabels, supportedLocales, type Locale } from '
 import { switchLocalePath } from '../i18n/paths.js';
 import publicShellScriptUrl from '../scripts/public-shell.js?url';
 import { headerAdTagEnabled, qqGroupNumber, sponsorUrl, telegramGroupUrl, xProfileUrl } from '../site.js';
+import { loadHomepageAnnouncement } from '../store.js';
 
 type Props = {
   activeNav?: string;
@@ -55,6 +56,7 @@ const {
 
 const t = Astro.locals.messages;
 const linkTo = Astro.locals.localizePath;
+const homepageAnnouncement = await loadHomepageAnnouncement(t.announcement.message);
 const inactiveClass = 'nav-top-tab shrink-0 text-sm md:text-base font-semibold text-base-content/85 hover:text-primary';
 const activeClass = 'nav-top-tab nav-top-tab-active shrink-0 text-sm md:text-base font-semibold text-primary';
 const mobilePrimaryTabClass = 'nav-top-tab nav-top-tab-mobile shrink-0 text-xs font-semibold text-base-content/85 hover:text-primary';
@@ -158,7 +160,8 @@ function navClickAttrs(targetPage: string, name: string) {
 <div id="publicAnnouncementDesktop" data-announcement-desktop hidden class="public-announcement public-announcement-pending border-b border-primary/20 bg-primary/5 px-2 py-2.5 md:px-3">
   <div class="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-2 text-sm">
     <div class="min-w-0 max-w-full justify-self-center overflow-x-auto whitespace-nowrap text-center font-semibold leading-5 text-base-content/75">
-      <span>{t.announcement.message}</span>
+          <span>{homepageAnnouncement.message}</span>
+          <button type="button" data-announcement-qq-group data-copy-text={qqGroupNumber} class="ml-2 underline decoration-primary/50 underline-offset-2 hover:text-primary" title={t.external.copyQqGroup}>{t.external.qqGroup} · {qqGroupNumber}</button>
     </div>
     <button type="button" data-dismiss-announcement class="btn btn-ghost btn-circle btn-xs shrink-0 text-base-content/70 hover:bg-base-200 hover:text-base-content" aria-label={t.announcement.close} title={t.announcement.close}>
       <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2" stroke-linecap="round">

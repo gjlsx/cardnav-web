@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from collection_lib.contracts import RecordKind  # noqa: E402
+from collection_lib import public_data  # noqa: E402
 from collection_lib.public_data import list_public_rows  # noqa: E402
 from console_tabs.collection_tab import KIND_BY_PAGE  # noqa: E402
 from console_tabs.site_config_tab import parse_editor_payload  # noqa: E402
@@ -49,6 +50,10 @@ class PublicDataTests(unittest.TestCase):
         self.assertEqual(payload["region"], "中国大陆")
         self.assertEqual(payload["benefit_text"], "注册送体验金")
         self.assertNotIn("unknown", payload)
+
+    def test_homepage_announcement_is_saved_to_the_existing_public_snapshot(self):
+        self.assertTrue(hasattr(public_data, "save_homepage_announcement"))
+        self.assertTrue(hasattr(public_data, "load_homepage_announcement"))
 
 
 if __name__ == "__main__":

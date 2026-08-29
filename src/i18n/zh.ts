@@ -165,7 +165,7 @@ export const zhMessages = {
   },
   announcement: {
     label: '公告',
-    message: '欢迎关注本站最新内容与公告。',
+    message: '欢迎大家来到 AIGate 欢迎大家进群交流意见',
     close: '关闭公告',
   },
   analytics: {

@@ -43,7 +43,7 @@ test('the public site does not support Russian', () => {
   assert.match(englishReadme, /does not support Russian/i);
 });
 
-test('shared page shell removes the hero and GitHub while keeping empty community placeholders', () => {
+test('shared page shell renders the published announcement with a QQ copy entry', () => {
   assert.doesNotMatch(publicPageSource, /githubRepoUrl|shouldShowHero/);
   assert.match(publicPageSource, /telegramGroupUrl/);
   assert.match(publicPageSource, /xProfileUrl/);
@@ -51,7 +51,10 @@ test('shared page shell removes the hero and GitHub while keeping empty communit
   assert.match(publicPageSource, /sponsorUrl/);
   assert.match(publicPageSource, /t\.actions\.sponsor/);
   assert.match(publicPageSource, /t\.actions\.supportAuthor/);
-  assert.match(publicPageSource, /<span[^>]*>\s*\{t\.announcement\.message\}/);
+  assert.match(publicPageSource, /loadHomepageAnnouncement/);
+  assert.match(publicPageSource, /data-announcement-qq-group/);
+  assert.match(publicPageSource, /data-copy-text=\{qqGroupNumber\}/);
+  assert.match(publicPageSource, /announcement\.message/);
 });
 
 test('support panel is a Stripe-only support action and the logo is the local future mark', () => {

@@ -1,10 +1,40 @@
 """Read/write public website rows by stable key for the site-config tab."""
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from .contracts import OverrideState, RecordKind, record_key
 from .publisher import PublicPublisher, _site_id
+
+HOMEPAGE_ANNOUNCEMENT_KEY = "homepage-announcement"
+
+
+def normalize_homepage_announcement(payload: Any, fallback_message: str = "") -> str:
+    message = payload.get("message") if isinstance(payload, dict) else ""
+    return str(message or "").strip() or fallback_message
+
+
+def load_homepage_announcement(repository, fallback_message: str = "") -> str:
+    rows = repository.query("SELECT payload FROM public_snapshot_entries WHERE `key` = %s LIMIT 1", (HOMEPAGE_ANNOUNCEMENT_KEY,))
+    if not rows:
+        return fallback_message
+    payload = rows[0].get("payload")
+    if isinstance(payload, str):
+        try:
+            payload = json.loads(payload)
+        except json.JSONDecodeError:
+            payload = {}
+    return normalize_homepage_announcement(payload, fallback_message)
+
+
+def save_homepage_announcement(repository, message: str) -> str:
+    normalized = " ".join(str(message or "").split())
+    if not normalized:
+        raise ValueError("公告内容不能为空")
+    repository.upsert_snapshot(HOMEPAGE_ANNOUNCEMENT_KEY, {"message": normalized})
+    repository.commit()
+    return normalized
 
 
 def list_public_rows(repository, kind: RecordKind) -> list[dict[str, Any]]:

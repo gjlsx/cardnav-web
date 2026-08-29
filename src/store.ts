@@ -156,6 +156,7 @@ type PublicSnapshotKey =
   | 'popular-search-terms'
   | 'gateway-sites'
   | 'gateway-models'
+  | 'homepage-announcement'
   | 'official-price-catalog'
   | 'official-prices'
   | 'model-leaderboard-task-slugs'
@@ -613,6 +614,18 @@ export async function loadShopProductsData(options: ShopProductsOptions = {}): P
 
 export async function loadPackedShopProductsSnapshot(): Promise<PackedShopProductsData | null> {
   return loadPublicSnapshot<PackedShopProductsData>('shop-products-packed');
+}
+
+export function normalizeHomepageAnnouncement(payload: unknown, fallbackMessage: string) {
+  const message = typeof payload === 'object' && payload && 'message' in payload
+    ? String((payload as { message?: unknown }).message || '').trim()
+    : '';
+  return message || fallbackMessage;
+}
+
+export async function loadHomepageAnnouncement(fallbackMessage: string) {
+  const snapshot = await loadPublicSnapshot<unknown>('homepage-announcement');
+  return { message: normalizeHomepageAnnouncement(snapshot, fallbackMessage) };
 }
 
 export async function loadGatewaySites(options: PublicListLimitOptions = {}): Promise<PublicGatewaySitesData> {

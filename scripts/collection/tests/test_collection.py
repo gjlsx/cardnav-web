@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -148,15 +149,18 @@ class CliFixtureTests(unittest.TestCase):
 
 class GuiSmokeTests(unittest.TestCase):
     def test_gui_entry_launches_console_shell(self):
-        import tkinter as tk
-        from console_app import ConsoleApp
-
-        root = tk.Tk()
-        root.withdraw()
-        app = ConsoleApp(root)
-        self.assertIn("collect.shops", app.pages)
-        self.assertIn("operations", app.pages)
-        root.destroy()
+        script = "\n".join((
+            "import sys, tkinter as tk",
+            f"sys.path.insert(0, {str(ROOT)!r})",
+            "from console_app import ConsoleApp",
+            "root = tk.Tk(); root.withdraw()",
+            "app = ConsoleApp(root)",
+            "assert 'collect.shops' in app.pages",
+            "assert 'operations' in app.pages",
+            "root.destroy()",
+        ))
+        result = subprocess.run([sys.executable, "-c", script], cwd=ROOT, capture_output=True, text=True, timeout=15)
+        self.assertEqual(result.returncode, 0, result.stderr)
 
 
 if __name__ == "__main__":

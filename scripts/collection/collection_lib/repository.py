@@ -303,6 +303,56 @@ class CollectionRepository:
             (kind, limit),
         )
 
+    def list_batches(self, kind: str, limit: int = 80) -> list[dict[str, Any]]:
+        """Return capture batches that contain the requested child-tab entity kind."""
+        return self.query(
+            "SELECT batch.batch_id, batch.trigger_type, batch.status, batch.started_at, batch.finished_at, "
+            "COUNT(raw.id) AS raw_count, COUNT(DISTINCT raw.source_id) AS source_count "
+            "FROM collection_batches batch JOIN collection_raw_records raw ON raw.batch_id = batch.batch_id "
+            "WHERE raw.record_kind = %s GROUP BY batch.batch_id, batch.trigger_type, batch.status, batch.started_at, batch.finished_at "
+            "ORDER BY batch.started_at DESC LIMIT %s",
+            (kind, limit),
+        )
+
+    def list_raw_records(self, kind: str, batch_id: str | None = None, limit: int = 300) -> list[dict[str, Any]]:
+        sql = (
+            "SELECT id, batch_id, run_id, source_id, record_key, record_kind, validation_state, validation_reason, payload "
+            "FROM collection_raw_records WHERE record_kind = %s"
+        )
+        params: list[Any] = [kind]
+        if batch_id:
+            sql += " AND batch_id = %s"
+            params.append(batch_id)
+        sql += " ORDER BY id DESC LIMIT %s"
+        params.append(limit)
+        rows = self.query(sql, tuple(params))
+        for row in rows:
+            payload = row.get("payload")
+            row["payload"] = json.loads(payload) if isinstance(payload, str) else (payload or {})
+        return rows
+
+    def list_runtime_records(self, kind: RecordKind, limit: int = 300) -> list[dict[str, Any]]:
+        """Expose only current runtime values; raw/staging remain separate audit surfaces."""
+        if kind is RecordKind.SHOP_PRODUCT:
+            return self.query(
+                "SELECT CONCAT(site_id, ':', standard_product) AS runtime_key, site_id, source_id, standard_product AS label, price_number AS value, sampled_at "
+                "FROM shop_products WHERE is_sample = FALSE ORDER BY refreshed_at DESC LIMIT %s", (limit,)
+            )
+        if kind is RecordKind.GATEWAY_SITE:
+            return self.query(
+                "SELECT site_id AS runtime_key, site_id, source_id, name AS label, score AS value, sampled_at "
+                "FROM gateway_sites WHERE is_sample = FALSE ORDER BY sampled_at DESC LIMIT %s", (limit,)
+            )
+        if kind is RecordKind.OFFICIAL_PLAN:
+            return self.query(
+                "SELECT CONCAT(url_slug, ':', country_code) AS runtime_key, source_id, display_name AS label, price_value AS value, sampled_at "
+                "FROM official_prices WHERE is_sample = FALSE ORDER BY sampled_at DESC LIMIT %s", (limit,)
+            )
+        return self.query(
+            "SELECT CONCAT(task_slug, ':', model_name) AS runtime_key, source_id, model_name AS label, score AS value, sampled_at "
+            "FROM model_leaderboards WHERE is_sample = FALSE ORDER BY sampled_at DESC LIMIT %s", (limit,)
+        )
+
     def list_overrides(self, kind: str) -> list[dict[str, Any]]:
         return self.query("SELECT record_kind, record_key, state, updated_at FROM collection_manual_overrides WHERE record_kind = %s ORDER BY updated_at DESC", (kind,))
 

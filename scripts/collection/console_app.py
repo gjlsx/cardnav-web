@@ -97,7 +97,7 @@ class ConsoleApp:
             except Exception:
                 self.repository.rollback()
 
-    def run_action(self, page_key: str, action: str, fn) -> None:
+    def run_action(self, page_key: str, action: str, fn, on_success=None) -> None:
         def on_event(kind, _action, payload):
             if kind == "start":
                 self.log(page_key, f"开始 {action}")
@@ -105,6 +105,8 @@ class ConsoleApp:
                 self.log(page_key, f"{action} 已在运行")
             elif kind == "ok":
                 self.log(page_key, f"完成 {action}: {payload}")
+                if on_success:
+                    on_success(payload)
             elif kind == "err":
                 self.log(page_key, f"失败 {action}: {payload}")
 

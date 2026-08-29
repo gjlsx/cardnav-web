@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import sys
+import subprocess
+import textwrap
 import tempfile
 import time
 import unittest
@@ -83,19 +85,38 @@ class RunnerTests(unittest.TestCase):
 
 
 class ShellSmokeTests(unittest.TestCase):
-    def test_console_shows_three_root_tabs_and_four_collect_tabs(self):
-        import tkinter as tk
-        from console_app import COLLECT_PAGES, ConsoleApp
+    def _console_probe(self, assertions: str) -> None:
+        script = "\n".join((
+            "import sys, tkinter as tk",
+            f"sys.path.insert(0, {str(ROOT)!r})",
+            "from console_app import ConsoleApp, COLLECT_PAGES",
+            "root = tk.Tk(); root.withdraw()",
+            "app = ConsoleApp(root)",
+            textwrap.dedent(assertions).strip(),
+            "root.destroy()",
+        ))
+        result = subprocess.run([sys.executable, "-c", script], cwd=ROOT, capture_output=True, text=True, timeout=15)
+        self.assertEqual(result.returncode, 0, result.stderr)
 
-        root = tk.Tk()
-        root.withdraw()
-        app = ConsoleApp(root)
+    def test_console_shows_three_root_tabs_and_four_collect_tabs(self):
+        self._console_probe("""
         notebook = root.winfo_children()[0]
         texts = [notebook.tab(i, "text") for i in notebook.tabs()]
-        self.assertEqual(texts, ["采集数据", "网站配置", "合作运维"])
-        self.assertEqual([key for key, _title in COLLECT_PAGES], ["collect.gateway", "collect.shops", "collect.official", "collect.leaderboard"])
-        self.assertEqual(len(app.pages), 6)
-        root.destroy()
+        assert texts == ["采集数据", "网站配置", "合作运维"], texts
+        assert [key for key, _title in COLLECT_PAGES] == ["collect.gateway", "collect.shops", "collect.official", "collect.leaderboard"]
+        assert len(app.pages) == 6
+        """)
+
+    def test_collection_workspace_supports_batch_capture_and_explicit_runtime_import(self):
+        self._console_probe("""
+        workspace = next(item for item in app.workspaces if item.page.page_key == "collect.shops")
+        assert str(workspace.source_list.cget("selectmode")) == "extended"
+        assert workspace.capture_button.cget("text") == "抓取选中来源（同一批次）"
+        assert workspace.import_button.cget("text") == "合并并入库运行数据表"
+        assert str(workspace.open_url_button.cget("state")) == "disabled"
+        assert "统一 raw 审计记录" in workspace.view_names
+        assert "当前运行时记录" in workspace.view_names
+        """)
 
 
 if __name__ == "__main__":

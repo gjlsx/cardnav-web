@@ -1,9 +1,9 @@
 ---
 scope: cardnav-web
-updated_at: 2026-08-29 22:29 Asia/Hong_Kong
+updated_at: 2026-08-29 22:44 Asia/Hong_Kong
 timezone: Asia/Hong_Kong
 tags: [collection, crawlee, playwright, taskexec]
-summary: Root agent rules and the first PriceAI browser-collection task are defined; implementation has not started.
+summary: Root agent rules now include complete tasklist-execution checks; the first PriceAI browser-collection task is defined but implementation has not started.
 ---
 
 # Current Status
@@ -12,7 +12,7 @@ summary: Root agent rules and the first PriceAI browser-collection task are defi
 
 - The collection path is raw-first: approved public source -> `collection_raw_payloads` / `collection_raw_records` -> explicit, local singleton merge/import worker -> existing runtime tables and public snapshots.
 - New adapters use Crawlee for Python with Playwright browser collection. The new program is not implemented yet; existing collector files remain legacy and are not to be deleted.
-- The first implementation task is `t08292213.p038`: manually collect the public PriceAI card-subscription, official-API/Token-Plan, and transit-API pages into local MySQL, then explicitly merge/import valid records. It remains `todo` and depends on the completed root-rule tasks `t08292201.p037`, `t08292220.p039`, and `t08292227.p040`.
+- The first implementation task is `t08292213.p038`: manually collect the public PriceAI card-subscription, official-API/Token-Plan, and transit-API pages into local MySQL, then explicitly merge/import valid records. It remains `todo` and depends on the completed root-rule tasks `t08292201.p037`, `t08292220.p039`, `t08292227.p040`, `t08292231.p041`, and `t08292243.p042`.
 
 ## Verified local entry points
 

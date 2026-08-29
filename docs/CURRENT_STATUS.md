@@ -1,9 +1,9 @@
 ---
 scope: cardnav-web
-updated_at: 2026-08-29 22:44 Asia/Hong_Kong
+updated_at: 2026-08-29 22:53 Asia/Hong_Kong
 timezone: Asia/Hong_Kong
 tags: [collection, crawlee, playwright, taskexec]
-summary: Root agent rules now include complete tasklist-execution checks; the first PriceAI browser-collection task is defined but implementation has not started.
+summary: Root agent rules now include complete tasklist-execution checks; PriceAI browser collection is migrated into a dedicated active tasklist and is being executed.
 ---
 
 # Current Status
@@ -12,7 +12,7 @@ summary: Root agent rules now include complete tasklist-execution checks; the fi
 
 - The collection path is raw-first: approved public source -> `collection_raw_payloads` / `collection_raw_records` -> explicit, local singleton merge/import worker -> existing runtime tables and public snapshots.
 - New adapters use Crawlee for Python with Playwright browser collection. The new program is not implemented yet; existing collector files remain legacy and are not to be deleted.
-- The first implementation task is `t08292213.p038`: manually collect the public PriceAI card-subscription, official-API/Token-Plan, and transit-API pages into local MySQL, then explicitly merge/import valid records. It remains `todo` and depends on the completed root-rule tasks `t08292201.p037`, `t08292220.p039`, `t08292227.p040`, `t08292231.p041`, and `t08292243.p042`.
+- The original `t08292213.p038` is retained as a cancelled migration record. Its complete implementation is now the dedicated `taskexec/cardnav-web/tasklist08292253.md`, tasks `t08292253.p001`–`p005`, which collect the public PriceAI card-subscription, official-API/Token-Plan, and transit-API pages into local MySQL then explicitly merge valid records.
 
 ## Verified local entry points
 
@@ -33,4 +33,4 @@ summary: Root agent rules now include complete tasklist-execution checks; the fi
 
 ## Next TODO
 
-Execute `t08292213.p038`: implement the standalone Crawlee + Playwright package, source registry, parser module, MySQL persistence facade with configurable idle reuse, CLI, fixtures, MySQL integration tests, and the explicit local PriceAI raw-to-runtime verification.
+Execute every runnable `codex` task in `taskexec/cardnav-web/tasklist08292253.md`: standalone Crawlee + Playwright package, source registry, parser module, MySQL persistence facade with configurable idle reuse, CLI, fixtures, MySQL integration tests, and explicit local PriceAI raw-to-runtime verification.

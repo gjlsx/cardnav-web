@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from collection_lib.contracts import RecordKind  # noqa: E402
+from collection_lib.publisher import PublicPublisher  # noqa: E402
 from collection_lib.runtime_import import RuntimeImporter, merge_raw_records  # noqa: E402
 
 
@@ -112,6 +113,9 @@ class MergeRawTests(unittest.TestCase):
 
 
 class RuntimeImportTests(unittest.TestCase):
+    def test_legacy_staging_direct_publish_entry_is_removed(self):
+        self.assertFalse(hasattr(PublicPublisher(), "publish_run"))
+
     def test_explicit_merge_import_writes_one_runtime_winner_and_is_idempotent(self):
         repository = MemoryRepository([raw("priceai-channels", "aggregator", 30, 9), raw("cardnav-home", "aggregator", 20, 8)])
         publisher = RecordingPublisher()

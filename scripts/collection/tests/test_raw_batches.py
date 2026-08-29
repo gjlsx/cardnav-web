@@ -46,9 +46,6 @@ class MemoryRepository:
     def has_manual_override(self, _kind, key):
         return key in self.locked
 
-    def write_staging_record(self, record):
-        self.staging.append(record)
-
     def commit(self):
         self.committed = True
 

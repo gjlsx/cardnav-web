@@ -32,10 +32,6 @@ class MemoryRepository:
     def has_manual_override(self, _kind, key):
         return key in self.locked
 
-    def write_staging_record(self, record):
-        self.staging.append(record)
-
-
 class PipelineRepo(MemoryRepository):
     def __init__(self, locked=(), fail_publish=False):
         super().__init__(locked)

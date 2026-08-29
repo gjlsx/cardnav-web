@@ -252,47 +252,6 @@ class CollectionRepository:
         finally:
             cursor.close()
 
-    def write_staging_record(self, record) -> None:
-        payload = dict(record.payload)
-        self._execute(
-            "INSERT INTO collection_staging_observations (run_id, normalized_site, source_id, source_class, source_priority, platform_family, model_or_plan, price, currency, billing_unit, stock_status, region, payment_tags, delivery_tags, public_perf, observed_at, provenance, confidence, record_key, record_kind, quality_status, publish_status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'approved', 'pending')",
-            (record.run_id, payload.get("normalized_site", ""), payload.get("source_id", ""), payload.get("source_class", ""), payload.get("source_priority", 0), payload.get("platform_family", ""), payload.get("model_or_plan", ""), payload.get("price"), payload.get("currency", ""), payload.get("billing_unit", ""), payload.get("stock_status", ""), payload.get("region", ""), payload.get("payment_tags", ""), payload.get("delivery_tags", ""), payload.get("public_perf", ""), payload.get("observed_at", ""), payload.get("provenance", ""), payload.get("confidence"), record.record_key, record.record_kind.value),
-        )
-
-    def fetch_pending_staging(self, run_id: str) -> list[dict[str, Any]]:
-        rows = self.query(
-            "SELECT id, run_id, normalized_site, source_id, source_class, source_priority, platform_family, model_or_plan, price, currency, billing_unit, stock_status, region, payment_tags, delivery_tags, public_perf, observed_at, provenance, confidence, record_key, record_kind FROM collection_staging_observations WHERE run_id = %s AND publish_status = 'pending' AND quality_status = 'approved'",
-            (run_id,),
-        )
-        for row in rows:
-            row["payload"] = {
-                "normalized_site": row.get("normalized_site") or "",
-                "source_id": row.get("source_id") or "",
-                "source_class": row.get("source_class") or "",
-                "source_priority": row.get("source_priority") or 0,
-                "platform_family": row.get("platform_family") or "",
-                "model_or_plan": row.get("model_or_plan") or "",
-                "price": row.get("price"),
-                "currency": row.get("currency") or "",
-                "billing_unit": row.get("billing_unit") or "",
-                "stock_status": row.get("stock_status") or "",
-                "region": row.get("region") or "",
-                "payment_tags": row.get("payment_tags") or "",
-                "delivery_tags": row.get("delivery_tags") or "",
-                "public_perf": row.get("public_perf") or "",
-                "observed_at": row.get("observed_at") or "",
-                "provenance": row.get("provenance") or "",
-                "confidence": row.get("confidence"),
-            }
-        return rows
-
-    def mark_staging(self, row_id: int, status: str) -> None:
-        published_at = datetime.now(timezone.utc).replace(tzinfo=None) if status == "published" else None
-        self._execute(
-            "UPDATE collection_staging_observations SET publish_status = %s, published_at = %s WHERE id = %s",
-            (status, published_at, row_id),
-        )
-
     def upsert_snapshot(self, key: str, payload: Any) -> None:
         self._execute(
             "INSERT INTO public_snapshot_entries (`key`, payload) VALUES (%s, %s) ON DUPLICATE KEY UPDATE payload = VALUES(payload)",

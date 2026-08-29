@@ -1,4 +1,4 @@
-"""Write whitelist observations to MySQL staging. Never prints connection secrets."""
+"""Legacy staging-table compatibility helpers; current collection must write raw only."""
 from __future__ import annotations
 
 import json

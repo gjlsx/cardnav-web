@@ -1,4 +1,4 @@
-"""Publish approved staging rows into public tables and snapshots in one transaction."""
+"""Write explicit merge/import winners or manual edits to runtime tables and snapshots."""
 from __future__ import annotations
 
 import json
@@ -20,24 +20,6 @@ class PublicPublisher:
     def publish_merged_row(self, repository, row: dict[str, Any]) -> None:
         """Publish a merge/import winner. The caller owns the encompassing transaction."""
         self._publish_row(repository, RecordKind(str(row["record_kind"])), row)
-
-    def publish_run(self, repository, run_id: str) -> dict[str, int]:
-        stats = {"published": 0, "skipped_manual": 0}
-        kinds: set[RecordKind] = set()
-        for row in repository.fetch_pending_staging(run_id):
-            kind = RecordKind(row["record_kind"])
-            key = str(row["record_key"])
-            if repository.has_manual_override(kind, key):
-                repository.mark_staging(row["id"], "skipped")
-                stats["skipped_manual"] += 1
-                continue
-            self._publish_row(repository, kind, row)
-            repository.mark_staging(row["id"], "published")
-            stats["published"] += 1
-            kinds.add(kind)
-        if kinds:
-            self.rebuild_snapshots(repository, kinds)
-        return stats
 
     def _publish_row(self, repository, kind: RecordKind, row: dict[str, Any]) -> None:
         payload = row.get("payload") or {}

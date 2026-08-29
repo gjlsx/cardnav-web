@@ -27,7 +27,7 @@ summary: PriceAI Crawlee CLI exists; collect/merge programs stay hardcoded and s
 
 - Crawlee unit tests 20 passed; legacy `python -m unittest discover -s scripts/collection/tests` 55 passed, 2026-08-29.
 - Local PriceAI collect `--all` wrote batch `batch-20260829153013-239622` (67 valid raw records) and merge-once imported 67 runtime rows. Transit raw payload was stored with 0 parsed gateway rows because the public listing JSON has no site homepage.
-- 2026-08-30 publish to `206.119.177.74`: dist-only via `scripts/deploy/publish_ai_lovemoney.py`; origin 80/443 200; LikeShop 8086/8090/8095 200; no collector. Public `https://ai.lovemoney.live/llm-gateway` shows 最近刷新. Backup `ai.lovemoney.live-20260830-050029.tar.gz`.
+- 2026-08-30 publish to `206.119.177.74`: `scripts/deploy/publish_ai_lovemoney.py` packs dist and imports local `ailovemoney` SQL. After import: gateway_sites=422, gateway_model_prices=2283, snapshots=9. Origin 80/443 200; LikeShop 8086/8090/8095 200; no collector.
 
 ## Constraints and open work
 

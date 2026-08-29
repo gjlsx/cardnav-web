@@ -14,6 +14,6 @@ $port = if ($env:MYSQL_PORT) { $env:MYSQL_PORT } else { '3306' }
 $user = if ($env:MYSQL_USER) { $env:MYSQL_USER } else { 'root' }
 if (-not $env:MYSQL_PWD -and $env:MYSQL_PASSWORD) { $env:MYSQL_PWD = $env:MYSQL_PASSWORD }
 
-& $dumpExe --host=$hostName --port=$port --user=$user --single-transaction --routines --events --default-character-set=utf8mb4 --databases $database | Out-File -LiteralPath $OutputPath -Encoding utf8
+& $dumpExe --host=$hostName --port=$port --user=$user --single-transaction --routines --events --default-character-set=utf8mb4 --result-file=$OutputPath --databases $database
 if ($LASTEXITCODE -ne 0) { throw "mysqldump failed with exit code $LASTEXITCODE" }
 Write-Output "Exported $database to $OutputPath"

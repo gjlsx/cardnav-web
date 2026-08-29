@@ -1,6 +1,6 @@
-"""Standard publish: pack local dist, backup origin, extract, ensure gateway columns, restart ai-lovemoney.
+"""Standard publish: pack local dist, export local ailovemoney SQL, backup origin, extract, import SQL, restart.
 
-Does not upload .env, does not import local SQL, does not touch LikeShop 8086/8090/8095.
+Does not upload .env and does not touch LikeShop 8086/8090/8095.
 Credentials are read from local secure files documented in howtorunvpsnew.md.
 
 Usage from repo root after pnpm test / typecheck / build:
@@ -10,6 +10,7 @@ Usage from repo root after pnpm test / typecheck / build:
 from __future__ import annotations
 
 import datetime as dt
+import os
 import subprocess
 import sys
 import tempfile
@@ -24,10 +25,12 @@ from vps_session import (  # noqa: E402
     WEB_ROOT,
     Session,
     connect,
+    load_dotenv,
     load_remote_mysql_password,
 )
 
 REMOTE_DIR = "/tmp/ailovemoney-publish"
+EXPORT_SCRIPT = ROOT / "scripts" / "export-mysql.ps1"
 
 
 def pack_dist(dest: Path) -> None:
@@ -40,7 +43,37 @@ def pack_dist(dest: Path) -> None:
     print(f"[pack] dist {dest.stat().st_size} bytes", flush=True)
 
 
-def connect_with_retry() -> object:
+def export_sql(dest: Path) -> None:
+    local = load_dotenv(ROOT / ".env")
+    env = os.environ.copy()
+    if local.get("MYSQL_PASSWORD"):
+        env["MYSQL_PASSWORD"] = local["MYSQL_PASSWORD"]
+        env["MYSQL_PWD"] = local["MYSQL_PASSWORD"]
+    for key in ("MYSQL_HOST", "MYSQL_PORT", "MYSQL_USER", "MYSQL_DATABASE"):
+        if local.get(key):
+            env[key] = local[key]
+    subprocess.run(
+        [
+            "powershell",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            str(EXPORT_SCRIPT),
+            "-OutputPath",
+            str(dest),
+        ],
+        cwd=ROOT,
+        env=env,
+        check=True,
+    )
+    raw = dest.read_bytes()
+    if raw.startswith(b"\xef\xbb\xbf"):
+        dest.write_bytes(raw[3:])
+    print(f"[export] sql {dest.stat().st_size} bytes", flush=True)
+
+
+def connect_with_retry():
     last_error = None
     for attempt in range(1, 5):
         try:
@@ -55,30 +88,45 @@ def connect_with_retry() -> object:
 
 def main() -> int:
     stamp = dt.datetime.now().strftime("%Y%m%d-%H%M%S")
-    backup = f"{BACKUP_DIR}/ai.lovemoney.live-{stamp}.tar.gz"
+    site_backup = f"{BACKUP_DIR}/ai.lovemoney.live-{stamp}.tar.gz"
+    db_backup = f"{BACKUP_DIR}/ailovemoney-{stamp}.sql"
     mysql_password = load_remote_mysql_password()
     with tempfile.TemporaryDirectory(prefix="ailovemoney-publish-") as tmp:
         dist_tar = Path(tmp) / "dist.tar.gz"
+        sql_path = Path(tmp) / "ailovemoney.sql"
         pack_dist(dist_tar)
+        export_sql(sql_path)
         client = connect_with_retry()
         session = Session(client, mysql_password)
         try:
             session.run(f"mkdir -p {REMOTE_DIR} {BACKUP_DIR}")
             with client.open_sftp() as sftp:
                 sftp.put(str(dist_tar), f"{REMOTE_DIR}/dist.tar.gz")
-                print("[sftp] uploaded dist only", flush=True)
-            session.run(f"tar -C /www/wwwroot -czf {backup} ai.lovemoney.live", timeout=180)
+                sftp.put(str(sql_path), f"{REMOTE_DIR}/ailovemoney.sql")
+                print("[sftp] uploaded dist and sql", flush=True)
+            session.run(f"tar -C /www/wwwroot -czf {site_backup} ai.lovemoney.live", timeout=180)
+            session.run(
+                f"mysqldump --host=127.0.0.1 --port=3306 --user=root --single-transaction --routines --events "
+                f"--default-character-set=utf8mb4 --databases ailovemoney > {db_backup}",
+                timeout=300,
+                env={"MYSQL_PWD": mysql_password},
+                hide=mysql_password,
+            )
             session.run(f"tar -xzf {REMOTE_DIR}/dist.tar.gz -C {WEB_ROOT}", timeout=120)
             session.run(f"test -f {WEB_ROOT}/dist/server/entry.mjs && echo dist_ok")
             session.run(f"test -f {WEB_ROOT}/.env && echo env_kept")
             session.run(
-                "mysql --host=127.0.0.1 --port=3306 --user=root ailovemoney -e "
-                "\"SET @sql:=IF((SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='ailovemoney' AND table_name='gateway_sites' AND column_name='region')=0, "
-                "'ALTER TABLE gateway_sites ADD COLUMN region VARCHAR(100) NULL', 'SELECT \\\"region_exists\\\"'); "
-                "PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt; "
-                "SET @sql:=IF((SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='ailovemoney' AND table_name='gateway_sites' AND column_name='benefit_text')=0, "
-                "'ALTER TABLE gateway_sites ADD COLUMN benefit_text TEXT NULL', 'SELECT \\\"benefit_text_exists\\\"'); "
-                "PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;\"",
+                "mysql --host=127.0.0.1 --port=3306 --user=root --default-character-set=utf8mb4 "
+                f"< {REMOTE_DIR}/ailovemoney.sql",
+                timeout=300,
+                env={"MYSQL_PWD": mysql_password},
+                hide=mysql_password,
+            )
+            session.run(
+                "mysql --host=127.0.0.1 --port=3306 --user=root -N -e "
+                "\"SELECT COUNT(*) FROM ailovemoney.public_snapshot_entries; "
+                "SELECT COUNT(*) FROM ailovemoney.gateway_sites; "
+                "SELECT COUNT(*) FROM ailovemoney.gateway_model_prices;\"",
                 env={"MYSQL_PWD": mysql_password},
                 hide=mysql_password,
             )
@@ -98,7 +146,8 @@ def main() -> int:
             session.run("curl -sS -o /dev/null -w 'mobile_8090 %{http_code}\\n' --max-time 8 -H 'Host: dtch.yg2022.top' http://127.0.0.1:8090/mobile/")
             session.run("curl -sS -o /dev/null -w 'admin_8095 %{http_code}\\n' --max-time 8 -H 'Host: dtch.yg2022.top' http://127.0.0.1:8095/admin/")
             session.run(f"rm -rf {REMOTE_DIR}")
-            print(f"[done] backup={backup}", flush=True)
+            print(f"[done] site_backup={site_backup}", flush=True)
+            print(f"[done] db_backup={db_backup}", flush=True)
             return 0
         finally:
             client.close()

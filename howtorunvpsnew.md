@@ -80,14 +80,11 @@ pnpm run build
 - `seed:reference-samples` 写入本机 `ailovemoney` 和公开快照，供页面验证。它不是生产采集。
 - 构建产物在 `dist/`。本地 `pnpm run dev` 仍用 `PORT=3101`，不要把生产 `dist` 当成 dev 页面来源。
 
-如需把本机样例同步到服务器，只导出最小 SQL 到本机临时目录，经已认证通道上传，导入后删除临时文件。不要把 SQL dump 加入 git。
+日常发布会把本机 `ailovemoney` 导出为临时 SQL，上传后在服务器上用本地 MySQL 直接导入，导入后删除临时文件。不要把 SQL dump 加入 git，也不要把本机连接串写进远程脚本。手动导出（脚本已内嵌，一般不必单独跑）：
 
 ```powershell
-$env:MYSQL_PASSWORD = '<local password>'   # 仅当前会话
 .\scripts\export-mysql.ps1 -OutputPath D:\temp\ailovemoney.sql
 ```
-
-服务器导入时使用服务器本地 MySQL 环境，不要把本机连接串写进远程脚本。
 
 ## 3. 当前服务器布局
 
@@ -114,30 +111,29 @@ pnpm run build
 python scripts/deploy/publish_ai_lovemoney.py
 ```
 
-脚本行为（默认只发 `dist`，这是日常发布）：
+脚本行为（日常发布 = `dist` + 本机 SQL 导入服务器）：
 
 | 项 | 值 |
 |---|---|
 | 目标 | `206.119.177.74`，用户 `root` |
-| 凭据 | `D:\temp\aws\177.74 server.txt`；远程 MySQL 密码从 LikeShop 本机 deploy config 读取 |
-| 上传 | 仅 `dist/` tar，不上传 `.env`、不导入本机 SQL |
-| 备份 | `/www/wwwroot/ai.lovemoney.live-backups/ai.lovemoney.live-<timestamp>.tar.gz` |
-| 缺列 | 幂等补 `gateway_sites.region`、`benefit_text` |
+| 凭据 | `D:\temp\aws\177.74 server.txt`；远程 MySQL 密码从 LikeShop 本机 deploy config 读取；本机 dump 用仓库 `.env` 的 `MYSQL_*` |
+| 上传 | `dist/` tar + 本机 `ailovemoney` SQL；不上传 `.env` |
+| 备份 | 站点 `ai.lovemoney.live-<timestamp>.tar.gz`；导入前再 `mysqldump` 远程库为 `ailovemoney-<timestamp>.sql` |
+| 数据库 | `scripts/export-mysql.ps1` 导出本机库，服务器 `mysql < dump` 直接导入 |
 | 重启 | 只 `systemctl restart ai-lovemoney` |
-| 验证 | origin 80/443 Host 头、LikeShop 8086/8090/8095、无采集进程/timer |
-| 禁止 | 改 LikeShop vhost、覆盖远程 `.env`、在生产跑采集器 |
+| 验证 | origin 80/443 Host 头、LikeShop 8086/8090/8095、无采集进程/timer、`public_snapshot_entries` / `gateway_sites` 计数 |
+| 禁止 | 改 LikeShop vhost、覆盖远程 `.env`、在生产跑采集器、把 dump 提交进 git |
 
-控制台「发布」二次确认短语 `CONFIRM PUBLISH AI.LOVEMONEY.LIVE` 也调用同一脚本。旧的 `D:\temp\ailovemoney-p005\publish_p008.py` 会整库导入本机 SQL，**不要当日常发布**。
+控制台「发布」二次确认短语 `CONFIRM PUBLISH AI.LOVEMONEY.LIVE` 也调用同一脚本。
 
-2026-08-30 04:50 Asia/Hong_Kong 按上表发布：备份 `ai.lovemoney.live-20260830-050029.tar.gz`；origin HTTP/HTTPS 200；`/llm-gateway` 可见「最近刷新」与「即将上线」；LikeShop 三端口 200；无采集器。本机 `https://ai.lovemoney.live/` 与 `dtch.yg2022.top:8086/8090/8095` 均为 HTTP 200。
+2026-08-30 05:09 按本表发布：本机 `export-mysql.ps1 --result-file` 导出后服务器直接导入。导入后 `gateway_sites=422`、`gateway_model_prices=2283`、`public_snapshot_entries=9`。远程库备份 `ailovemoney-20260830-050931.sql`。origin 80/443 与 LikeShop 三端口均为 200。此前 PowerShell `Out-File` 会把 dump 转坏，导出已改为 mysqldump `--result-file`。
 
-推荐手工顺序与脚本一致：本机验证通过后再覆盖远程 `dist`，然后重启 `ai-lovemoney`，最后恢复本机 `pnpm run dev`。
+推荐手工顺序与脚本一致：本机验证通过后再覆盖远程 `dist` 并导入本机 SQL，然后重启 `ai-lovemoney`，最后恢复本机 `pnpm run dev`。
 
 1. 本机完成第 2 节命令，浏览器检查 `http://127.0.0.1:3101` 的 `/`、`/shops`、`/llm-gateway`、`/official-price`、`/model-leaderboard`、`/guide`。
-2. 运行 `python scripts/deploy/publish_ai_lovemoney.py`（内含远程备份、同步 `dist`、缺列迁移、重启与端口验证）。不要上传本机 `.env`。
-3. 如需更新样例快照，另做脱敏 SQL 导入，核对 `public_snapshot_entries` 计数后再切流量；这不是默认发布步骤。
-4. 不要重载或改写 LikeShop vhost。
-5. 发布结束后回到本机：
+2. 运行 `python scripts/deploy/publish_ai_lovemoney.py`（备份站点与远程库、同步 `dist`、导入本机 SQL、重启与端口验证）。不要上传本机 `.env`。
+3. 不要重载或改写 LikeShop vhost。
+4. 发布结束后回到本机：
 
 ```powershell
 cd D:\work\dock\cardnav-web
@@ -218,7 +214,8 @@ http://dtch.yg2022.top:8095/admin/
 
 ## 8. 回滚与注意事项
 
-- 回滚：把 `/www/wwwroot/ai.lovemoney.live-backups/<timestamp>` 拷回发布目录，重启 `ai-lovemoney`。不要 `a2dissite` LikeShop 配置。停本站时只禁用 `ai.lovemoney.live.conf`。
+- 回滚站点：把 `/www/wwwroot/ai.lovemoney.live-backups/ai.lovemoney.live-<timestamp>.tar.gz` 解回发布目录，重启 `ai-lovemoney`。
+- 回滚数据库：`python scripts/deploy/restore_remote_mysql.py <timestamp>`，对应文件 `ailovemoney-<timestamp>.sql`。不要 `a2dissite` LikeShop 配置。停本站时只禁用 `ai.lovemoney.live.conf`。
 - 不要 `pkill node` 或无筛选 `pkill ssh`；只操作 `ai-lovemoney.service`。
 - 不要在生产安装 Windows 计划任务、cron collector 或 Python GUI。
 - 记录实际发布命令时脱敏：去掉密码、密钥路径中的秘密、dump 全文、cookie。

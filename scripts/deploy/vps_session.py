@@ -34,6 +34,19 @@ def load_vps_password() -> str:
     return password
 
 
+def load_dotenv(path: Path) -> dict[str, str]:
+    values: dict[str, str] = {}
+    if not path.exists():
+        return values
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        values[key.strip()] = value.strip().strip("'").strip('"')
+    return values
+
+
 def load_remote_mysql_password() -> str:
     text = LIKESHOP_CONFIG.read_text(encoding="utf-8")
     match = re.search(r"Remote\s*=\s*@\{.*?MysqlPassword\s*=\s*'([^']*)'", text, re.S)

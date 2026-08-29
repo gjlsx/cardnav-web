@@ -8,15 +8,15 @@
 
 ## General operating guardrails
 
-- Follow the global alert policy: schedule the prescribed alert when programmer intervention is needed and play one completion alert when entering idle.
+- Follow the global alert policy: schedule the prescribed alert when programmer intervention is needed and play one completion alert when entering idle. The standard completion alert is `powershell -NoProfile -Command "[console]::beep(1046,220)"`; delayed-alert implementation remains owned by the global rule.
 - A message beginning `q:` is question-only: answer without modifying files, running task workflows, builds, or commits unless the user explicitly changes that scope.
 - For multi-step work, give a brief `Step 1` / `Step 2` / `Validation` plan before edits. Prefer the smallest final-architecture-aligned solution; do not add one-off abstractions or temporary bypasses.
 - For internal code evidence, use an absolute Windows path with an optional line number. Do not invent URL/URI-style local paths. User-facing final responses must still follow the platform's required clickable absolute file-link format.
 
 ## Local targets and stack boundaries
 
-- The managed local Astro/Node site is currently `http://127.0.0.1:3101/`. Before browser validation, check `pnpm exec astro dev status`; do not assume the generic Astro port 4321.
-- The local collection control surface is `python scripts/collection/gui.py`. There is no NocoDB administration service in this repository.
+- The managed local Astro/Node site is `http://127.0.0.1:3101/`. Before browser validation, check `pnpm exec astro dev status`.
+- The local collection control surface is `python scripts/collection/gui.py`.
 - MySQL defaults to `127.0.0.1:3306`, database `ailovemoney`; actual settings are read only from the local `.env` `MYSQL_*` values. Never expose them.
 - The public Astro site only reads runtime tables and public snapshots. It must not collect sources or write collection data through a browser route.
 - Current task state, resumable evidence, and verification live in `taskexec/cardnav-web/`. `docs/CURRENT_STATUS.md` is the canonical concise handoff for material project state, entry points, verification, blockers, and the advisory `Next TODO`; do not copy detailed task evidence into it.

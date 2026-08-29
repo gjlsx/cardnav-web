@@ -45,7 +45,7 @@ test('aggregate rows keep the canonical product identity visible after price sor
 });
 
 test('public gateway sites use the approved stable display order without a sponsor override', () => {
-  assert.match(storeSource, /ORDER BY gateway_sites\.score DESC, gateway_sites\.name ASC/);
+  assert.match(storeSource, /ORDER BY gateway_sites\.score DESC, COALESCE\(coverage_summary\.model_count, 0\) DESC, gateway_sites\.name ASC/);
   assert.doesNotMatch(storeSource.match(/async function mysqlGatewaySiteRows[\s\S]+?return result\.rows\.map/)?.[0] ?? '', /gateway_sites\.sponsor DESC/);
 });
 

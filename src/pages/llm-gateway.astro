@@ -50,14 +50,6 @@ function gatewaySiteClickAttrs(site: { name: string; slug: string; outboundUrl: 
   };
 }
 
-function gatewaySiteOpenAttrs(site: { name: string; outboundUrl: string }) {
-  return {
-    'data-umami-event': 'gateway-site-open-click',
-    'data-umami-event-name': site.name,
-    'data-umami-event-url': site.outboundUrl,
-  };
-}
-
 function gatewayModelClickAttrs(model: { modelId: string; modelFamily: string }) {
   const targetPage = modelHref(model.modelId);
   return {
@@ -87,7 +79,6 @@ const gatewayHomeConfig = {
   sitesApi: `/api/llm-gateway/sites.json?offset=${GATEWAY_SITE_PAGE_SIZE}&locale=${encodeURIComponent(Astro.locals.locale)}${requestedModelFamily ? `&model=${encodeURIComponent(requestedModelFamily)}` : ''}`,
   modelsApi: `/api/llm-gateway/models.json?offset=${GATEWAY_MODEL_PAGE_SIZE}&locale=${encodeURIComponent(Astro.locals.locale)}`,
   detailLabel: t.llmGateway.viewDetail,
-  openLabel: t.actions.open,
   sequenceLabel: t.labels.sequence,
   basicInfoLabel: t.llmGateway.basicInfo,
   sponsorLabel: t.sponsors.sponsorLabel,
@@ -96,6 +87,7 @@ const gatewayHomeConfig = {
   partnershipLinkLabel: t.sponsors.partnershipLinkLabel,
   scoreLabel: t.labels.score,
   supportedModelsLabel: t.llmGateway.supportedModels,
+  latestRefreshLabel: t.labels.latestRefresh,
   modelLabel: t.labels.model,
   modelFamilyLabel: t.llmGateway.modelFamily,
   supportedGatewayCountLabel: t.llmGateway.supportedGatewayCount,
@@ -187,6 +179,7 @@ const gatewayMailto = `mailto:${gatewaySubmissionEmail}?subject=${encodeURICompo
               <DataTableHeader label={t.llmGateway.basicInfo} sortKey="name" />
               <DataTableHeader label={t.labels.score} sortKey="score" sortType="number" align="right" helpTip={t.llmGateway.gatewayScoreTip} helpLabel={t.llmGateway.gatewayScoreHelpLabel} />
               <DataTableHeader label={t.llmGateway.supportedModels} sortKey="families" />
+              <DataTableHeader label={t.labels.latestRefresh} sortKey="updatedAt" />
             </Fragment>
             {topSites.map((site, index) => {
               const families = uniqueLabels(site.displayModelFamilies, 8);
@@ -202,10 +195,8 @@ const gatewayMailto = `mailto:${gatewaySubmissionEmail}?subject=${encodeURICompo
                   sponsorHref={linkTo('/partnership')}
                   sponsorLinkLabel={t.sponsors.partnershipLinkLabel}
                   detailLabel={t.llmGateway.viewDetail}
-                  openLabel={t.actions.open}
                   detailHref={linkTo(`/llm-gateway/${site.slug}`)}
                   clickAttrs={gatewaySiteClickAttrs(site)}
-                  openAttrs={gatewaySiteOpenAttrs(site)}
                   sticky={isStickyGatewaySite(site)}
                   scoreLabel={t.labels.score}
                   referenceSampleLabel={t.shops.referenceSample}
@@ -220,6 +211,7 @@ const gatewayMailto = `mailto:${gatewaySubmissionEmail}?subject=${encodeURICompo
                     'data-sort-name': site.name,
                     'data-sort-score': String(site.siteScore || 0),
                     'data-sort-families': families.join(' '),
+                    'data-sort-updated-at': site.latestGatewayRefreshTime,
                   }}
                 >
                   <DataTableCell label={t.llmGateway.supportedModels}>
@@ -231,6 +223,7 @@ const gatewayMailto = `mailto:${gatewaySubmissionEmail}?subject=${encodeURICompo
                       <span class="text-base-content/35">-</span>
                     )}
                   </DataTableCell>
+                  <DataTableCell label={t.labels.latestRefresh} class="whitespace-nowrap text-xs text-base-content/70">{site.latestGatewayRefreshTime || t.labels.notRecorded}</DataTableCell>
                 </GatewaySiteTableRow>
               );
             })}

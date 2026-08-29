@@ -104,14 +104,6 @@ import { formatPositiveScore, uniqueLabels } from '../gateway-display.js';
     };
   }
 
-  function gatewaySiteOpenTracking(site) {
-    return {
-      umamiEvent: 'gateway-site-open-click',
-      umamiEventName: site.name,
-      umamiEventUrl: site.outboundUrl || site.url,
-    };
-  }
-
   function gatewayModelTracking(model) {
     const targetPage = `${modelLinkPrefix}/${encodeURIComponent(model.modelId)}`;
     return {
@@ -141,6 +133,7 @@ import { formatPositiveScore, uniqueLabels } from '../gateway-display.js';
       sortName: site.name,
       sortScore: Number(site.siteScore) || 0,
       sortFamilies: families.join(' '),
+      sortUpdatedAt: site.latestGatewayRefreshTime || '',
     });
 
     const sequenceCell = tableCell(config.sequenceLabel, 'center', '', { sequence: true });
@@ -172,14 +165,6 @@ import { formatPositiveScore, uniqueLabels } from '../gateway-display.js';
     detailLink.href = `${gatewayLinkPrefix}/${site.slug}`;
     setTracking(detailLink, gatewaySiteTracking(site));
     actionWrap.append(detailLink);
-    if (site.outboundUrl || site.url) {
-      const openLink = el('a', 'btn btn-outline btn-xs inline-flex h-7 min-h-7 items-center px-3 leading-none', config.openLabel);
-      openLink.href = site.outboundUrl || site.url;
-      openLink.target = '_blank';
-      openLink.rel = 'noopener noreferrer';
-      setTracking(openLink, gatewaySiteOpenTracking(site));
-      actionWrap.append(openLink);
-    }
     infoWrap.append(textWrap, actionWrap);
     infoCell.append(infoWrap);
     row.append(infoCell);
@@ -197,6 +182,10 @@ import { formatPositiveScore, uniqueLabels } from '../gateway-display.js';
       familiesCell.append(el('span', 'text-base-content/35', '-'));
     }
     row.append(familiesCell);
+
+    const updatedAtCell = tableCell(config.latestRefreshLabel, 'left', 'whitespace-nowrap text-xs text-base-content/70');
+    updatedAtCell.textContent = site.latestGatewayRefreshTime || '-';
+    row.append(updatedAtCell);
 
     return row;
   }
@@ -263,6 +252,7 @@ import { formatPositiveScore, uniqueLabels } from '../gateway-display.js';
         name: rowSortValue(row, 'name'),
         score: rowSortValue(row, 'score', 'number'),
         families: rowSortValue(row, 'families'),
+        updatedAt: rowSortValue(row, 'updatedAt'),
       } : {
         sequence: rowSortValue(row, 'sequence', 'number') || index + 1,
         model: rowSortValue(row, 'model'),
@@ -287,6 +277,7 @@ import { formatPositiveScore, uniqueLabels } from '../gateway-display.js';
         name: site.name,
         score: Number(site.siteScore) || 0,
         families: families.join(' '),
+        updatedAt: site.latestGatewayRefreshTime || '',
       },
     };
   }

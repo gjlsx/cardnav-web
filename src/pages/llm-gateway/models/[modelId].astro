@@ -37,7 +37,6 @@ const modelSiteTableConfig = {
   displaySummary: t.labels.displaySummary,
   gatewayLinkPrefix: linkTo('/llm-gateway'),
   detailLabel: t.llmGateway.viewDetail,
-  openLabel: t.actions.open,
   sponsorLabel: t.sponsors.sponsorLabel,
   sponsorDescription: t.sponsors.sponsorDescription,
   partnershipUrl: linkTo('/partnership'),
@@ -84,15 +83,6 @@ function gatewaySiteClickAttrs(site: { name: string; slug: string }) {
     'data-umami-event-source-model': model.modelId,
     'data-umami-event-target-page': targetPage,
     'data-umami-event-url': targetPage,
-  };
-}
-
-function gatewaySiteOpenAttrs(site: { name: string; outboundUrl: string }) {
-  return {
-    'data-umami-event': 'gateway-site-open-click',
-    'data-umami-event-name': site.name,
-    'data-umami-event-source-model': model.modelId,
-    'data-umami-event-url': site.outboundUrl,
   };
 }
 
@@ -162,10 +152,8 @@ function isStickyGatewaySite(site: { sponsor?: boolean }) {
             sponsorHref={linkTo('/partnership')}
             sponsorLinkLabel={t.sponsors.partnershipLinkLabel}
             detailLabel={t.llmGateway.viewDetail}
-            openLabel={t.actions.open}
             detailHref={linkTo(`/llm-gateway/${site.slug}`)}
             clickAttrs={gatewaySiteClickAttrs(site)}
-            openAttrs={gatewaySiteOpenAttrs(site)}
             sticky={isStickyGatewaySite(site)}
             showScore={false}
             referenceSampleLabel={t.shops.referenceSample}

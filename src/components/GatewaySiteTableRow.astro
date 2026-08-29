@@ -12,7 +12,6 @@ type GatewaySite = {
   name: string;
   slug: string;
   url: string;
-  outboundUrl: string;
   displayFamily?: string;
   summary?: string;
   siteScore?: number | null;
@@ -32,10 +31,8 @@ type Props = {
   sponsorHref: string;
   sponsorLinkLabel: string;
   detailLabel: string;
-  openLabel: string;
   detailHref: string;
   clickAttrs?: DataAttrs;
-  openAttrs?: DataAttrs;
   rowAttrs?: DataAttrs;
   sticky?: boolean;
   showScore?: boolean;
@@ -57,10 +54,8 @@ const {
   sponsorHref,
   sponsorLinkLabel,
   detailLabel,
-  openLabel,
   detailHref,
   clickAttrs = {},
-  openAttrs = {},
   rowAttrs = {},
   sticky = false,
   showScore = true,
@@ -97,7 +92,6 @@ const mergedRowAttrs = {
       </div>
       <div class="inline-flex shrink-0 items-center gap-2 self-start sm:self-center">
         <a href={detailHref} class="btn btn-primary btn-xs inline-flex h-7 min-h-7 items-center px-3 leading-none" {...clickAttrs}>{detailLabel}</a>
-        {site.outboundUrl ? <a href={site.outboundUrl} target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-xs inline-flex h-7 min-h-7 items-center px-3 leading-none" {...openAttrs}>{openLabel}</a> : null}
       </div>
     </div>
   </DataTableCell>

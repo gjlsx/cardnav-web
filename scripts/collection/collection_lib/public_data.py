@@ -12,7 +12,7 @@ def list_public_rows(repository, kind: RecordKind) -> list[dict[str, Any]]:
         rows = repository.query("SELECT site_id, standard_product, name, price, price_number, currency_code, in_stock FROM shop_products ORDER BY id DESC LIMIT 300")
         return [{"record_key": f"shop_product:{(row.get('site_id') or '').replace('collected-','')}:{row.get('standard_product') or ''}", **row} for row in rows]
     if kind is RecordKind.GATEWAY_SITE:
-        rows = repository.query("SELECT site_id, slug, name, host, score FROM gateway_sites ORDER BY score DESC, name ASC LIMIT 300")
+        rows = repository.query("SELECT site_id, slug, name, host, score, region, benefit_text FROM gateway_sites ORDER BY score DESC, name ASC LIMIT 300")
         return [{"record_key": f"gateway_site:{row.get('host') or row.get('site_id')}", **row} for row in rows]
     if kind is RecordKind.OFFICIAL_PLAN:
         rows = repository.query("SELECT url_slug, country_code, display_name, price_text FROM official_prices ORDER BY display_order ASC LIMIT 300")
@@ -24,6 +24,15 @@ def list_public_rows(repository, kind: RecordKind) -> list[dict[str, Any]]:
 def save_manual_row(repository, kind: RecordKind, payload: dict[str, Any]) -> None:
     key = payload.get("record_key") or record_key(kind, host=str(payload.get("host") or payload.get("normalized_site") or ""), canonical_sku=str(payload.get("standard_product") or payload.get("model_or_plan") or ""), plan_slug=str(payload.get("url_slug") or ""), country_code=str(payload.get("country_code") or "US"), task_slug=str(payload.get("task_slug") or "coding"), model_name=str(payload.get("model_name") or ""))
     repository.set_manual_override(kind, key, OverrideState.MANUAL, payload)
+    if kind is RecordKind.GATEWAY_SITE:
+        repository.execute(
+            "UPDATE gateway_sites SET region = %s, benefit_text = %s WHERE site_id = %s",
+            (str(payload.get("region") or ""), str(payload.get("benefit_text") or ""), str(payload.get("site_id") or "")),
+        )
+        publisher = PublicPublisher()
+        publisher.rebuild_snapshots(repository, {kind})
+        repository.commit()
+        return
     publisher = PublicPublisher()
     fake_row = {"id": 0, "record_key": key, "record_kind": kind.value, "source_id": payload.get("source_id") or "manual", "payload": payload}
     publisher._publish_row(repository, kind, fake_row)

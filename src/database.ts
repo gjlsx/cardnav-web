@@ -111,6 +111,8 @@ const statements = [
     weight INT NOT NULL DEFAULT 0,
     summary TEXT NULL,
     invite_url TEXT NULL,
+    region VARCHAR(100) NULL,
+    benefit_text TEXT NULL,
     sponsor BOOLEAN NOT NULL DEFAULT FALSE,
     score DECIMAL(12,4) NOT NULL DEFAULT 0,
     availability_percent DECIMAL(8,3) NOT NULL DEFAULT 0,
@@ -230,6 +232,8 @@ const gatewaySiteColumns = [
   ['source_id', 'VARCHAR(64) NULL'],
   ['sampled_at', 'DATETIME NULL'],
   ['is_sample', 'BOOLEAN NOT NULL DEFAULT FALSE'],
+  ['region', 'VARCHAR(100) NULL'],
+  ['benefit_text', 'TEXT NULL'],
 ] as const;
 
 const officialPriceColumns = [

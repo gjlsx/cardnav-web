@@ -11,6 +11,7 @@ sys.path.insert(0, str(ROOT))
 from collection_lib.contracts import RecordKind  # noqa: E402
 from collection_lib.public_data import list_public_rows  # noqa: E402
 from console_tabs.collection_tab import KIND_BY_PAGE  # noqa: E402
+from console_tabs.site_config_tab import parse_editor_payload  # noqa: E402
 
 
 class PublicDataTests(unittest.TestCase):
@@ -26,6 +27,28 @@ class PublicDataTests(unittest.TestCase):
 
         rows = list_public_rows(Repo(), RecordKind.SHOP_PRODUCT)
         self.assertEqual(rows[0]["record_key"], "shop_product:a.example:chatgpt-plus")
+
+    def test_gateway_rows_include_editable_region_and_benefit_fields(self):
+        class Repo:
+            def query(self, sql, params=()):
+                self.sql = sql
+                return [{"site_id": "collected-a", "slug": "a", "name": "A", "host": "a.example", "score": 50, "region": "中国", "benefit_text": "福利说明"}]
+
+        repository = Repo()
+        rows = list_public_rows(repository, RecordKind.GATEWAY_SITE)
+        self.assertIn("region", repository.sql)
+        self.assertIn("benefit_text", repository.sql)
+        self.assertEqual(rows[0]["region"], "中国")
+        self.assertEqual(rows[0]["benefit_text"], "福利说明")
+
+    def test_site_config_editor_keeps_known_fields_editable(self):
+        payload = parse_editor_payload(
+            {"site_id": "collected-a", "region": "", "benefit_text": "", "score": 50},
+            "region=中国大陆\nbenefit_text=注册送体验金\nunknown=ignored",
+        )
+        self.assertEqual(payload["region"], "中国大陆")
+        self.assertEqual(payload["benefit_text"], "注册送体验金")
+        self.assertNotIn("unknown", payload)
 
 
 if __name__ == "__main__":

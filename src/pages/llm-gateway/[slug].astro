@@ -16,7 +16,7 @@ import {
 import PublicPage from '../../layouts/PublicPage.astro';
 import DataTableHeader from '../../components/DataTableHeader.astro';
 import { buildSeoContext } from '../../seo.js';
-import { publicSiteUrl } from '../../site.js';
+import { publicSiteUrl, telegramGroupUrl } from '../../site.js';
 import { loadGatewayDetail } from '../../store.js';
 import deferredTableCoreScriptUrl from '../../scripts/deferred-table-core.js?url';
 import gatewayDetailTablesScriptUrl from '../../scripts/gateway-detail-tables.js?url';
@@ -78,9 +78,9 @@ function priceSortValue(value: number | null) {
   return typeof value === 'number' && Number.isFinite(value) ? value : '';
 }
 
-function gatewaySiteOpenAttrs() {
+function gatewayBenefitForwardAttrs() {
   return {
-    'data-umami-event': 'gateway-site-open-click',
+    'data-umami-event': 'gateway-benefit-forward-click',
     'data-umami-event-name': site.name,
     'data-umami-event-url': site.outboundUrl,
   };
@@ -148,11 +148,22 @@ function gatewayModelClickAttrs(modelId: string) {
       <div class="mt-4 flex flex-wrap gap-2">
         {shortList(site.displayModelFamilies, 12).map(family => <span class="badge badge-primary badge-outline">{family}</span>)}
       </div>
-      {site.outboundUrl ? <div class="mt-4">
-        <a href={site.outboundUrl} target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" {...gatewaySiteOpenAttrs()}>{t.actions.open}</a>
-      </div> : null}
     </div>
   </PageHero>
+
+  <section class="card mt-6 border border-base-300 bg-base-100 shadow-sm">
+    <div class="card-body gap-4 p-5 sm:p-6">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h2 class="text-lg font-semibold">{t.llmGateway.availableBenefits}</h2>
+        <span class="badge badge-ghost">{t.llmGateway.region}: {site.region || t.labels.notRecorded}</span>
+      </div>
+      <p class="rounded-xl bg-warning/10 px-4 py-3 text-sm leading-6 text-base-content">{site.benefitText || t.llmGateway.benefitEmpty}</p>
+      <div class="flex flex-wrap gap-2">
+        {site.outboundUrl ? <a href={site.outboundUrl} target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" {...gatewayBenefitForwardAttrs()}>{t.llmGateway.benefitForward}</a> : null}
+        <a href={telegramGroupUrl} target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" data-umami-event="gateway-benefit-suggestion-click" data-umami-event-url={telegramGroupUrl}>{t.llmGateway.submitSuggestion}</a>
+      </div>
+    </div>
+  </section>
 
   <section class="card bg-base-100 border border-base-300 shadow-sm overflow-hidden" data-gateway-deferred-table="prices">
     <div class="border-b border-base-300 p-5">

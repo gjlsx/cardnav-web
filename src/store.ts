@@ -51,6 +51,8 @@ export type PublicGatewaySiteRow = {
   isSample: boolean;
   sourceName: string;
   sourcePageUrl: string;
+  region: string;
+  benefitText: string;
 };
 
 export type PublicGatewayPriceRow = {
@@ -292,6 +294,8 @@ function mapGatewaySiteRow(row: Record<string, unknown>): PublicGatewaySiteRow {
     isSample,
     sourceName: String(row.source_name || ''),
     sourcePageUrl: String(row.source_page_url || ''),
+    region: String(row.region || ''),
+    benefitText: String(row.benefit_text || ''),
   };
 }
 
@@ -349,6 +353,8 @@ async function mysqlGatewaySiteRows(options: { slug?: string; modelId?: string; 
       gateway_sites.host,
       gateway_sites.summary,
       gateway_sites.invite_url,
+      gateway_sites.region,
+      gateway_sites.benefit_text,
       gateway_sites.sponsor,
       gateway_sites.model_types,
       gateway_sites.payment_methods,
@@ -376,7 +382,7 @@ async function mysqlGatewaySiteRows(options: { slug?: string; modelId?: string; 
       GROUP BY site_id
     ) AS price_summary ON price_summary.site_id = gateway_sites.site_id
     WHERE gateway_sites.status = 'online' AND gateway_sites.type = 'gateway'${modelFilter}
-    ORDER BY gateway_sites.score DESC, gateway_sites.name ASC
+    ORDER BY gateway_sites.score DESC, COALESCE(coverage_summary.model_count, 0) DESC, gateway_sites.name ASC
     ${options.limit ? 'LIMIT ?' : ''}
   `, options.limit ? [...values, options.limit] : values);
   return result.rows.map(mapMySqlGatewaySiteRow);
@@ -613,7 +619,7 @@ export async function loadGatewaySites(options: PublicListLimitOptions = {}): Pr
   const snapshot = await loadPublicSnapshot<PublicGatewaySitesData>('gateway-sites');
   if (snapshot) {
     const limit = safeListLimit(options.limit);
-    const sites = filterGatewaySitesByModelFamily(snapshot.sites, options.modelFamily);
+    const sites = sortGatewaySites(filterGatewaySitesByModelFamily(snapshot.sites, options.modelFamily));
     return {
       ...snapshot,
       sites: sites.slice(0, limit ?? sites.length).map(site => ({ ...site, sponsor: site.sponsor === true })),
@@ -622,6 +628,15 @@ export async function loadGatewaySites(options: PublicListLimitOptions = {}): Pr
     };
   }
   return loadMySqlGatewaySites(options);
+}
+
+/** Public default order: score first, then broader observed model coverage, then a stable name tie-breaker. */
+export function sortGatewaySites(sites: PublicGatewaySiteRow[]) {
+  return sites.slice().sort((left, right) =>
+    (right.siteScore ?? 0) - (left.siteScore ?? 0)
+    || right.modelCount - left.modelCount
+    || left.name.localeCompare(right.name, 'zh-Hans-CN'),
+  );
 }
 
 /** Keeps only sites with an explicit observed coverage family; no name inference. */

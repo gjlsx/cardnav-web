@@ -193,10 +193,10 @@ async function main() {
           modelCount: coverage.length, priceCount: 0, modelFamilies: [...new Set(coverage.map(item => item.modelFamily))],
           displayModelFamilies: [...new Set(coverage.map(item => item.modelFamily))], refreshStatus: '', refreshErrorType: '',
           latestGatewayRefreshAt: sample.sampledAt, latestGatewayRefreshTime: formatBeijingRefreshTime(sample.sampledAt), sampledAt: sample.sampledAt,
-          isSample: true, sourceName: source?.name ?? '', sourcePageUrl: source?.sourcePageUrl ?? '',
+          isSample: true, sourceName: source?.name ?? '', sourcePageUrl: source?.sourcePageUrl ?? '', region: '', benefitText: '',
         };
       })
-      .sort((left, right) => right.siteScore - left.siteScore || left.name.localeCompare(right.name));
+      .sort((left, right) => right.siteScore - left.siteScore || right.modelCount - left.modelCount || left.name.localeCompare(right.name));
     const gatewayModels = [...new Map(referenceGatewayModelCoverage.map(coverage => [coverage.modelId, coverage])).values()]
       .map(coverage => {
         const rows = referenceGatewayModelCoverage.filter(item => item.modelId === coverage.modelId);

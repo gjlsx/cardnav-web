@@ -248,16 +248,6 @@
     detailLink.dataset.umamiEventTargetPage = detailHref;
     detailLink.dataset.umamiEventUrl = detailHref;
     actionWrap.append(detailLink);
-    if (site.outboundUrl || site.url) {
-      const openLink = el('a', 'btn btn-outline btn-xs inline-flex h-7 min-h-7 items-center px-3 leading-none', config.openLabel || '');
-      openLink.href = site.outboundUrl || site.url;
-      openLink.target = '_blank';
-      openLink.rel = 'noopener noreferrer';
-      openLink.dataset.umamiEvent = 'gateway-site-open-click';
-      openLink.dataset.umamiEventName = site.name || '';
-      openLink.dataset.umamiEventUrl = site.outboundUrl || site.url;
-      actionWrap.append(openLink);
-    }
     infoWrap.append(textWrap, actionWrap);
     infoCell.append(infoWrap);
     row.append(infoCell);

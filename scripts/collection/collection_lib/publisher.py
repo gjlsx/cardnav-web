@@ -187,7 +187,7 @@ class PublicPublisher:
         repository.upsert_snapshot("shop-products", payload)
 
     def _rebuild_gateway_snapshot(self, repository) -> None:
-        sites = repository.query("SELECT site_id, slug, name, url, host, family, score, availability_percent, avg_success_latency_ms, sampled_at, is_sample, source_id, summary FROM gateway_sites")
+        sites = repository.query("SELECT site_id, slug, name, url, host, family, score, availability_percent, avg_success_latency_ms, sampled_at, is_sample, source_id, summary, region, benefit_text FROM gateway_sites")
         coverage = repository.query("SELECT site_id, model_id, model_family FROM gateway_model_coverage")
         prices = repository.query(
             "SELECT site_id, model_id, fetched_at FROM gateway_model_prices "
@@ -202,7 +202,7 @@ class PublicPublisher:
             prices_by_site.setdefault(str(row["site_id"]), []).append(row)
             prices_by_model.setdefault(str(row["model_id"]), []).append(row)
         payload = {
-            "sites": [
+            "sites": sorted([
                 {
                     "id": site["site_id"], "slug": site.get("slug") or site["site_id"], "name": site.get("name") or "",
                     "url": site.get("url") or "", "outboundUrl": site.get("url") or "", "host": site.get("host") or "", "family": site.get("family") or "",
@@ -219,9 +219,10 @@ class PublicPublisher:
                     "latestGatewayRefreshTime": str(site.get("sampled_at") or ""),
                     "sampledAt": str(site.get("sampled_at") or ""), "isSample": bool(site.get("is_sample")),
                     "sourceName": "", "sourcePageUrl": "",
+                    "region": site.get("region") or "", "benefitText": site.get("benefit_text") or "",
                 }
                 for site in sites
-            ],
+            ], key=lambda item: (-float(item["siteScore"]), -int(item["modelCount"]), str(item["name"]).casefold())),
             "totalSiteCount": len(sites),
             "sitesWithPricesCount": sum(1 for site in sites if prices_by_site.get(str(site["site_id"]))),
             "totalModelCount": len({item.get("model_id") for item in coverage}),

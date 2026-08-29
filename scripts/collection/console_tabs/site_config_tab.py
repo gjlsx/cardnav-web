@@ -8,6 +8,16 @@ from collection_lib.contracts import RecordKind
 from collection_lib.public_data import hide_row, list_public_rows, save_manual_row
 
 
+def parse_editor_payload(row: dict, editor_text: str) -> dict:
+    """Apply editable key=value lines without accepting arbitrary storage fields."""
+    payload = dict(row)
+    for raw_line in editor_text.splitlines():
+        key, separator, value = raw_line.partition("=")
+        if separator and key in payload:
+            payload[key] = value
+    return payload
+
+
 class SiteConfigWorkspace:
     def __init__(self, app, page):
         self.app = app
@@ -63,7 +73,7 @@ class SiteConfigWorkspace:
         row = self._selected()
         if not row or not self.app.repository:
             return
-        payload = dict(row)
+        payload = parse_editor_payload(row, self.editor.get("1.0", "end-1c"))
         payload["normalized_site"] = str(row.get("host") or row.get("site_id") or "").replace("collected-", "")
         payload["model_or_plan"] = str(row.get("standard_product") or row.get("model_name") or row.get("url_slug") or "")
         save_manual_row(self.app.repository, RecordKind(self.kind.get()), payload)

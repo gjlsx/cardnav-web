@@ -79,6 +79,25 @@ class CollectionRepository:
             row["payload"] = json.loads(payload) if isinstance(payload, str) else (payload or {})
         return rows
 
+    def fetch_latest_raw_for_keys(self, keys: set[str]) -> list[dict[str, Any]]:
+        """Return the newest valid raw row per (stable key, source) for a merge scope."""
+        if not keys:
+            return []
+        placeholders = ", ".join(["%s"] * len(keys))
+        rows = self.query(
+            "SELECT id, batch_id, run_id, source_id, source_class, source_priority, source_url, source_record_hash, record_key, record_kind, payload, validation_state, validation_reason "
+            f"FROM collection_raw_records WHERE validation_state = 'valid' AND record_key IN ({placeholders}) ORDER BY id DESC",
+            tuple(keys),
+        )
+        newest: dict[tuple[str, str], dict[str, Any]] = {}
+        for row in rows:
+            key = (str(row.get("record_key") or ""), str(row.get("source_id") or ""))
+            if key not in newest:
+                payload = row.get("payload")
+                row["payload"] = json.loads(payload) if isinstance(payload, str) else (payload or {})
+                newest[key] = row
+        return list(newest.values())
+
     def mark_batch_imported(self, batch_id: str) -> None:
         self._execute("UPDATE collection_raw_records SET merged_at = UTC_TIMESTAMP(), imported_at = UTC_TIMESTAMP() WHERE batch_id = %s", (batch_id,))
         self._execute("UPDATE collection_batches SET status = 'imported', finished_at = UTC_TIMESTAMP() WHERE batch_id = %s", (batch_id,))

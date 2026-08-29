@@ -38,9 +38,10 @@ def raw(source_id, source_class, priority, price, *, region=None, record_key="sh
 
 
 class MemoryRepository:
-    def __init__(self, rows, locked=()):
+    def __init__(self, rows, locked=(), latest_rows=None):
         self.batch = {"batch_id": "batch-1", "status": "raw_completed"}
         self.rows = rows
+        self.latest_rows = latest_rows if latest_rows is not None else rows
         self.locked = set(locked)
         self.imported = []
         self.activity = []
@@ -52,6 +53,9 @@ class MemoryRepository:
 
     def fetch_raw_batch(self, batch_id):
         return self.rows if batch_id == "batch-1" else []
+
+    def fetch_latest_raw_for_keys(self, keys):
+        return [row for row in self.latest_rows if row["record_key"] in keys]
 
     def has_manual_override(self, _kind, key):
         return key in self.locked
@@ -134,6 +138,18 @@ class RuntimeImportTests(unittest.TestCase):
         self.assertEqual(result["skipped_manual"], 1)
         self.assertEqual(publisher.rows, [])
         self.assertEqual(len(repository.rows), 1)
+
+    def test_later_low_priority_single_source_batch_keeps_latest_high_priority_raw_winner(self):
+        key = "shop_product:shop.example.com:chatgpt-plus"
+        low_only_batch = raw("openprice-products", "aggregator", 10, 1, record_key=key)
+        latest_high = raw("priceai-channels", "aggregator", 30, 9, record_key=key)
+        repository = MemoryRepository([low_only_batch], latest_rows=[low_only_batch, latest_high])
+        publisher = RecordingPublisher()
+
+        RuntimeImporter(publisher).merge_import_batch(repository, "batch-1")
+
+        self.assertEqual(publisher.rows[0]["source_id"], "priceai-channels")
+        self.assertEqual(publisher.rows[0]["payload"]["price_number"], 9)
 
     def test_failed_runtime_write_rolls_back_without_marking_batch_imported(self):
         repository = MemoryRepository([raw("priceai-channels", "aggregator", 30, 9)])

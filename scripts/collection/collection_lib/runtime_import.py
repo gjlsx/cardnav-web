@@ -94,7 +94,14 @@ class RuntimeImporter:
         if batch.get("status") != "raw_completed":
             raise ValueError(f"batch is not ready for merge/import: {batch_id}")
 
-        raw_rows = repository.fetch_raw_batch(batch_id)
+        batch_raw_rows = repository.fetch_raw_batch(batch_id)
+        batch_keys = {str(row.get("record_key") or (row.get("payload") or {}).get("record_key") or "") for row in batch_raw_rows}
+        batch_keys.discard("")
+        # A source loop may run one source at a time.  Merge the newest raw row
+        # from every known source for the affected stable keys, not just this
+        # batch, so a later low-priority source cannot replace a higher-priority
+        # current winner.
+        raw_rows = repository.fetch_latest_raw_for_keys(batch_keys)
         grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
         for row in raw_rows:
             key = str(row.get("record_key") or (row.get("payload") or {}).get("record_key") or "")

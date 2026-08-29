@@ -1,6 +1,7 @@
 """Page-type parsers that turn PriceAI browser HTML into existing raw contracts."""
 from __future__ import annotations
 
+import json
 import re
 from html.parser import HTMLParser
 from typing import Any
@@ -15,6 +16,11 @@ _PRICE_RE = re.compile(r"([¥￥$])\s*([0-9]+(?:\.[0-9]+)?)")
 _SPACE_RE = re.compile(r"\s+")
 _SLUG_RE = re.compile(r"[^a-z0-9]+")
 _SHOP_SUFFIX_RE = re.compile(r"\s*(月卡|年卡|季卡|周卡|订阅|套餐)\s*$", re.IGNORECASE)
+_FAMILY_PLAN_RE = re.compile(
+    r"(ChatGPT|Claude|Gemini|Grok)[\s\S]{0,120}?(Free|Go|Plus|Pro 20x|Pro 5x|Pro|Max 20x|Max 5x|Max)\s*\$([0-9]+(?:\.[0-9]+)?)\s*/月",
+    re.IGNORECASE,
+)
+_SKIP_HOSTS = ("priceai.cc", "stripe.com", "twitter.com", "facebook.com", "google.com", "cloudflare.com")
 
 
 class _CollectionCardParser(HTMLParser):
@@ -165,8 +171,151 @@ def _parse_gateway(card: dict[str, Any], observed_at: str) -> dict[str, Any] | N
     }
 
 
+def _skip_host(host: str) -> bool:
+    lowered = host.casefold()
+    return any(part in lowered for part in _SKIP_HOSTS)
+
+
+def _decode_embedded(html: str) -> str:
+    return html.replace('\\"', '"').replace("\\u0022", '"')
+
+
+def _json_objects(html: str) -> list[dict[str, Any]]:
+    text = _decode_embedded(html)
+    objects: list[dict[str, Any]] = []
+    for match in re.finditer(r"\{", text):
+        start = match.start()
+        depth = 0
+        for index, char in enumerate(text[start:], start):
+            if char == "{":
+                depth += 1
+            elif char == "}":
+                depth -= 1
+                if depth == 0:
+                    blob = text[start : index + 1]
+                    if 20 < len(blob) < 8000:
+                        try:
+                            payload = json.loads(blob)
+                        except json.JSONDecodeError:
+                            payload = None
+                        if isinstance(payload, dict):
+                            objects.append(payload)
+                    break
+        if len(objects) >= 400:
+            break
+    return objects
+
+
+def _parse_shop_listing(payload: dict[str, Any], observed_at: str) -> dict[str, Any] | None:
+    url = str(payload.get("url") or "")
+    host = urlsplit(url).hostname
+    title = str(payload.get("sourceTitle") or "")
+    store = str(payload.get("sourceStoreName") or payload.get("sourceName") or "")
+    if not host or not title or not store or _skip_host(host):
+        return None
+    sku = _slug(_SHOP_SUFFIX_RE.sub("", title))
+    if not sku:
+        return None
+    status = str(payload.get("status") or "").casefold()
+    return {
+        "normalized_site": host.casefold(),
+        "site_name": store,
+        "canonical_sku": sku,
+        "model_or_plan": title,
+        "display_name": title,
+        "stock_status": "out_of_stock" if status in {"out_of_stock", "缺货"} else "in_stock",
+        "observed_at": observed_at,
+        "provenance": "priceai-browser",
+        "price": float(payload["price"]) if payload.get("price") is not None else None,
+        "currency": payload.get("currency") or ("CNY" if payload.get("price") is not None else None),
+    }
+
+
+def _parse_official_listing(payload: dict[str, Any], observed_at: str) -> dict[str, Any] | None:
+    if str(payload.get("type") or "").casefold() != "official":
+        return None
+    name = str(payload.get("name") or payload.get("id") or "")
+    slug = _slug(str(payload.get("id") or name))
+    if not name or not slug:
+        return None
+    return {
+        "plan_slug": slug,
+        "model_or_plan": name,
+        "display_name": name,
+        "country_code": "US",
+        "region": "US",
+        "observed_at": observed_at,
+        "provenance": "priceai-browser",
+        "price": None,
+        "currency": None,
+    }
+
+
+def _parse_official_plans(html: str, observed_at: str) -> list[dict[str, Any]]:
+    rows = []
+    for match in _FAMILY_PLAN_RE.finditer(html):
+        family, plan, amount = match.group(1), match.group(2), match.group(3)
+        rows.append(
+            {
+                "plan_slug": _slug(f"{family} {plan}"),
+                "model_or_plan": f"{family} {plan}",
+                "display_name": f"{family} {plan}",
+                "country_code": "US",
+                "region": "US",
+                "observed_at": observed_at,
+                "provenance": "priceai-browser",
+                "price": float(amount),
+                "currency": "USD",
+            }
+        )
+    return rows
+
+
+def _parse_gateway_listing(payload: dict[str, Any], observed_at: str) -> dict[str, Any] | None:
+    if payload.get("sourceStoreName") or str(payload.get("type") or "").casefold() == "official":
+        return None
+    url = str(payload.get("url") or payload.get("homepage") or "")
+    host = urlsplit(url).hostname
+    name = str(payload.get("siteName") or payload.get("name") or "")
+    if not host or not name or _skip_host(host):
+        return None
+    return {
+        "normalized_site": host.casefold(),
+        "site_name": name,
+        "display_name": name,
+        "model_or_plan": name,
+        "observed_at": observed_at,
+        "provenance": "priceai-browser",
+        "price": float(payload["price"]) if isinstance(payload.get("price"), (int, float)) else None,
+        "currency": None,
+    }
+
+
+def _unique_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    unique: list[dict[str, Any]] = []
+    seen: set[tuple[str, str]] = set()
+    for row in rows:
+        key = (str(row.get("normalized_site") or row.get("plan_slug") or ""), str(row.get("canonical_sku") or row.get("country_code") or row.get("site_name") or ""))
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(row)
+    return unique
+
+
+def _parse_live_rows(source: BrowserSource, html: str, observed_at: str) -> list[dict[str, Any]]:
+    objects = _json_objects(html)
+    if source.page_type == "card_subscriptions":
+        return _unique_rows(row for payload in objects for row in [_parse_shop_listing(payload, observed_at)] if row)
+    if source.page_type == "official_api":
+        rows = [row for payload in objects for row in [_parse_official_listing(payload, observed_at)] if row]
+        rows.extend(_parse_official_plans(html, observed_at))
+        return _unique_rows(rows)
+    return _unique_rows(row for payload in objects for row in [_parse_gateway_listing(payload, observed_at)] if row)
+
+
 def parse_priceai_page(source: BrowserSource, html: str, *, observed_at: str) -> SourceCapture:
-    """Parse only explicit card markup for the matching allowlisted PriceAI page type."""
+    """Parse allowlisted PriceAI markup or embedded public listings into existing contracts."""
     parser = _CollectionCardParser()
     parser.feed(html)
     parsers = {
@@ -176,4 +325,6 @@ def parse_priceai_page(source: BrowserSource, html: str, *, observed_at: str) ->
     }
     expected_card_type, parse_card = parsers[source.page_type]
     rows = [row for card in parser.cards if card["type"] == expected_card_type for row in [parse_card(card, observed_at)] if row]
+    if not rows:
+        rows = _parse_live_rows(source, html, observed_at)
     return SourceCapture(source=_source_mapping(source), body=html, rows=rows, content_type="text/html", kind=source.record_kind)

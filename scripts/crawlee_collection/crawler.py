@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import tempfile
 from collections.abc import Callable
 
 from .sources import MAX_CONCURRENCY, BrowserSource, require_allowed_source
@@ -25,6 +26,7 @@ class PlaywrightPageFetcher:
 
     async def _playwright_fetch(self, source: BrowserSource) -> str:
         from crawlee import ConcurrencySettings
+        from crawlee.configuration import Configuration
         from crawlee.crawlers import PlaywrightCrawler, PlaywrightCrawlingContext
 
         html = {"value": ""}
@@ -33,6 +35,7 @@ class PlaywrightPageFetcher:
             max_crawl_depth=0,
             retry_on_blocked=False,
             concurrency_settings=ConcurrencySettings(min_concurrency=1, max_concurrency=1, desired_concurrency=1),
+            configuration=Configuration(storage_dir=tempfile.mkdtemp(prefix="crawlee-priceai-")),
             headless=True,
         )
 

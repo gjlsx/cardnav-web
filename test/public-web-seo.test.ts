@@ -273,7 +273,7 @@ test('seo context includes Organization structured data', () => {
   const organizationNode = graph.find(node => node['@type'] === 'Organization');
   assert.ok(organizationNode);
   assert.equal(organizationNode.name, 'AI LoveMoney');
-  assert.match(String(organizationNode.logo), /\/favicon\.webp$/);
+  assert.match(String(organizationNode.logo), /\/lovemoney-mark\.svg$/);
 });
 
 test('IndexNow key file is available for search engine submission', () => {

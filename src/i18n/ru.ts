@@ -149,12 +149,20 @@ export const ruMessages: Messages = {
     openTool: 'Открыть инструмент',
     openExternalTool: 'Открыть внешний инструмент',
     loadMoreProducts: 'Показать еще товары',
+    sponsor: 'Поддержать',
+    supportAuthor: 'Поддержать автора',
   },
   external: {
     telegramGroup: 'Telegram',
     xProfile: 'X',
     qqGroup: 'Группа QQ',
+    copyQqGroup: 'Скопировать номер группы QQ',
     chatgptSession: 'Страница ChatGPT Session',
+  },
+  sponsorSupport: {
+    title: 'Поддержите AI LoveMoney',
+    description: 'Если сайт экономит ваше время на сравнении и выборе, небольшая поддержка помогает продолжать его развитие.',
+    button: 'Поддержать проект',
   },
   announcement: {
     label: 'Объявление',

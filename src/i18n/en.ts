@@ -149,12 +149,20 @@ export const enMessages: Messages = {
     openTool: 'Open tool',
     openExternalTool: 'Open external tool',
     loadMoreProducts: 'Load more products',
+    sponsor: 'Sponsor',
+    supportAuthor: 'Support the author',
   },
   external: {
     telegramGroup: 'Telegram',
     xProfile: 'X',
     qqGroup: 'QQ group',
+    copyQqGroup: 'Copy QQ group number',
     chatgptSession: 'ChatGPT Session endpoint',
+  },
+  sponsorSupport: {
+    title: 'Support AI LoveMoney',
+    description: 'If this site saves you time comparing and filtering options, a small contribution helps keep it maintained.',
+    button: 'Sponsor the project',
   },
   announcement: {
     label: 'Announcement',

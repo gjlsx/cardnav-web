@@ -104,7 +104,7 @@ export function buildSeoContext(input: SeoInput) {
       '@type': 'Organization',
       name: messages.seo.websiteName,
       url: baseUrl,
-      logo: resolveUrl(baseUrl, '/favicon.webp'),
+      logo: resolveUrl(baseUrl, '/lovemoney-mark.svg'),
     },
   ];
 

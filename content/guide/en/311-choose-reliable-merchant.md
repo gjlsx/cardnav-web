@@ -86,5 +86,5 @@ Cheap prices are certainly important, but do not only look at cheapness. Many ti
 If you do not want to browse sites one by one, you can directly view merchants and products already organized for you on [AI LoveMoney](https://ai.lovemoney.live/). Our sorting rules and feedback handling methods are as follows:
 
 - **Dynamic information sorting**: The algorithm dynamically ranks products according to indicators such as stock, stability, and popularity, trying to show relatively better and more worry-free choices first.
-- **Community joint supervision**: Because all merchants are independent third parties, we cannot directly manage their transactions. If you encounter after-sales problems, you are welcome to give feedback in the official [Telegram discussion group]().
+- **Community joint supervision**: Because all merchants are independent third parties, we cannot directly manage their transactions. If you encounter after-sales problems, you are welcome to give feedback in the official [Telegram discussion group](https://t.me/+AX9TXrzMaS04OWI1).
 - **Problem merchants removed**: Although transaction safety needs to be evaluated and borne by everyone themselves, for merchants repeatedly reported by users with solid evidence, we will firmly remove them and never include them again.

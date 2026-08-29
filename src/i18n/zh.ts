@@ -148,12 +148,20 @@ export const zhMessages = {
     openTool: '打开工具',
     openExternalTool: '打开外部工具',
     loadMoreProducts: '加载更多商品',
+    sponsor: '我要赞助',
+    supportAuthor: '支持作者',
   },
   external: {
     telegramGroup: 'Telegram',
     xProfile: 'X',
     qqGroup: 'QQ群',
+    copyQqGroup: '复制 QQ 群号',
     chatgptSession: 'ChatGPT Session 获取入口',
+  },
+  sponsorSupport: {
+    title: '支持 AI LoveMoney',
+    description: '如果本站帮你节省了比较和筛选时间，欢迎用一杯咖啡的方式支持持续维护。',
+    button: '前往赞助',
   },
   announcement: {
     label: '公告',

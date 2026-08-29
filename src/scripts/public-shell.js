@@ -104,6 +104,23 @@ function initAnnouncement() {
   });
 }
 
+function initCopyButtons() {
+  const buttons = Array.from(document.querySelectorAll('[data-copy-text]'));
+  buttons.forEach(button => {
+    button.addEventListener('click', async () => {
+      const value = button.getAttribute('data-copy-text') || '';
+      if (!value || !navigator.clipboard?.writeText) return;
+      try {
+        await navigator.clipboard.writeText(value);
+        button.setAttribute('data-copied', 'true');
+        window.setTimeout(() => button.removeAttribute('data-copied'), 1200);
+      } catch {
+        // Keep the visible group number available if clipboard permission is unavailable.
+      }
+    });
+  });
+}
+
 function initPublicShell() {
   const languageMenus = Array.from(document.querySelectorAll('[data-language-menu]'));
 
@@ -176,3 +193,4 @@ initPublicShell();
 initHeaderAd();
 initInlineHelp();
 initAnnouncement();
+initCopyButtons();

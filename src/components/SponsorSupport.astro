@@ -1,0 +1,28 @@
+---
+/* 文件说明: 在商务合作页提供公开、独立的本站赞助入口。 */
+import { sponsorUrl } from '../site.js';
+
+const t = Astro.locals.messages;
+---
+
+<section class="site-main-width rounded-2xl border border-base-300 bg-base-100 p-5 shadow-sm md:p-7" aria-labelledby="sponsor-support-title">
+  <div class="grid gap-5 md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center">
+    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" class="h-7 w-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"></path>
+        <path d="M9 12h6"></path>
+        <path d="M12 9v6"></path>
+      </svg>
+    </div>
+    <div>
+      <h2 id="sponsor-support-title" class="text-xl font-bold text-base-content">{t.sponsorSupport.title}</h2>
+      <p class="mt-2 max-w-2xl leading-7 text-base-content/75">{t.sponsorSupport.description}</p>
+    </div>
+    <a href={sponsorUrl} target="_blank" rel="noopener noreferrer" class="btn btn-neutral min-h-11 whitespace-nowrap px-6">
+      {t.sponsorSupport.button}
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 3h7v7"></path><path d="M10 14 21 3"></path><path d="M21 14v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h6"></path>
+      </svg>
+    </a>
+  </div>
+</section>

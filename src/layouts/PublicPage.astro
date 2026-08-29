@@ -7,7 +7,7 @@ import Sponsors from '../components/Sponsors.astro';
 import { getLocaleHtmlLang, localeLabels, supportedLocales, type Locale } from '../i18n/config.js';
 import { switchLocalePath } from '../i18n/paths.js';
 import publicShellScriptUrl from '../scripts/public-shell.js?url';
-import { headerAdTagEnabled, qqGroupUrl, telegramGroupUrl, xProfileUrl } from '../site.js';
+import { headerAdTagEnabled, qqGroupNumber, sponsorUrl, telegramGroupUrl, xProfileUrl } from '../site.js';
 
 type Props = {
   activeNav?: string;
@@ -121,7 +121,7 @@ function navClickAttrs(targetPage: string, name: string) {
   <meta name="color-scheme" content="light dark" />
   <meta name="description" content={description} />
   <meta name="robots" content={robots} />
-  <link rel="icon" type="image/webp" href="/favicon.webp" />
+  <link rel="icon" type="image/svg+xml" href="/lovemoney-mark.svg" />
   <link rel="canonical" href={canonicalUrl} />
   {alternateUrls.map(item => <link rel="alternate" hreflang={item.hreflang} href={item.url} />)}
   {xDefaultUrl && <link rel="alternate" hreflang="x-default" href={xDefaultUrl} />}
@@ -182,9 +182,10 @@ function navClickAttrs(targetPage: string, name: string) {
         {primaryNavItems.map(item => (
           <li><a href={linkTo(item.href)} class={activeNav === item.key ? mobileMoreLinkClass + ' text-primary' : mobileMoreLinkClass} {...navClickAttrs(linkTo(item.href), item.label)}>{item.label}</a></li>
         ))}
-        <li><span class={mobileMoreLinkClass} data-contact-url={telegramGroupUrl}>{t.external.telegramGroup}</span></li>
+        <li><a href={telegramGroupUrl} target="_blank" rel="noopener noreferrer" class={mobileMoreLinkClass}>{t.external.telegramGroup}</a></li>
         <li><span class={mobileMoreLinkClass} data-contact-url={xProfileUrl}>{t.external.xProfile}</span></li>
-        <li><span class={mobileMoreLinkClass} data-contact-url={qqGroupUrl}>{t.external.qqGroup}</span></li>
+        <li><button type="button" class={mobileMoreLinkClass + ' w-full text-left'} data-copy-text={qqGroupNumber} title={t.external.copyQqGroup}>{t.external.qqGroup} · {qqGroupNumber}</button></li>
+        <li><a href={sponsorUrl} target="_blank" rel="noopener noreferrer" class={mobileMoreLinkClass}>{t.actions.supportAuthor}</a></li>
       </ul>
     </details>
     <div class="mobile-nav-scroll min-w-0 w-0 flex-1 overflow-x-auto">
@@ -236,7 +237,7 @@ function navClickAttrs(targetPage: string, name: string) {
   <nav class="hidden w-full px-4 py-2 md:block">
     <div class="desktop-nav-wrap">
       <a href={linkTo('/')} aria-label={t.actions.backHome} class="inline-flex shrink-0 items-center gap-2 rounded-lg px-2 py-1 text-base-content transition hover:bg-base-200" {...navClickAttrs(linkTo('/'), 'Header Logo')}>
-        <img src="/favicon.webp" alt={t.site.name} width="28" height="28" class="h-7 w-7 rounded object-cover" />
+        <img src="/lovemoney-mark.svg" alt={t.site.name} width="28" height="28" class="h-7 w-7 rounded object-contain" />
         <span class="flex flex-col justify-center leading-none">
           <span class="text-base font-bold tracking-normal">{t.site.name}</span>
           <span class="text-xs font-semibold text-base-content/60">{t.site.domain}</span>
@@ -281,24 +282,27 @@ function navClickAttrs(targetPage: string, name: string) {
           <path d="M12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Zm0,6a2,2,0,1,1,2-2A2,2,0,0,1,12,14ZM12,2a1,1,0,0,0-1,1V4a1,1,0,0,0,2,0V3A1,1,0,0,0,12,2ZM12,18a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V19A1,1,0,0,0,12,18ZM5.64,4.22a1,1,0,1,0-1.42,1.42l1,1a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42ZM17.36,15.94a1,1,0,0,0-1.42,1.42l1,1a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2ZM4,11H3a1,1,0,0,0,0,2H4a1,1,0,0,0,0-2Zm14.78-6.78a1,1,0,0,0-1.42,0l-1,1a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0l1-1A1,1,0,0,0,18.78,4.22ZM6.64,15.94a1,1,0,0,0-1.42,0l-1,1a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0l1-1A1,1,0,0,0,6.64,15.94Z"/>
         </svg>
       </button>
-      <span aria-label={t.external.telegramGroup} title={t.external.telegramGroup} data-contact-url={telegramGroupUrl} class="btn btn-ghost btn-circle h-10 min-h-10 w-10 shrink-0 cursor-default p-0 text-base-content">
+      <a href={telegramGroupUrl} target="_blank" rel="noopener noreferrer" aria-label={t.external.telegramGroup} title={t.external.telegramGroup} class="btn btn-ghost btn-circle h-10 min-h-10 w-10 shrink-0 p-0 text-base-content">
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" class="h-5 w-5 shrink-0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="m22 2-7 20-4-9-9-4Z"></path>
           <path d="M22 2 11 13"></path>
         </svg>
-      </span>
+      </a>
       <span aria-label={t.external.xProfile} title={t.external.xProfile} data-contact-url={xProfileUrl} class="btn btn-ghost btn-circle h-10 min-h-10 w-10 shrink-0 cursor-default p-0 text-base-content/85">
         <svg aria-hidden="true" viewBox="0 0 24 24" class="h-4 w-4 shrink-0 fill-current">
           <path d="M13.93 10.16 21.31 1.5h-1.75l-6.41 7.52L8.03 1.5H2.13l7.74 11.36-7.74 9.08h1.75l6.76-7.93 5.4 7.93h5.9l-8.01-11.78Zm-2.39 2.81-.78-1.13L4.52 2.82h2.67l5.04 7.28.78 1.13 6.55 9.46h-2.67l-5.35-7.72Z"></path>
         </svg>
       </span>
-      <span aria-label={t.external.qqGroup} title={t.external.qqGroup} data-contact-url={qqGroupUrl} class="btn btn-ghost btn-circle h-10 min-h-10 w-10 shrink-0 cursor-default p-0 text-base-content/85">
+      <button type="button" aria-label={`${t.external.qqGroup}: ${qqGroupNumber}`} title={t.external.copyQqGroup} data-copy-text={qqGroupNumber} class="btn btn-ghost btn-circle h-10 min-h-10 w-10 shrink-0 p-0 text-base-content/85">
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" class="h-5 w-5 shrink-0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="9" cy="9" r="3"></circle>
           <circle cx="17" cy="10" r="2.5"></circle>
           <path d="M3.5 20c.6-3 2.5-4.5 5.5-4.5s4.9 1.5 5.5 4.5"></path>
         </svg>
-      </span>
+      </button>
+      <a href={sponsorUrl} target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm h-9 min-h-9 shrink-0 whitespace-nowrap px-3 text-sm">
+        {t.actions.sponsor}
+      </a>
     </div>
   </nav>
 </header>

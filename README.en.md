@@ -160,6 +160,17 @@ pnpm run build
 pnpm start
 ```
 
+### Local start and check
+
+The Astro development manager owns the local website process:
+
+```bash
+pnpm dev
+```
+
+- Website: <http://127.0.0.1:3101/> (`pnpm exec astro dev status` / `pnpm exec astro dev stop`)
+- Local collection console: `python scripts/collection/gui.py`
+
 `seed:reference-samples` writes a bounded public reference sample set into local MySQL `ailovemoney` and the public snapshots. It is not live collection.
 
 ## Current implementation boundary
@@ -167,7 +178,7 @@ pnpm start
 Canonical decisions: [data navigation and collection boundary](docs/data-nav-and-collection.md).
 
 - Done: renamed three-locale nav, standard SKU aggregation, gateway/official/leaderboard reference samples, and internal model/plan relation queries. Production is display-only.
-- Manual check: after seeding, open `/shops`, `/llm-gateway`, `/official-price`, and `/model-leaderboard` on `http://127.0.0.1:3101`. Samples are labeled non-live and have no purchase outbound links.
+- Manual check: after seeding, open `/shops`, `/llm-gateway`, `/official-price`, and `/model-leaderboard` on <http://127.0.0.1:3101/>. Samples are labeled non-live and have no purchase outbound links.
 - Requires per-source user approval: real HTTP collection, Windows/remote schedulers, auto-publishing staging to public snapshots. Unapproved sources must not make network requests.
 - Existing partnership/submit forms stay; submissions are not auto-published.
 - Source defaults: `enabled=false`, `interval_minutes=60`, `max_items_per_run=1000` (`0` = unlimited). `site.score=50` is a display initial value only.

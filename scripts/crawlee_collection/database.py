@@ -68,6 +68,22 @@ class ReusableRepository:
     def merge_batch(self, batch_id: str) -> dict[str, Any]:
         return self.importer.merge_import_batch(self.repository(), batch_id)
 
+    def persist_captures(self, captures: list[Any], trigger: str = "manual") -> dict[str, Any]:
+        from scripts.collection.collection_lib.migrations import apply_migrations
+        from scripts.collection.collection_lib.pipeline import run_collection_batch
+
+        repository = self.repository()
+        apply_migrations(repository.connection)
+        return run_collection_batch(repository, captures, trigger=trigger)
+
+    def list_raw_batches(self) -> list[dict[str, Any]]:
+        return self.repository().query(
+            "SELECT batch.batch_id, batch.status, batch.started_at, COUNT(raw.id) AS raw_count "
+            "FROM collection_batches batch LEFT JOIN collection_raw_records raw ON raw.batch_id = batch.batch_id "
+            "GROUP BY batch.batch_id, batch.status, batch.started_at "
+            "ORDER BY batch.started_at DESC"
+        )
+
     def _connection_usable(self) -> bool:
         connection = self._connection
         if connection is None or getattr(connection, "closed", False):

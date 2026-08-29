@@ -60,6 +60,22 @@ class _RecordingRepository:
         return set()
 
 
+class _GatewaySnapshotRepository(_RecordingRepository):
+    def query(self, sql: str, params: tuple = ()):  # noqa: ANN001, ANN201
+        if "FROM gateway_sites" in sql:
+            return [{
+                "site_id": "collected-linkai-shop", "slug": "linkai-shop", "name": "LinkAi", "host": "linkai.shop",
+                "family": "collected", "score": 50, "sampled_at": "2026-08-30 00:00:00", "is_sample": False,
+                "source_id": "cardnav-gateway-details", "summary": "API", "url": "https://cardnav.xyz/llm-gateway/linkai",
+                "availability_percent": 99.2, "avg_success_latency_ms": 281,
+            }]
+        if "FROM gateway_model_coverage" in sql:
+            return [{"site_id": "collected-linkai-shop", "model_id": "gpt-5.6-luna", "model_family": "GPT"}]
+        if "FROM gateway_model_prices" in sql:
+            return [{"site_id": "collected-linkai-shop", "model_id": "gpt-5.6-luna", "fetched_at": "2026-08-30 00:00:00"}]
+        return []
+
+
 class CardNavGatewayParserTests(unittest.TestCase):
     def test_standard_model_id_casefolds_and_collapses_spaces(self) -> None:
         self.assertEqual(normalize_gateway_model_id("  GPT   5.6  Luna  "), "gpt-5.6-luna")
@@ -159,6 +175,18 @@ class CardNavGatewayParserTests(unittest.TestCase):
 
         self.assertEqual((key, state), ("gateway_site:linkai.shop", "valid"))
         self.assertEqual(payload["metadata_json"]["models"][0]["model_id"], "gpt-5.6-luna")
+
+    def test_gateway_snapshot_exposes_observed_prices_and_detail_metadata(self) -> None:
+        repository = _GatewaySnapshotRepository()
+
+        PublicPublisher().rebuild_snapshots(repository, {RecordKind.GATEWAY_SITE})
+
+        site = repository.snapshots["gateway-sites"]["sites"][0]
+        model = repository.snapshots["gateway-models"]["models"][0]
+        self.assertEqual(site["url"], "https://cardnav.xyz/llm-gateway/linkai")
+        self.assertEqual(site["priceCount"], 1)
+        self.assertEqual(site["availabilityPercent"], 99.2)
+        self.assertEqual(model["priceCount"], 1)
 
 
 if __name__ == "__main__":

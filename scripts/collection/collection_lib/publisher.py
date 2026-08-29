@@ -187,22 +187,31 @@ class PublicPublisher:
         repository.upsert_snapshot("shop-products", payload)
 
     def _rebuild_gateway_snapshot(self, repository) -> None:
-        sites = repository.query("SELECT site_id, slug, name, host, family, score, sampled_at, is_sample, source_id, summary FROM gateway_sites")
+        sites = repository.query("SELECT site_id, slug, name, url, host, family, score, availability_percent, avg_success_latency_ms, sampled_at, is_sample, source_id, summary FROM gateway_sites")
         coverage = repository.query("SELECT site_id, model_id, model_family FROM gateway_model_coverage")
+        prices = repository.query(
+            "SELECT site_id, model_id, fetched_at FROM gateway_model_prices "
+            "WHERE input_price IS NOT NULL OR output_price IS NOT NULL OR cache_input_price IS NOT NULL OR cache_output_price IS NOT NULL"
+        )
         by_site: dict[str, list[dict[str, Any]]] = {}
         for row in coverage:
             by_site.setdefault(str(row["site_id"]), []).append(row)
+        prices_by_site: dict[str, list[dict[str, Any]]] = {}
+        prices_by_model: dict[str, list[dict[str, Any]]] = {}
+        for row in prices:
+            prices_by_site.setdefault(str(row["site_id"]), []).append(row)
+            prices_by_model.setdefault(str(row["model_id"]), []).append(row)
         payload = {
             "sites": [
                 {
                     "id": site["site_id"], "slug": site.get("slug") or site["site_id"], "name": site.get("name") or "",
-                    "url": "", "outboundUrl": "", "host": site.get("host") or "", "family": site.get("family") or "",
+                    "url": site.get("url") or "", "outboundUrl": site.get("url") or "", "host": site.get("host") or "", "family": site.get("family") or "",
                     "displayFamily": site.get("family") or "", "createdAt": str(site.get("sampled_at") or ""),
                     "createdTime": str(site.get("sampled_at") or ""), "lastProductRefreshCompleteAt": None,
                     "lastProductRefreshCompleteTime": "", "siteScore": float(site.get("score") or 50), "sponsor": False,
-                    "availabilityPercent": None, "avgSuccessLatencyMs": None, "summary": site.get("summary") or "",
+                    "availabilityPercent": site.get("availability_percent"), "avgSuccessLatencyMs": site.get("avg_success_latency_ms"), "summary": site.get("summary") or "",
                     "modelTypes": [], "paymentMethods": [],
-                    "modelCount": len(by_site.get(str(site["site_id"]), [])), "priceCount": 0,
+                    "modelCount": len(by_site.get(str(site["site_id"]), [])), "priceCount": len(prices_by_site.get(str(site["site_id"]), [])),
                     "modelFamilies": list({item.get("model_family") for item in by_site.get(str(site["site_id"]), []) if item.get("model_family")}),
                     "displayModelFamilies": list({item.get("model_family") for item in by_site.get(str(site["site_id"]), []) if item.get("model_family")}),
                     "refreshStatus": "", "refreshErrorType": "",
@@ -214,14 +223,17 @@ class PublicPublisher:
                 for site in sites
             ],
             "totalSiteCount": len(sites),
-            "sitesWithPricesCount": 0,
+            "sitesWithPricesCount": sum(1 for site in sites if prices_by_site.get(str(site["site_id"]))),
             "totalModelCount": len({item.get("model_id") for item in coverage}),
-            "totalPriceCount": 0,
+            "totalPriceCount": len(prices),
         }
         models = {}
         for item in coverage:
-            models.setdefault(item["model_id"], {"id": item["model_id"], "modelId": item["model_id"], "modelFamily": item.get("model_family") or "Other", "supportSiteCount": 0, "priceCount": 0, "latestGatewayRefreshAt": None, "latestGatewayRefreshTime": ""})
-            models[item["model_id"]]["supportSiteCount"] += 1
+            model_id = str(item["model_id"])
+            model_prices = prices_by_model.get(model_id, [])
+            latest_price_at = max((str(price.get("fetched_at") or "") for price in model_prices), default="") or None
+            models.setdefault(model_id, {"id": model_id, "modelId": model_id, "modelFamily": item.get("model_family") or "Other", "supportSiteCount": 0, "priceCount": len(model_prices), "latestGatewayRefreshAt": latest_price_at, "latestGatewayRefreshTime": latest_price_at or ""})
+            models[model_id]["supportSiteCount"] += 1
         repository.upsert_snapshot("gateway-sites", payload)
         repository.upsert_snapshot("gateway-models", {"models": list(models.values()), "totalModelCount": len(models), "totalSupportCount": sum(model["supportSiteCount"] for model in models.values())})
 

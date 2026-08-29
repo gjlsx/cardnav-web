@@ -2,9 +2,13 @@ from __future__ import annotations
 
 import json
 import unittest
+
+from scripts.collection.collection_lib.contracts import RecordKind
+from scripts.collection.collection_lib.pipeline import SourceCapture
 from io import StringIO
 from unittest.mock import patch
 
+from scripts.crawlee_collection.catch_config import configured_sources
 from scripts.crawlee_collection.sources import MAX_CONCURRENCY, get_source, list_sources
 from scripts.crawlee_collection.worker import MergeImportWorker
 
@@ -28,6 +32,18 @@ class _Fetcher:
         require_allowed_source(source.source_id, source.url)
         self.urls.append(source.url)
         return SHOP_HTML if source.page_type == "card_subscriptions" else "<html></html>"
+
+    def fetch_cardnav_captures(self, model_source, list_source, observed_at: str, max_items_per_run: int):
+        self.urls.extend([model_source.url, list_source.url])
+        return [
+            SourceCapture(
+                source={"id": list_source.source_id, "public_url": list_source.url},
+                body="<html></html>",
+                rows=[{"normalized_site": "linkai.shop", "site_name": "LinkAi", "observed_at": observed_at}],
+                content_type="text/html",
+                kind=RecordKind.GATEWAY_SITE,
+            )
+        ]
 
 
 class _Store:
@@ -83,9 +99,14 @@ class CliTests(unittest.TestCase):
 
     def test_collect_all_uses_playwright_fetcher_and_persists_one_raw_batch(self) -> None:
         code, payload = self._run(["collect", "--all"])
+        configured = configured_sources()
         self.assertEqual(code, 0)
-        self.assertEqual(self.fetcher.urls, [source.url for source in list_sources()])
-        self.assertEqual(self.store.persisted, [("manual", [source.source_id for source in list_sources()])])
+        self.assertEqual(self.fetcher.urls, [
+            *[source.url for source in configured if source.page_type != "cardnav_gateway_details"],
+            "https://priceai.cc/api-transit/models",
+            "https://cardnav.xyz/llm-gateway",
+        ])
+        self.assertEqual(self.store.persisted, [("manual", [source.source_id for source in configured])])
         self.assertEqual(payload["batch_id"], "batch-1")
         self.assertEqual(self.fetcher.max_concurrency, 1)
 
@@ -98,6 +119,14 @@ class CliTests(unittest.TestCase):
         self.assertEqual(code, 2)
         self.assertIn("unknown source", payload["error"])
         self.assertEqual(self.store.persisted, [])
+
+    def test_collect_cardnav_gateway_runs_its_priceai_catalog_dependency(self) -> None:
+        code, payload = self._run(["collect", "--source", "cardnav-gateway-details"])
+
+        self.assertEqual(code, 0)
+        self.assertEqual(self.fetcher.urls, ["https://priceai.cc/api-transit/models", "https://cardnav.xyz/llm-gateway"])
+        self.assertEqual(self.store.persisted, [("manual", ["cardnav-gateway-details"])])
+        self.assertEqual(payload["batch_id"], "batch-1")
 
     def test_merge_once_and_worker_once_are_explicit_and_serial(self) -> None:
         collect_code, _ = self._run(["collect", "--source", "priceai-card-subscriptions"])

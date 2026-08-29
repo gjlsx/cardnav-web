@@ -89,7 +89,7 @@ def normalize_raw_observation(
             "channel_count": clean.get("channel_count"),
             "available_channel_count": clean.get("available_channel_count"),
             "out_of_stock_channel_count": clean.get("out_of_stock_channel_count"),
-            "metadata_json": {},
+            "metadata_json": clean.get("metadata_json") or {},
             "validation_state": "valid",
             "validation_reason": None,
             "manual_state": None,

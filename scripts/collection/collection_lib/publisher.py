@@ -64,21 +64,39 @@ class PublicPublisher:
         site_id = _site_id(host)
         slug = host.replace(".", "-")[:80]
         sampled = str(payload.get("observed_at") or _now())[:19].replace("T", " ")
+        metadata = payload.get("metadata_json") if isinstance(payload.get("metadata_json"), dict) else {}
+        source_id = str(payload.get("source_id") or row.get("source_id") or "")
         repository.execute(
-            "INSERT INTO gateway_sites (site_id, url, status, name, family, type, slug, host, score, source_id, sampled_at, is_sample, created_at, summary) "
-            "VALUES (%s, NULL, 'online', %s, %s, 'gateway', %s, %s, 50, %s, %s, FALSE, %s, %s) "
-            "ON DUPLICATE KEY UPDATE name = VALUES(name), family = VALUES(family), score = 50, sampled_at = VALUES(sampled_at)",
-            (site_id, payload.get("site_name") or host, payload.get("platform_family") or "collected", slug, host,
-             str(payload.get("source_id") or row.get("source_id") or ""), sampled, sampled, payload.get("summary") or ""),
+            "INSERT INTO gateway_sites (site_id, url, status, name, family, type, slug, host, score, availability_percent, avg_success_latency_ms, source_id, sampled_at, is_sample, created_at, summary) "
+            "VALUES (%s, %s, 'online', %s, %s, 'gateway', %s, %s, %s, %s, %s, %s, %s, FALSE, %s, %s) "
+            "ON DUPLICATE KEY UPDATE url = VALUES(url), name = VALUES(name), family = VALUES(family), score = VALUES(score), availability_percent = VALUES(availability_percent), avg_success_latency_ms = VALUES(avg_success_latency_ms), sampled_at = VALUES(sampled_at), summary = VALUES(summary)",
+            (site_id, payload.get("url") or None, payload.get("site_name") or host, payload.get("platform_family") or "collected", slug, host,
+             50,
+             metadata.get("availability_percent") if metadata.get("availability_percent") is not None else 0,
+             metadata.get("avg_success_latency_ms"), source_id, sampled, sampled, payload.get("summary") or ""),
         )
-        model_id = str(payload.get("model_or_plan") or "")
-        if model_id:
+        models = metadata.get("models") if isinstance(metadata.get("models"), list) else []
+        if not models and payload.get("model_or_plan"):
+            models = [{"model_id": str(payload["model_or_plan"]), "model_family": payload.get("model_family") or payload.get("platform_family") or "Other"}]
+        repository.execute("DELETE FROM gateway_model_coverage WHERE site_id = %s AND source_id = %s", (site_id, source_id))
+        repository.execute("DELETE FROM gateway_model_prices WHERE site_id = %s", (site_id,))
+        for model in models:
+            if not isinstance(model, dict) or not str(model.get("model_id") or ""):
+                continue
+            model_id = str(model["model_id"])
+            model_family = str(model.get("model_family") or "Other")
             repository.execute(
                 "INSERT INTO gateway_model_coverage (site_id, model_id, model_family, source_id, observed_at, is_sample) "
                 "VALUES (%s, %s, %s, %s, %s, FALSE) ON DUPLICATE KEY UPDATE model_family = VALUES(model_family), observed_at = VALUES(observed_at)",
-                (site_id, model_id, payload.get("model_family") or payload.get("platform_family") or "Other",
-                 str(payload.get("source_id") or row.get("source_id") or ""), sampled),
+                (site_id, model_id, model_family, source_id, sampled),
             )
+            if any(model.get(field) is not None for field in ("input_price", "output_price", "cache_input_price", "cache_output_price")):
+                repository.execute(
+                    "INSERT INTO gateway_model_prices (site_id, model_id, model_family, unit, input_price, output_price, cache_input_price, cache_output_price, fetched_at) "
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    (site_id, model_id, model_family, str(model.get("billing_unit") or ""), model.get("input_price"), model.get("output_price"),
+                     model.get("cache_input_price"), model.get("cache_output_price"), sampled),
+                )
 
     def _publish_official(self, repository, row: dict[str, Any], payload: dict[str, Any]) -> None:
         plan = str(payload.get("plan_slug") or payload.get("model_or_plan") or "")

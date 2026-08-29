@@ -33,6 +33,7 @@ ALLOWED_FIELDS = (
     "country_code",
     "rank",
     "url",
+    "metadata_json",
 )
 
 FORBIDDEN_FIELD_MARKERS = (

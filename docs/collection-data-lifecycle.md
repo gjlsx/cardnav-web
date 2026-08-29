@@ -16,6 +16,14 @@
 
 采集和 merge/import 是两个独立步骤。采集、循环采集、fixture 测试、dry-run 均只写 raw；它们不得写运行时实体表或 `public_snapshot_entries`。不存在第二份“发布副本”或 SFTP/SQL 文件发布步骤：`merge_import_batch` 对运行时表及完整快照的一次 MySQL 事务就是发布。
 
+## 程序写死、参数走 `catch.config`
+
+采集程序、解析程序、merge/import 入库程序和它们的调用顺序写死：`PlaywrightCrawler` 只写 raw，独立 merge worker 只读 `raw_completed` batch 再入运行库/快照。不得再加第二条流水线、平行 schema 或 GUI 自有协议。
+
+可变项只放在同一份 `scripts/crawlee_collection/catch.config`（仓库内模板为 `catch.config.example`）：采集哪些已登记来源、每项上限、重采 sleep/间隔、merge worker 是否启用及其轮询间隔。精确 allowlist URL 仍在代码里，配置不能增加任意 URL。所有 CLI、未来 GUI 按钮和 Linux 一键/systemd 都只调用同一套 CLI，并由该 CLI 读取这份配置；不要为 GUI 或服务器再复制一份参数。
+
+中转站当前批准来源为 PriceAI 的精确模型目录 `https://priceai.cc/api-transit/models`，以及 CardNav 的精确列表入口 `https://cardnav.xyz/llm-gateway`。CardNav 只可读取列表 DOM 已出现、且匹配同域 `/llm-gateway/<safe-slug>` 的一层详情页；不能访问详情中的外部“打开”链接、模型页、广告或其它路径。PriceAI 模型页只保存 raw payload 并提供本批次允许模型集合，不发布模型排行。模型标准名为 trim、连续空白合并、Unicode casefold、空格替换为 `-`，例如 `GPT 5.6 Luna` -> `gpt-5.6-luna`；CardNav 详情中未命中该集合的模型不入运行库。一个详情页对应一个 `gateway_site` raw 稳定键，其白名单 `metadata_json` 可承载多个模型覆盖和公开价格；merge/import 在同一既有事务更新 `gateway_sites`、`gateway_model_coverage`、`gateway_model_prices` 及中转快照。来源可见评分只保留 raw，`site.score` 仍为展示初始值 50。
+
 当前 MVP 的目标是本机 MySQL `ailovemoney`。采集器不在 `ai.lovemoney.live` 生产服务器运行。MVP 验收后，才可以单独批准把同一个 merge/import 事务切换到运行时服务器 MySQL；不得为远程目标创建第二种原始数据格式。
 
 ## 项目固定原始数据格式
@@ -31,6 +39,8 @@
 | 处理状态 | `validation_state`, `validation_reason`, `manual_state`, `merged_at`, `imported_at` | 保留校验与人工状态，不改变原始来源事实 |
 
 `collection_staging_observations` 保留为唯一旧 staging 表，供历史兼容和查看；新采集流程不向它双写，也绝不新增 `collection_staging_records`。
+
+各表职责、采集写哪些、merge 写哪些见 [数据库说明](数据库说明.md)。
 
 ## 合并与入库规则
 

@@ -11,6 +11,8 @@ PRICEAI_SOURCE_IDS = (
     "priceai-card-subscriptions",
     "priceai-official-api",
     "priceai-transit-api",
+    "priceai-transit-models",
+    "cardnav-gateway-details",
 )
 
 
@@ -46,6 +48,20 @@ _SOURCES = (
         "PriceAI 中转 API",
         "https://priceai.cc/api-transit",
         "transit_api",
+        RecordKind.GATEWAY_SITE,
+    ),
+    BrowserSource(
+        "priceai-transit-models",
+        "PriceAI 中转标准模型",
+        "https://priceai.cc/api-transit/models",
+        "transit_model_catalog",
+        RecordKind.GATEWAY_SITE,
+    ),
+    BrowserSource(
+        "cardnav-gateway-details",
+        "CardNav 中转站详情",
+        "https://cardnav.xyz/llm-gateway",
+        "cardnav_gateway_details",
         RecordKind.GATEWAY_SITE,
     ),
 )

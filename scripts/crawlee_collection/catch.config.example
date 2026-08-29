@@ -1,0 +1,18 @@
+{
+  "collect": {
+    "enabled": false,
+    "source_ids": [
+      "priceai-card-subscriptions",
+      "priceai-official-api",
+      "priceai-transit-api",
+      "cardnav-gateway-details"
+    ],
+    "max_items_per_run": 1000,
+    "interval_seconds": 3600
+  },
+  "merge": {
+    "enabled": false,
+    "poll_interval_seconds": 10,
+    "connection_idle_ttl_s": 600
+  }
+}

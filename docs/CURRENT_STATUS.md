@@ -1,6 +1,6 @@
 ---
 scope: cardnav-web
-updated_at: 2026-08-30 04:25 Asia/Hong_Kong
+updated_at: 2026-08-30 04:47 Asia/Hong_Kong
 timezone: Asia/Hong_Kong
 tags: [collection, crawlee, playwright, taskexec]
 summary: PriceAI Crawlee CLI exists; collect/merge programs stay hardcoded and share scripts/crawlee_collection/catch.config for source set, recrawl sleep, and merge intervals.
@@ -36,4 +36,4 @@ summary: PriceAI Crawlee CLI exists; collect/merge programs stay hardcoded and s
 
 ## Next TODO
 
-No runnable `todo` remains in `taskexec/cardnav-web/tasklist08292253.md`. Optional later: map PriceAI transit ranking rows if a public site homepage field appears, without following downstream links. GUI/Linux continue to call `python -m scripts.crawlee_collection` / `python -m scripts.crawlee_collection.gui`.
+Active list: `taskexec/cardnav-web/tasklist08300447.md` (all rows still `todo`; do not start until asked). Backup collection sources and homepage announcement edit/publish. Optional later: map PriceAI transit ranking rows if a public site homepage field appears, without following downstream links.

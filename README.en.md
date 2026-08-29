@@ -4,8 +4,7 @@
 
 <p align="center">
   <a href="README.md">中文</a> ·
-  <strong>English</strong> ·
-  <a href="README.ru.md">Русский</a>
+  <strong>English</strong>
 </p>
 
 <p align="center">
@@ -14,7 +13,7 @@
 
 <p align="center">
   <a href="https://ai.lovemoney.live">
-    <img src="https://img.shields.io/badge/Website-ai.lovemoney.live-2563eb?style=flat-square&logo=data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAHhlWElmTU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAAAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAABIAAAAAQAAAEgAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAAABigAwAEAAAAAQAAABgAAAAA0bpBmgAAAAlwSFlzAAALEwAACxMBAJqcGAAAA8xJREFUSA21VVtsFFUY%2Fua27e6sGijYK6217aY0gtm0FCQBoyY%2BqE%2FWpqFcVAKx8c0XfVAS%2B4RGC0kxMSQkllKg2lZMY0yICngDbUMkpFBbSqh1LWrt0uteujNz%2FM%2BZne1utysBwp%2FMnDPnv3z%2F7fwjMSLcR5Lvo21hWl0KEDMMjI0FEIlGIUlxLo9R7J2DVC2eBK%2Buo6S4KJVBXykAZ777Ee%2B3HMLwtRHEYgYZlWy7yWppGBI4QFaWCxtr%2FHj37TfhqyhLaEhODc7%2F3I%2FGV5swPT2Dgrxc6F6dhBxrTgjOyvVTSxcM3sLEZBBVlT58fvIT5JMNQRzANE3WsHMvezD3Ubbn9TdY4M9xNjs7d0fP1cEh9sxzdUxfVcI%2BOPgRNyuIh8fIa%2BZ%2F4mlWULaeDVwdtDl38W4%2F%2FhlbWehje8lJh0QNDNOEaVrQVBXZWdl2aHfx3vHS89i6uQaW6iHHRQntIvNMOx1DyML0l4MGei4bUBUJTZs0VBdl7miu8vU1E30BDb%2BOF2EuYqFnJ%2BDNSukip6C26xcDFtrOLwCahLMjMfTu9qDq4eVBuHOnhw0c%2BCZKnjI86VOhu8g60fIaxFA5RwM8LuD6vwwNx8K4EbS4ThoFphj6fzegkDxvLn%2BhmshIRgBhha7CllIFNWsUDARMNHREcHPGTqGDEphmqGsP4wdKUelKGS%2F6XdhUojjszBEICXLYR2k5sT0bpatl9N8w0HgijGDIBvljykLd0RD66HzNKhkd293oedmNunWL9%2Ff%2FI6B4oxRFBSl37nAjf4WEc0Mx7OkK49K4hXryXBjPkdC9y42NxbbnIr3xGG4DQFLxjNSS8vFGD3IekNF7xcCzh%2BfxC%2BW9iNLStcsDzr90eQDvNO%2FHp91f3D5FolstCWZSyp8qV9C2zQ2vS8LErIXChxRh3PF84Mpv2P9hK071fpUOIPqf2k2KX4gcXUJ5row88jiZXlir4nC9GzXFKroo38kF1TQNuscjBp%2BjI6qhKAoURYZBEzRKY5rTa3S5dtdqdrs60vG14XEV9fSkQgPhSJhusAVZXuSInZcmZ0V5GWbn5tD68RHc%2FOtvRMIhWAshRGmdD6U%2FkSVnQ8Mj6OjsFiPhsarKhEuJcf3ThT40vtIkQArz86DrHhKK326%2BOLWIH4lvZ0%2Fsyclb%2BGdiAmtpXJ%2FqbEuM6wQAh%2Fz27Pd4r6UVQ8PXwQdgkj5nLxKvk5hm8SMC5z%2BcDdV%2BNO97C5W%2B8oRsCgA%2FXYjFMDo6ZtfCmYAJ8cwb%2FsssfaQ4TSANIE3iHg8Wy32PhjKp%2Fwc46vDtLUqx1QAAAABJRU5ErkJggg%3D%3D" alt="AI LoveMoney website" />
+    <img src="" alt="AI LoveMoney website" />
   </a>
   <a href="https://t.me/+AX9TXrzMaS04OWI1">
     <img src="https://img.shields.io/badge/Telegram-Group-26a5e4?style=flat-square&logo=telegram&logoColor=white" alt="Telegram group" />
@@ -182,6 +181,7 @@ Canonical decisions: [data navigation and collection boundary](docs/data-nav-and
 - Requires per-source user approval: real HTTP collection, Windows/remote schedulers, auto-publishing staging to public snapshots. Unapproved sources must not make network requests.
 - Existing partnership/submit forms stay; submissions are not auto-published.
 - Source defaults: `enabled=false`, `interval_minutes=60`, `max_items_per_run=1000` (`0` = unlimited). `site.score=50` is a display initial value only.
+- This site does not support Russian. `README.ru.md` has been removed; there is no Russian README, and Russian is not a supported public language.
 - Passwords, SSH keys, connection strings, and SQL dumps stay out of this repository.
 
 ## Current production deployment

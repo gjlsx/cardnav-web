@@ -12,8 +12,8 @@ const publicPageSource = readSource('src/layouts/PublicPage.astro');
 const sponsorsSource = readSource('src/components/Sponsors.astro');
 const supportSource = readSource('src/components/SponsorSupport.astro');
 const gatewaySource = readSource('src/pages/llm-gateway.astro');
+const chineseReadme = readSource('README.md');
 const englishReadme = readSource('README.en.md');
-const russianReadme = readSource('README.ru.md');
 
 test('public runtime uses the approved sponsor, Telegram, and QQ community values', () => {
   assert.match(siteSource, /publicSiteUrl = process\.env\.PUBLIC_SITE_URL \|\| 'https:\/\/ai\.lovemoney\.live'/);
@@ -25,15 +25,22 @@ test('public runtime uses the approved sponsor, Telegram, and QQ community value
   assert.doesNotMatch(siteSource, /cardnav\.xyz|t\.me\/cardnav_xyz_group|github\.com\/charleslee8266|x\.com\/CharlesLee8266/);
 });
 
-test('gateway submission and translated README files use the centralized public contacts', () => {
+test('gateway submission and README files use the centralized public contacts', () => {
   assert.match(gatewaySource, /import \{ gatewaySubmissionEmail, publicSiteUrl, telegramGroupUrl \} from '\.\.\/site\.js'/);
   assert.doesNotMatch(gatewaySource, /const gatewaySubmissionEmail =/);
-  for (const readme of [englishReadme, russianReadme]) {
+  for (const readme of [chineseReadme, englishReadme]) {
     assert.match(readme, /https:\/\/t\.me\/\+AX9TXrzMaS04OWI1/);
     assert.match(readme, /https:\/\/buy\.stripe\.com\/cNi8wRgiq26I1Ese0V0Fi00/);
     assert.match(readme, /1106704568/);
     assert.match(readme, /xiu\.juan2love@gmail\.com/);
+    assert.doesNotMatch(readme, /href=["']README\.ru\.md["']/);
   }
+});
+
+test('the public site does not support Russian', () => {
+  assert.equal(fs.existsSync(path.resolve('README.ru.md')), false);
+  assert.match(chineseReadme, /不支持俄语/);
+  assert.match(englishReadme, /does not support Russian/i);
 });
 
 test('shared page shell removes the hero and GitHub while keeping empty community placeholders', () => {

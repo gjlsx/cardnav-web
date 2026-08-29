@@ -4,8 +4,7 @@
 
 <p align="center">
   <strong>中文</strong> ·
-  <a href="README.en.md">English</a> ·
-  <a href="README.ru.md">Русский</a>
+  <a href="README.en.md">English</a>
 </p>
 
 <p align="center">
@@ -182,6 +181,7 @@ pnpm dev
 - 必须由用户逐来源批准后才能做：真实 HTTP 采集、Windows/远程调度。未批准来源不得发网；定时 merge/import 也必须单独启用。
 - 现有合作/提交表单继续使用，结果不自动公开发布。
 - 来源默认 `enabled=false`、`interval_minutes=60`、`max_items_per_run=1000`（`0` 不限）。`site.score=50` 只是展示初值。
+- 本站不支持俄语。已删除 `README.ru.md`，不再提供俄语 README，也不再把俄语当作受支持的公开语言。
 - 密码、SSH 私钥、数据库连接串和 SQL dump 不进本仓库。
 
 采集生命周期、统一 raw 格式和 MVP 后直写运行时服务器 MySQL 的方向见 [采集数据生命周期](docs/collection-data-lifecycle.md)。

@@ -59,7 +59,7 @@ MySQL 库: ailovemoney（仅服务器本地）
 
 - 白名单当前仅为 `216.144.231.55`（用户重复提供的同一 IP 按一个地址处理）。
 - 使用专用账户，权限仅限 `ailovemoney.*` 的日常读写；不授予 `*.*`，不把 schema 管理权限交给远程采集器。
-- 网络层用仅匹配 TCP/3306 的持久防火墙规则拒绝其它来源；不要为了此项启用、清空或重置整台服务器的 UFW。
+- 网络层用仅匹配 TCP/3306 的持久防火墙规则拒绝其它外部来源，同时必须保留服务器 `lo` 回环访问；不要为了此项启用、清空或重置整台服务器的 UFW。
 - 本机忽略的 `.env` 可保存 `MYSQL_REMOTE_HOST`、`MYSQL_REMOTE_PORT`、`MYSQL_REMOTE_USER`、`MYSQL_REMOTE_PASSWORD`、`MYSQL_REMOTE_DATABASE`；这些值、导出的 SQL 和任何服务器密码都不得进 Git、任务日志或聊天。
 - 变更白名单、撤销账户或排障前，先检查 `SHOW GRANTS`、`ss -lnt` 与 `systemctl status ai-lovemoney-mysql-firewall`。网页应用不可改用该远程账户。
 

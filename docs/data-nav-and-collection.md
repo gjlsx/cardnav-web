@@ -58,9 +58,13 @@ pnpm run seed:reference-samples
 
 已批准、公开且字段白名单明确的来源可由本机 GUI 手工真实 HTTP 采集，保存来源 raw payload 与带来源标签的统一 `collection_raw_records`；来源字段缺失时保持 `NULL`。新采集不再把数据双写进 staging 或自动写正式表。人工或独立启用的定时 `merge_import_batch` 才对 raw 按稳定键、来源优先级、同级最低价整合，并在一个事务写入运行时实体表/快照；写入即发布。来源仍默认 `enabled=false`，`interval_minutes=60`、`max_items_per_run=1000`；人工运行忽略 enabled 但不忽略上限。原始公开响应保留 30 天，解析记录和审计长期保留；账号、Cookie、验证码、订单和交付数据均不得保存。
 
+已确认的后续运行方式：raw 采集完成后，由一个默认关闭的本机单例、单线程 merge/import worker 每 10 秒串行轮询 `raw_completed` batch；它只读取 raw 并调用同一事务服务写运行时库/快照，不发采集 HTTP、不处理验证码、不在生产服务器运行。每批仍适用 24 小时来源新鲜度规则；所有候选过期时保留前端现有记录和最后采样时间。该 worker 尚未在本期 MVP 接入。
+
 站点级手工覆盖/隐藏按稳定键在 merge/import 阶段生效：批量来源响应与统一 raw 均继续保存，覆盖记录不覆盖运行时展示。解除覆盖后可重新 merge/import；不恢复旧快照。`collection_staging_observations` 仅保留作唯一历史兼容/查看 staging 表。MVP 只管理本机 MySQL；远程 MySQL 的本机直连读写属于 MVP 后另行批准的任务。服务器发布经合作运维 Tab 的二次确认后，遵循项目根目录 `howtorunvpsnew.md` 真执行，并保持 LikeShop 8086/8090/8095 不受影响。
 
 当前唯一采集生命周期与字段合同见 [collection-data-lifecycle.md](collection-data-lifecycle.md)。
+
+采集引擎的已确认后续选择、测试事实和禁止边界见 [collection-capture-engine.md](collection-capture-engine.md)。
 
 ## 秘密边界
 

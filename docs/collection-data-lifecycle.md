@@ -46,6 +46,15 @@
 
 默认 `merge_import_enabled=false`。人工按钮可执行明确的 `merge_import_batch(batch_id)`；若未来开启定时 merge/import，必须调用同一事务服务并记录来源、批次、数量与结果。
 
+## 独立 merge/import worker（已确认运行约束，尚未接入）
+
+采集来源只负责把批准来源的响应和解析记录写入 raw。后续读取 raw、按稳定键合并/清洗并事务写入运行时库/快照，统一由一个本机独立 worker 负责；它不承担网页采集。
+
+- worker 默认关闭，只有人工或明确配置后才能运行；不在生产服务器运行。
+- 同一时刻只能有一个 worker 实例和一条执行线程。它以 10 秒间隔轮询，串行挑选一个 `raw_completed` batch，调用既有 `merge_import_batch(batch_id)` 完成后才处理下一个 batch。
+- worker 沿用本节全部合并规则：手工闸门、来源优先级、同级最低价和本机 `captured_at` 24 小时新鲜度。成功后的 batch 保持幂等；候选均过期仍标记已处理，但不删除或隐藏当前运行时数据。
+- 该约束只定义 merge/import 的运行位置与串行度；不改变来源审批、allowlist、raw 审计格式、生产发布或远程 MySQL 的边界。
+
 ## 安全与数据边界
 
 - 未批准或 allowlist 不明确的来源只能使用 fixture，不能发 HTTP。

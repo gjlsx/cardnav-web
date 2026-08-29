@@ -19,7 +19,7 @@
 - The local collection control surface is `python scripts/collection/gui.py`. There is no NocoDB administration service in this repository.
 - MySQL defaults to `127.0.0.1:3306`, database `ailovemoney`; actual settings are read only from the local `.env` `MYSQL_*` values. Never expose them.
 - The public Astro site only reads runtime tables and public snapshots. It must not collect sources or write collection data through a browser route.
-- Current task state, resumable evidence, and verification live in `taskexec/cardnav-web/`. `docs/CURRENT_STATUS.md` does not exist and may be created only with explicit user approval.
+- Current task state, resumable evidence, and verification live in `taskexec/cardnav-web/`. `docs/CURRENT_STATUS.md` is the canonical concise handoff for material project state, entry points, verification, blockers, and the advisory `Next TODO`; do not copy detailed task evidence into it.
 
 ## Confirmed collection architecture
 

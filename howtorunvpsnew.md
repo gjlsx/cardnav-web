@@ -1,6 +1,6 @@
 # AI LoveMoney VPS 发布与验证
 
-更新时间：2026-08-28  
+更新时间：2026-08-29  
 当前目标：独立站 `ai.lovemoney.live`，与 LikeShop `dtch.yg2022.top` 同机但目录/服务/端口隔离。  
 本文是本项目日常发布入口，不是 LikeShop 文档副本。
 
@@ -9,7 +9,7 @@
 1. 只发布 `ai.lovemoney.live`。不要改 LikeShop 的 `8086` / `8090` / `8095` 虚拟主机或进程。
 2. Apache `*:80` 和 `*:443` 只服务 `ai.lovemoney.live`。LikeShop 继续走独立端口。
 3. 应用是 Astro standalone Node，监听 `127.0.0.1:3101`，由 Apache 反代。
-4. 数据库只使用服务器本地 MySQL/MariaDB `ailovemoney`。不要把本机密码、dump 或 `.env` 写入本仓库。
+4. 应用数据库只使用服务器本地 MySQL/MariaDB `ailovemoney`。远程管理只使用专用低权限账号和受限白名单；不要把本机密码、dump 或 `.env` 写入本仓库。
 5. 生产站只读展示。不要在 VPS 上运行 Python 采集器，不要安装采集计划任务。
 6. DNS 走 Cloudflare 时，源站验证使用 origin IP + `Host: ai.lovemoney.live`，或已解析的 `https://ai.lovemoney.live/`。
 7. Windows 上不要用会残留的 `Start-Process ssh.exe` 反复探测；非交互诊断优先 Paramiko，凭据只从本机受控安全文件读取。
@@ -52,6 +52,16 @@ MySQL 库: ailovemoney（仅服务器本地）
 首次使用私钥如遇 Windows OpenSSH 权限报错，只在本机对私钥文件收紧 ACL，不要把私钥复制进仓库。
 
 自动诊断优先 Paramiko：`df`、`systemctl is-active apache2 ai-lovemoney`、`ss -lntp`、HTTP Host 头探测。需要 TUI 或长时间观察时再用人工 SSH。
+
+## 1.1 远程 MySQL 管理边界
+
+应用进程仍通过服务器本地回环 MySQL 运行；远程访问只用于受控开发和数据运维，不能把 `root` 暴露到公网。
+
+- 白名单当前仅为 `216.144.231.55`（用户重复提供的同一 IP 按一个地址处理）。
+- 使用专用账户，权限仅限 `ailovemoney.*` 的日常读写；不授予 `*.*`，不把 schema 管理权限交给远程采集器。
+- 网络层用仅匹配 TCP/3306 的持久防火墙规则拒绝其它来源；不要为了此项启用、清空或重置整台服务器的 UFW。
+- 本机忽略的 `.env` 可保存 `MYSQL_REMOTE_HOST`、`MYSQL_REMOTE_PORT`、`MYSQL_REMOTE_USER`、`MYSQL_REMOTE_PASSWORD`、`MYSQL_REMOTE_DATABASE`；这些值、导出的 SQL 和任何服务器密码都不得进 Git、任务日志或聊天。
+- 变更白名单、撤销账户或排障前，先检查 `SHOW GRANTS`、`ss -lnt` 与 `systemctl status ai-lovemoney-mysql-firewall`。网页应用不可改用该远程账户。
 
 ## 2. 本地构建与样例数据
 

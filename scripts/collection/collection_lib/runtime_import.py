@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from .config import source_class_rank
@@ -13,6 +14,18 @@ _SOURCE_METADATA_FIELDS = {
     "batch_id", "run_id", "source_id", "source_class", "source_priority", "source_url", "source_record_hash",
     "record_kind", "record_key", "validation_state", "validation_reason", "manual_state",
 }
+
+RAW_FRESHNESS_HOURS = 24
+
+
+def _is_fresh_raw(row: dict[str, Any], now: datetime) -> bool:
+    """Use the local raw capture time, never a third-party observed timestamp."""
+    captured_at = row.get("captured_at")
+    if not isinstance(captured_at, datetime):
+        return False
+    if captured_at.tzinfo is None:
+        captured_at = captured_at.replace(tzinfo=timezone.utc)
+    return captured_at >= now - timedelta(hours=RAW_FRESHNESS_HOURS)
 
 
 def _numeric_price(payload: dict[str, Any]) -> float:
@@ -101,7 +114,11 @@ class RuntimeImporter:
         # from every known source for the affected stable keys, not just this
         # batch, so a later low-priority source cannot replace a higher-priority
         # current winner.
-        raw_rows = repository.fetch_latest_raw_for_keys(batch_keys)
+        now = datetime.now(timezone.utc)
+        raw_rows = [
+            row for row in repository.fetch_latest_raw_for_keys(batch_keys)
+            if _is_fresh_raw(row, now)
+        ]
         grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
         for row in raw_rows:
             key = str(row.get("record_key") or (row.get("payload") or {}).get("record_key") or "")

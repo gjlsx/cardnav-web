@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import sys
 import unittest
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -14,13 +15,23 @@ from collection_lib.publisher import PublicPublisher  # noqa: E402
 from collection_lib.runtime_import import RuntimeImporter, merge_raw_records  # noqa: E402
 
 
-def raw(source_id, source_class, priority, price, *, region=None, record_key="shop_product:shop.example.com:chatgpt-plus"):
+def raw(
+    source_id,
+    source_class,
+    priority,
+    price,
+    *,
+    region=None,
+    record_key="shop_product:shop.example.com:chatgpt-plus",
+    captured_at=None,
+):
     return {
         "record_key": record_key,
         "record_kind": RecordKind.SHOP_PRODUCT.value,
         "source_id": source_id,
         "source_class": source_class,
         "source_priority": priority,
+        "captured_at": captured_at or datetime.now(timezone.utc),
         "validation_state": "valid",
         "payload": {
             "record_key": record_key,
@@ -154,6 +165,43 @@ class RuntimeImportTests(unittest.TestCase):
 
         self.assertEqual(publisher.rows[0]["source_id"], "priceai-channels")
         self.assertEqual(publisher.rows[0]["payload"]["price_number"], 9)
+
+    def test_fresh_lower_priority_raw_replaces_high_priority_raw_after_24_hours(self):
+        key = "shop_product:shop.example.com:chatgpt-plus"
+        low_fresh = raw("openprice-products", "aggregator", 10, 1, record_key=key)
+        high_expired = raw(
+            "priceai-channels",
+            "aggregator",
+            30,
+            9,
+            record_key=key,
+            captured_at=datetime.now(timezone.utc) - timedelta(hours=24, minutes=1),
+        )
+        repository = MemoryRepository([low_fresh], latest_rows=[low_fresh, high_expired])
+        publisher = RecordingPublisher()
+
+        RuntimeImporter(publisher).merge_import_batch(repository, "batch-1")
+
+        self.assertEqual(publisher.rows[0]["source_id"], "openprice-products")
+        self.assertEqual(publisher.rows[0]["payload"]["price_number"], 1)
+
+    def test_all_expired_raw_candidates_leave_existing_runtime_rows_untouched(self):
+        expired = raw(
+            "priceai-channels",
+            "aggregator",
+            30,
+            9,
+            captured_at=datetime.now(timezone.utc) - timedelta(hours=24, minutes=1),
+        )
+        repository = MemoryRepository([expired])
+        publisher = RecordingPublisher()
+
+        result = RuntimeImporter(publisher).merge_import_batch(repository, "batch-1")
+
+        self.assertEqual(result["runtime_writes"], 0)
+        self.assertEqual(publisher.rows, [])
+        self.assertEqual(publisher.snapshots, [])
+        self.assertEqual(repository.imported, ["batch-1"])
 
     def test_failed_runtime_write_rolls_back_without_marking_batch_imported(self):
         repository = MemoryRepository([raw("priceai-channels", "aggregator", 30, 9)])

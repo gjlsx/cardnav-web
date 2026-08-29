@@ -48,7 +48,7 @@ pnpm run seed:reference-samples
 2. 该站公开网页
 3. 聚合站：PriceAI > CardNav > OpenPrice
 
-规则：按规范化站名去重；高优先级覆盖有效字段，低优先级只补空；同优先级选最低价。`site.score=50` 属于网站展示初值，来源配置不得覆盖。
+规则：按规范化站名去重；每个来源只取本机 `captured_at` 最近 24 小时内的最新有效 raw。高优先级来源在这 24 小时窗口内有数据时，高优先级覆盖有效字段、低优先级只补空；高优先级超过 24 小时没有该稳定键的有效 raw，低优先级的新鲜数据才可接管。同优先级选最低价。所有来源均超时不隐藏既有运行时数据，页面继续显示最后采样时间。`site.score=50` 属于网站展示初值，来源配置不得覆盖。
 
 来源配置默认值：`enabled=false`、`interval_minutes=60`、`max_items_per_run=1000`；`0` 表示不限条数。批准状态默认 `draft`。未批准来源只跑 fixture；已批准且 allowlist 明确的来源可真实 HTTP 写入**本机** MySQL 的统一 raw 表。后续 merge/import 才按稳定键和本节优先级写运行时表/快照；该入库即发布。本机总控台：`python scripts/collection/gui.py`。
 

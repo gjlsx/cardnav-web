@@ -37,10 +37,12 @@
 合并按同一 batch 的 `record_key` 分组：卡网为规范化站点域名 + canonical SKU；中转站为规范化站点域名；官方计划为 plan slug + 国家；模型排行为 task slug + 规范模型名。
 
 1. 来源层级：本站公开 API > 本站公开 HTML > 聚合站；聚合站内部 PriceAI > CardNav > OpenPrice。
-2. 高优先级的有效字段不能被低优先级覆盖；低优先级只可填补高优先级的空值。
-3. 同优先级的有效数字价格取最低价；无法解析的价格不参与最低价排序，但 raw 仍保留。
-4. `site.score` 只控制前端站点展示排序，当前初始值为 50，绝不参与来源合并。
-5. 手工锁定或隐藏不阻止 raw 记录保存；它阻止对应 stable key 的 merge/import。取消标志后，可以重新执行 merge/import，不必重新抓取。
+2. 每次合并先对每个 `stable key × source` 取最新有效 raw；只有其本机 `captured_at` 未超过 `RAW_FRESHNESS_HOURS=24` 的候选可参与合并。第三方页面的 `observed_at` 只用于展示采样时间，不用于新鲜度判断。
+3. 高优先级来源在 24 小时内有有效字段时，低优先级不得覆盖；低优先级只可填补高优先级的空值。只有高优先级来源对该稳定键超过 24 小时没有有效 raw 时，新鲜的低优先级候选才可接管。
+4. 同优先级的有效数字价格取最低价；无法解析的价格不参与最低价排序，但 raw 仍保留。
+5. 当某个受影响稳定键的所有候选都超过 24 小时时，merge/import 标记 batch 已处理，但不删除、隐藏或改写既有运行时行和公开快照；页面继续显示既有最后采样时间。
+6. `site.score` 只控制前端站点展示排序，当前初始值为 50，绝不参与来源合并。
+7. 手工锁定或隐藏不阻止 raw 记录保存；它阻止对应 stable key 的 merge/import。取消标志后，可以重新执行 merge/import，不必重新抓取。
 
 默认 `merge_import_enabled=false`。人工按钮可执行明确的 `merge_import_batch(batch_id)`；若未来开启定时 merge/import，必须调用同一事务服务并记录来源、批次、数量与结果。
 

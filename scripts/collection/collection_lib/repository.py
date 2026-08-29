@@ -70,7 +70,7 @@ class CollectionRepository:
 
     def fetch_raw_batch(self, batch_id: str) -> list[dict[str, Any]]:
         rows = self.query(
-            "SELECT id, batch_id, run_id, source_id, source_class, source_priority, source_url, source_record_hash, record_key, record_kind, payload, validation_state, validation_reason "
+            "SELECT id, batch_id, run_id, source_id, source_class, source_priority, source_url, source_record_hash, record_key, record_kind, payload, captured_at, validation_state, validation_reason "
             "FROM collection_raw_records WHERE batch_id = %s ORDER BY id ASC",
             (batch_id,),
         )
@@ -85,7 +85,7 @@ class CollectionRepository:
             return []
         placeholders = ", ".join(["%s"] * len(keys))
         rows = self.query(
-            "SELECT id, batch_id, run_id, source_id, source_class, source_priority, source_url, source_record_hash, record_key, record_kind, payload, validation_state, validation_reason "
+            "SELECT id, batch_id, run_id, source_id, source_class, source_priority, source_url, source_record_hash, record_key, record_kind, payload, captured_at, validation_state, validation_reason "
             f"FROM collection_raw_records WHERE validation_state = 'valid' AND record_key IN ({placeholders}) ORDER BY id DESC",
             tuple(keys),
         )

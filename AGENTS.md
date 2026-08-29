@@ -13,6 +13,13 @@
 - For multi-step work, give a brief `Step 1` / `Step 2` / `Validation` plan before edits. Prefer the smallest final-architecture-aligned solution; do not add one-off abstractions or temporary bypasses.
 - For internal code evidence, use an absolute Windows path with an optional line number. Do not invent URL/URI-style local paths. User-facing final responses must still follow the platform's required clickable absolute file-link format.
 
+## Tasklist execution completion
+
+- When the user explicitly asks to execute a tasklist, continue through every task in that tasklist that is assigned to the current agent and whose dependencies are satisfied. Do not end the run merely because one task is complete.
+- A task may be left unexecuted only when it belongs to another role, has an unfinished dependency, or is substantively impossible to complete and is recorded with a concrete reason as `blocked`, `partial`, or `pending`. Difficulty, elapsed time, or a need for ordinary verification is not a blocker.
+- Before claiming that a user-requested tasklist execution is complete, re-read the active tasklist and inspect the current agent's locks. If any runnable task remains in `todo` or `doing`, continue it. Do not silently treat an unexecuted task as complete.
+- This rule never expands user authorization: preserve approval gates, safety limits, and taskexec lock/commit/verification requirements. It does not require executing a tasklist that the user only asked to create, inspect, or review.
+
 ## Local targets and stack boundaries
 
 - The managed local Astro/Node site is `http://127.0.0.1:3101/`. Before browser validation, check `pnpm exec astro dev status`.

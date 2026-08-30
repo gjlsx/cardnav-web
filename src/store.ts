@@ -156,6 +156,7 @@ type PublicSnapshotKey =
   | 'popular-search-terms'
   | 'gateway-sites'
   | 'gateway-models'
+  | 'gateway-reference-ranking'
   | 'homepage-announcement'
   | 'official-price-catalog'
   | 'official-prices'
@@ -854,6 +855,24 @@ export type PublicOfficialPriceCatalogRow = {
   isDefault: boolean;
   displayOrder: number;
 };
+
+export type PublicGatewayReferenceSite = { referenceKey: string; sourceRank: number; name: string; sourceDetailUrl: string; summary: string; modelCount: number | null; modelFamilies: string[]; uptime: number | null; latencyMs: number | null; userRating: number | null; ratingCount: number | null; paymentMethods: string[]; supportsRefund: boolean | null; supportsInvoice: boolean | null; collectedAt: string };
+export type PublicGatewayReferenceRanking = { sourceId: string; sourceName: string; sourcePageUrl: string; sourceUpdatedAt: string | null; collectedAt: string | null; sites: PublicGatewayReferenceSite[] };
+export type PublicGatewayPriceReference = { modelId: string; modelFamily: string; unit: string; direction: string; lowestPrice: number; siteCount: number; latestFetchedAt: string };
+
+export async function loadGatewayReferenceRanking(): Promise<PublicGatewayReferenceRanking> {
+  return await loadPublicSnapshot<PublicGatewayReferenceRanking>('gateway-reference-ranking') ?? { sourceId: 'hvoyai-awesome-ai-api', sourceName: 'Hvoy AI 中转站实时参考榜', sourcePageUrl: '', sourceUpdatedAt: null, collectedAt: null, sites: [] };
+}
+
+export async function loadGatewayPriceReference(): Promise<PublicGatewayPriceReference[]> {
+  const result = await getPool().query(`
+    SELECT model_id AS modelId, model_family AS modelFamily, unit, 'input' AS direction, MIN(input_price) AS lowestPrice, COUNT(DISTINCT site_id) AS siteCount, MAX(fetched_at) AS latestFetchedAt FROM gateway_model_prices WHERE input_price IS NOT NULL AND unit <> '' GROUP BY model_id, model_family, unit
+    UNION ALL SELECT model_id, model_family, unit, 'output', MIN(output_price), COUNT(DISTINCT site_id), MAX(fetched_at) FROM gateway_model_prices WHERE output_price IS NOT NULL AND unit <> '' GROUP BY model_id, model_family, unit
+    UNION ALL SELECT model_id, model_family, unit, 'cache_input', MIN(cache_input_price), COUNT(DISTINCT site_id), MAX(fetched_at) FROM gateway_model_prices WHERE cache_input_price IS NOT NULL AND unit <> '' GROUP BY model_id, model_family, unit
+    UNION ALL SELECT model_id, model_family, unit, 'cache_output', MIN(cache_output_price), COUNT(DISTINCT site_id), MAX(fetched_at) FROM gateway_model_prices WHERE cache_output_price IS NOT NULL AND unit <> '' GROUP BY model_id, model_family, unit
+  `);
+  return result.rows.map(row => ({ modelId: String(row.modelId || ''), modelFamily: String(row.modelFamily || ''), unit: String(row.unit || ''), direction: String(row.direction || ''), lowestPrice: Number(row.lowestPrice), siteCount: Number(row.siteCount), latestFetchedAt: String(row.latestFetchedAt || '') }));
+}
 
 function mapOfficialPriceRow(row: Record<string, unknown>): PublicOfficialPriceRow {
   return {

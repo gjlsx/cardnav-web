@@ -107,6 +107,7 @@ const gatewayMailto = `mailto:${gatewaySubmissionEmail}?subject=${encodeURICompo
       {t.llmGateway.noteSuffix}
     </p>
     <div slot="aside" class="flex flex-col items-stretch gap-3">
+      <a href={linkTo('/ranking-reference?tab=transit')} class="btn btn-outline btn-md w-full">查看中转参考</a>
       <button id="openGatewaySubmitModal" type="button" class="btn btn-primary btn-md w-full" data-umami-event="gateway-submit-open-click" data-umami-event-name={t.llmGateway.submitGateway}>
         {t.llmGateway.submitGateway}
       </button>

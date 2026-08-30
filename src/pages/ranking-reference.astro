@@ -1,0 +1,25 @@
+---
+import PublicPage from '../layouts/PublicPage.astro';
+import { buildSeoContext } from '../seo.js';
+import { publicSiteUrl } from '../site.js';
+import { loadGatewayPriceReference, loadGatewayReferenceRanking } from '../store.js';
+
+const requested = Astro.url.searchParams.get('tab');
+const tab = requested === 'prices' ? 'prices' : 'transit';
+const transit = tab === 'transit' ? await loadGatewayReferenceRanking() : null;
+const prices = tab === 'prices' ? await loadGatewayPriceReference() : [];
+const linkTo = Astro.locals.localizePath;
+const seo = buildSeoContext({ baseUrl: publicSiteUrl, pathname: '/ranking-reference', title: '排名参考', description: '模型表现、中转站实时参考和公开价格参考。', imagePath: '/og-cardnav.webp', type: 'webpage', locale: Astro.locals.locale });
+---
+<PublicPage activeNav="model-leaderboard" {...seo}>
+  <section class="mx-auto max-w-6xl px-4 py-8">
+    <h1 class="text-3xl font-bold">排名参考</h1>
+    <p class="mt-2 text-base-content/70">模型表现、公开中转站参考和可比较的公开价格，仅供自行核验。</p>
+    <div class="tabs tabs-box mt-5" role="tablist">
+      <a class="tab" href={linkTo('/model-leaderboard')}>模型表现</a>
+      <a class:list={['tab', { 'tab-active': tab === 'transit' }]} href={linkTo('/ranking-reference?tab=transit')}>中转参考</a>
+      <a class:list={['tab', { 'tab-active': tab === 'prices' }]} href={linkTo('/ranking-reference?tab=prices')}>价格参考</a>
+    </div>
+    {tab === 'transit' ? <section class="mt-6"><div class="alert alert-info">禾维公开数据参考；上游排名算法未公开，不代表 AIGATE 自有综合评分。</div>{transit && transit.sites.length ? <div class="overflow-x-auto mt-4"><table class="table"><thead><tr><th>参考排名</th><th>站点</th><th>在线率</th><th>平均延迟</th><th>模型数</th><th>用户评分</th><th>采集时间</th></tr></thead><tbody>{transit.sites.map(site => <tr><td>{site.sourceRank}</td><td>{site.name}</td><td>{site.uptime ?? '未提供'}</td><td>{site.latencyMs ?? '未提供'}</td><td>{site.modelCount ?? '未提供'}</td><td>{site.userRating == null ? '未提供' : `${site.userRating}${site.ratingCount ? ` (${site.ratingCount})` : ''}`}</td><td>{site.collectedAt || transit.collectedAt || '未提供'}</td></tr>)}</tbody></table></div> : <p class="mt-5 text-base-content/60">暂无中转参考数据，完成一次本机采集和入库后显示。</p>}</section> : <section class="mt-6"><div class="alert alert-info">仅比较同一单位、同一价格方向的已公开数值；GitHub 中转参考不参与价格计算。</div>{prices.length ? <div class="overflow-x-auto mt-4"><table class="table"><thead><tr><th>模型标准名</th><th>方向</th><th>最低公开报价</th><th>覆盖站点</th><th>单位</th><th>更新时间</th></tr></thead><tbody>{prices.map(row => <tr><td class="font-mono">{row.modelId}</td><td>{row.direction}</td><td>{row.lowestPrice}</td><td>{row.siteCount}</td><td>{row.unit}</td><td>{row.latestFetchedAt || '未提供'}</td></tr>)}</tbody></table></div> : <p class="mt-5 text-base-content/60">暂无可比较的公开价格数据。</p>}</section>}
+  </section>
+</PublicPage>

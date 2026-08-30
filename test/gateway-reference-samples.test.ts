@@ -67,6 +67,16 @@ test('gateway list uses internal detail navigation while the detail page owns th
   assert.match(seedSource, /availabilityPercent: null/);
 });
 
+test('gateway detail exposes compact direct TELG and QQ group buttons without showing their addresses', () => {
+  const detailPageSource = fs.readFileSync(path.resolve('src/pages/llm-gateway/[slug].astro'), 'utf8');
+  const siteSource = fs.readFileSync(path.resolve('src/site.ts'), 'utf8');
+  assert.match(detailPageSource, /href=\{telegramGroupUrl\}[\s\S]*?>TELG<\/a>/);
+  assert.match(detailPageSource, /href=\{qqGroupJoinUrl\}[\s\S]*?>QQ群<\/a>/);
+  assert.doesNotMatch(detailPageSource, /t\.llmGateway\.submitSuggestion/);
+  assert.match(siteSource, /qqGroupNumber = '1106704568'/);
+  assert.match(siteSource, /qqGroupJoinUrl = `https:\/\/qun\.qq\.com\/join\.html\?gc=\$\{qqGroupNumber\}`/);
+});
+
 test('gateway row mapper turns SQL NULL URLs into an empty public value', () => {
   assert.match(storeSource, /const url = row\.url == null \? '' : String\(row\.url\)\.trim\(\);/);
   assert.doesNotMatch(storeSource, /const url = String\(row\.url\);/);

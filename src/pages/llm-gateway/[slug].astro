@@ -16,7 +16,7 @@ import {
 import PublicPage from '../../layouts/PublicPage.astro';
 import DataTableHeader from '../../components/DataTableHeader.astro';
 import { buildSeoContext } from '../../seo.js';
-import { publicSiteUrl, telegramGroupUrl } from '../../site.js';
+import { publicSiteUrl, qqGroupJoinUrl, telegramGroupUrl } from '../../site.js';
 import { loadGatewayDetail } from '../../store.js';
 import deferredTableCoreScriptUrl from '../../scripts/deferred-table-core.js?url';
 import gatewayDetailTablesScriptUrl from '../../scripts/gateway-detail-tables.js?url';
@@ -160,7 +160,8 @@ function gatewayModelClickAttrs(modelId: string) {
       <p class="rounded-xl bg-warning/10 px-4 py-3 text-sm leading-6 text-base-content">{site.benefitText || t.llmGateway.benefitEmpty}</p>
       <div class="flex flex-wrap gap-2">
         {site.outboundUrl ? <a href={site.outboundUrl} target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" {...gatewayBenefitForwardAttrs()}>{t.llmGateway.benefitForward}</a> : null}
-        <a href={telegramGroupUrl} target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" data-umami-event="gateway-benefit-suggestion-click" data-umami-event-url={telegramGroupUrl}>{t.llmGateway.submitSuggestion}</a>
+        <a href={telegramGroupUrl} target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" data-umami-event="gateway-benefit-community-click" data-umami-event-name="TELG" data-umami-event-url={telegramGroupUrl}>TELG</a>
+        <a href={qqGroupJoinUrl} target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" data-umami-event="gateway-benefit-community-click" data-umami-event-name="QQ群" data-umami-event-url={qqGroupJoinUrl}>QQ群</a>
       </div>
     </div>
   </section>

@@ -9,6 +9,7 @@ export const indexNowKey = process.env.INDEXNOW_KEY || 'ailovemoneyindexnow2026'
 export const telegramGroupUrl = 'https://t.me/+AX9TXrzMaS04OWI1';
 export const sponsorUrl = 'https://buy.stripe.com/cNi8wRgiq26I1Ese0V0Fi00';
 export const qqGroupNumber = '1106704568';
+export const qqGroupJoinUrl = `https://qun.qq.com/join.html?gc=${qqGroupNumber}`;
 export const gatewaySubmissionEmail = 'xiu.juan2love@gmail.com';
 export const xProfileUrl = '';
 

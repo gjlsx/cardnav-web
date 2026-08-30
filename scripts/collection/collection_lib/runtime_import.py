@@ -140,13 +140,18 @@ class RuntimeImporter:
 
         merged = merge_raw_records(eligible)
         kinds: set[RecordKind] = set()
+        reference_rows = [row for row in merged if row.get("source_id") == "hvoyai-awesome-ai-api"]
         try:
             for row in merged:
                 kind = RecordKind(row["record_kind"])
+                if row.get("source_id") == "hvoyai-awesome-ai-api":
+                    continue
                 self.publisher.publish_merged_row(repository, row)
                 kinds.add(kind)
             if kinds:
                 self.publisher.rebuild_snapshots(repository, kinds)
+            if reference_rows:
+                self.publisher.rebuild_gateway_reference_snapshot(repository, reference_rows)
             repository.mark_batch_imported(batch_id)
             repository.append_activity(
                 "collection.merge-import",

@@ -21,6 +21,7 @@ _FAMILY_PLAN_RE = re.compile(
     re.IGNORECASE,
 )
 _SKIP_HOSTS = ("priceai.cc", "stripe.com", "twitter.com", "facebook.com", "google.com", "cloudflare.com")
+_HVOYAI_DETAIL_PATH_RE = re.compile(r"^/sites/([a-z0-9-]+)/?$", re.IGNORECASE)
 
 
 class _CollectionCardParser(HTMLParser):
@@ -114,6 +115,80 @@ def _source_mapping(source: BrowserSource) -> dict[str, Any]:
         "priority": source.priority,
         "public_url": source.url,
     }
+
+
+def _hvoyai_reference_slug(url: str) -> str:
+    parsed = urlsplit(url)
+    if parsed.scheme != "https" or (parsed.hostname or "").casefold() != "www.hvoyai.com":
+        return ""
+    match = _HVOYAI_DETAIL_PATH_RE.fullmatch(parsed.path)
+    return match.group(1).casefold() if match else ""
+
+
+def _optional_number(value: Any) -> float | int | None:
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        return value if value == value else None
+    return None
+
+
+def parse_hvoyai_reference_json(source: BrowserSource, body: str, *, observed_at: str) -> SourceCapture:
+    """Parse the single Hvoy public JSON source into raw-only reference rows.
+
+    Hvoy exposes its own detail-page URLs, not merchant homepages.  The safe
+    detail slug is therefore used only as an opaque raw identity and the rows
+    are never published as AIGATE gateway sites.
+    """
+    if source.page_type != "hvoyai_transit_reference_json":
+        raise ValueError(f"unexpected Hvoy reference source page type: {source.page_type}")
+    try:
+        payload = json.loads(body)
+    except json.JSONDecodeError as exc:
+        raise ValueError("Hvoy reference response is not valid JSON") from exc
+    if not isinstance(payload, dict) or not isinstance(payload.get("sites"), list):
+        raise ValueError("Hvoy reference response has no sites list")
+    source_updated_at = str(payload.get("generatedAt") or payload.get("updatedDate") or "")
+    rows: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for item in payload["sites"]:
+        if not isinstance(item, dict):
+            continue
+        url = str(item.get("url") or "").strip()
+        slug = _hvoyai_reference_slug(url)
+        name = _clean_text(str(item.get("name") or ""))
+        if not slug or not name or slug in seen:
+            continue
+        seen.add(slug)
+        models = [str(model).strip() for model in item.get("models") or [] if str(model).strip()]
+        rank = _optional_number(item.get("rank"))
+        rows.append(
+            {
+                "normalized_site": f"hvoyai-reference-{slug}.invalid",
+                "site_name": name,
+                "display_name": name,
+                "summary": _clean_text(str(item.get("description") or "")),
+                "url": url,
+                "observed_at": observed_at,
+                "provenance": "hvoyai-github-reference",
+                "metadata_json": {
+                    "source_rank": int(rank) if rank is not None else None,
+                    "source_updated_at": source_updated_at or None,
+                    "hvoyai_detail_url": url,
+                    "reference_key": slug,
+                    "model_count": int(item["modelCount"]) if _optional_number(item.get("modelCount")) is not None else None,
+                    "model_families": models,
+                    "uptime": _optional_number(item.get("uptime")),
+                    "latency_ms": _optional_number(item.get("latencyMs")),
+                    "user_rating": _optional_number(item.get("userRating")),
+                    "rating_count": int(item["ratingCount"]) if _optional_number(item.get("ratingCount")) is not None else None,
+                    "payment_methods": [str(value).strip() for value in item.get("paymentMethods") or [] if str(value).strip()],
+                    "supports_refund": item.get("supportsRefund") if isinstance(item.get("supportsRefund"), bool) else None,
+                    "supports_invoice": item.get("supportsInvoice") if isinstance(item.get("supportsInvoice"), bool) else None,
+                },
+            }
+        )
+    return SourceCapture(source=_source_mapping(source), body=body, rows=rows, content_type="application/json", kind=source.record_kind)
 
 
 def _parse_shop(card: dict[str, Any], observed_at: str) -> dict[str, Any] | None:

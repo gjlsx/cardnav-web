@@ -65,7 +65,11 @@ class PlaywrightPageFetcher:
             allowed = source.url.rstrip("/")
             if current != allowed:
                 raise ValueError(f"URL is not allowed for {source.source_id}: {context.request.url}")
-            html["value"] = await context.page.content()
+            html["value"] = (
+                await context.page.locator("body").inner_text()
+                if source.page_type == "hvoyai_transit_reference_json"
+                else await context.page.content()
+            )
 
         await crawler.run([source.url])
         return html["value"]

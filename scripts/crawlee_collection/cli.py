@@ -16,7 +16,7 @@ from scripts.collection.collection_lib.config import apply_item_cap
 from .catch_config import configured_sources, load_catch_config
 from .crawler import PlaywrightPageFetcher
 from .database import ReusableRepository
-from .parser import parse_priceai_page
+from .parser import parse_hvoyai_reference_json, parse_priceai_page
 from .sources import MAX_CONCURRENCY, get_source, list_sources
 from .worker import MergeImportWorker
 
@@ -120,6 +120,9 @@ def _collect_once(args: argparse.Namespace, services: dict[str, Any]) -> int:
                 captures.extend(fetcher.fetch_cardnav_captures(get_source("priceai-transit-models"), source, observed_at, cap))
                 continue
             html = fetcher.fetch_html(source)
+            if source.page_type == "hvoyai_transit_reference_json":
+                captures.append(parse_hvoyai_reference_json(source, html, observed_at=observed_at))
+                continue
             if source.page_type == "transit_model_catalog":
                 from scripts.collection.collection_lib.pipeline import SourceCapture
 

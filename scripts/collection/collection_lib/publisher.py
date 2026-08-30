@@ -238,6 +238,48 @@ class PublicPublisher:
         repository.upsert_snapshot("gateway-sites", payload)
         repository.upsert_snapshot("gateway-models", {"models": list(models.values()), "totalModelCount": len(models), "totalSupportCount": sum(model["supportSiteCount"] for model in models.values())})
 
+    def rebuild_gateway_reference_snapshot(self, repository, rows: list[dict[str, Any]]) -> None:
+        """Publish the upstream reference list without creating or changing gateway sites."""
+        sites = []
+        for row in rows:
+            payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
+            metadata = payload.get("metadata_json") if isinstance(payload.get("metadata_json"), dict) else {}
+            rank = metadata.get("source_rank")
+            if not isinstance(rank, int):
+                continue
+            sites.append(
+                {
+                    "referenceKey": metadata.get("reference_key") or payload.get("normalized_site") or "",
+                    "sourceRank": rank,
+                    "name": payload.get("site_name") or "",
+                    "sourceDetailUrl": metadata.get("hvoyai_detail_url") or payload.get("url") or "",
+                    "summary": payload.get("summary") or "",
+                    "modelCount": metadata.get("model_count"),
+                    "modelFamilies": metadata.get("model_families") or [],
+                    "uptime": metadata.get("uptime"),
+                    "latencyMs": metadata.get("latency_ms"),
+                    "userRating": metadata.get("user_rating"),
+                    "ratingCount": metadata.get("rating_count"),
+                    "paymentMethods": metadata.get("payment_methods") or [],
+                    "supportsRefund": metadata.get("supports_refund"),
+                    "supportsInvoice": metadata.get("supports_invoice"),
+                    "collectedAt": payload.get("observed_at") or "",
+                }
+            )
+        sites.sort(key=lambda item: (int(item["sourceRank"]), str(item["name"]).casefold()))
+        source_updated_at = max((str((row.get("payload") or {}).get("metadata_json", {}).get("source_updated_at") or "") for row in rows), default="")
+        repository.upsert_snapshot(
+            "gateway-reference-ranking",
+            {
+                "sourceId": "hvoyai-awesome-ai-api",
+                "sourceName": "Hvoy AI 中转站实时参考榜",
+                "sourcePageUrl": "https://raw.githubusercontent.com/hvoyai/awesome-ai-api/main/data.json",
+                "sourceUpdatedAt": source_updated_at or None,
+                "collectedAt": max((str(item["collectedAt"]) for item in sites), default="") or None,
+                "sites": sites,
+            },
+        )
+
     def _rebuild_official_snapshot(self, repository) -> None:
         prices = repository.query("SELECT app_slug, plan_slug, app_name, plan_name, display_name, url_slug, is_default, display_order, country_code, country_label, currency_code, price_text, price_value, cny_price, usd_price, rub_price, source_id, sampled_at, is_sample, fetched_at FROM official_prices")
         payload = [

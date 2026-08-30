@@ -13,7 +13,7 @@ from typing import Any
 
 from scripts.collection.collection_lib.config import apply_item_cap
 
-from .catch_config import configured_sources, load_catch_config
+from .catch_config import configured_sources, load_catch_config, source_interval_seconds
 from .crawler import PlaywrightPageFetcher
 from .database import ReusableRepository
 from .parser import parse_hvoyai_reference_json, parse_priceai_page
@@ -99,7 +99,13 @@ def cmd_collect(args: argparse.Namespace, services: dict[str, Any]) -> int:
         code = _collect_once(args, services)
         if not getattr(args, "loop", False):
             return code
-        time.sleep(max(1, int(load_catch_config()["collect"]["interval_seconds"])))
+        try:
+            source_ids = [source.source_id for source in _selected_sources(args)]
+        except ValueError:
+            return 2
+        config = load_catch_config()
+        interval = min((source_interval_seconds(config, source_id) for source_id in source_ids), default=int(config["collect"]["interval_seconds"]))
+        time.sleep(max(1, interval))
 
 
 def _collect_once(args: argparse.Namespace, services: dict[str, Any]) -> int:

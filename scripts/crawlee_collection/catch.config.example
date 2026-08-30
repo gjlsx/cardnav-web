@@ -5,10 +5,17 @@
       "priceai-card-subscriptions",
       "priceai-official-api",
       "priceai-transit-api",
-      "cardnav-gateway-details"
+      "cardnav-gateway-details",
+      "hvoyai-awesome-ai-api"
     ],
     "max_items_per_run": 1000,
-    "interval_seconds": 3600
+    "interval_seconds": 3600,
+    "source_settings": {
+      "hvoyai-awesome-ai-api": {
+        "enabled": false,
+        "interval_minutes": 480
+      }
+    }
   },
   "merge": {
     "enabled": false,

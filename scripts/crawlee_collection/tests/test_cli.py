@@ -20,6 +20,8 @@ SHOP_HTML = """
 </article>
 """
 
+HVOYAI_JSON = '{"updatedDate":"2026-08-30","sites":[{"rank":1,"name":"Reference API","url":"https://www.hvoyai.com/sites/reference-api/","modelCount":1,"models":["OpenAI"]}]}'
+
 
 class _Fetcher:
     def __init__(self) -> None:
@@ -31,7 +33,11 @@ class _Fetcher:
 
         require_allowed_source(source.source_id, source.url)
         self.urls.append(source.url)
-        return SHOP_HTML if source.page_type == "card_subscriptions" else "<html></html>"
+        if source.page_type == "card_subscriptions":
+            return SHOP_HTML
+        if source.page_type == "hvoyai_transit_reference_json":
+            return HVOYAI_JSON
+        return "<html></html>"
 
     def fetch_cardnav_captures(self, model_source, list_source, observed_at: str, max_items_per_run: int):
         self.urls.extend([model_source.url, list_source.url])
@@ -102,9 +108,10 @@ class CliTests(unittest.TestCase):
         configured = configured_sources()
         self.assertEqual(code, 0)
         self.assertEqual(self.fetcher.urls, [
-            *[source.url for source in configured if source.page_type != "cardnav_gateway_details"],
+            *[source.url for source in configured if source.page_type not in {"cardnav_gateway_details", "hvoyai_transit_reference_json"}],
             "https://priceai.cc/api-transit/models",
             "https://cardnav.xyz/llm-gateway",
+            *[source.url for source in configured if source.page_type == "hvoyai_transit_reference_json"],
         ])
         self.assertEqual(self.store.persisted, [("manual", [source.source_id for source in configured])])
         self.assertEqual(payload["batch_id"], "batch-1")

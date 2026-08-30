@@ -14,6 +14,7 @@ PRICEAI_SOURCE_IDS = (
     "priceai-transit-models",
     "cardnav-gateway-details",
 )
+GATEWAY_REFERENCE_SOURCE_IDS = ("hvoyai-awesome-ai-api",)
 
 
 @dataclass(frozen=True)
@@ -63,6 +64,15 @@ _SOURCES = (
         "https://cardnav.xyz/llm-gateway",
         "cardnav_gateway_details",
         RecordKind.GATEWAY_SITE,
+    ),
+    BrowserSource(
+        "hvoyai-awesome-ai-api",
+        "Hvoy AI 中转站实时参考榜",
+        "https://raw.githubusercontent.com/hvoyai/awesome-ai-api/main/data.json",
+        "hvoyai_transit_reference_json",
+        RecordKind.GATEWAY_SITE,
+        source_class="reference",
+        priority=-10,
     ),
 )
 _BY_ID = {source.source_id: source for source in _SOURCES}

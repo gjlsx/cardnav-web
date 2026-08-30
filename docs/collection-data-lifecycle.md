@@ -22,7 +22,7 @@
 
 可变项只放在同一份 `scripts/crawlee_collection/catch.config`（仓库内模板为 `catch.config.example`）：采集哪些已登记来源、每项上限、重采 sleep/间隔、merge worker 是否启用及其轮询间隔。精确 allowlist URL 仍在代码里，配置不能增加任意 URL。所有 CLI、未来 GUI 按钮和 Linux 一键/systemd 都只调用同一套 CLI，并由该 CLI 读取这份配置；不要为 GUI 或服务器再复制一份参数。
 
-中转站当前批准来源为 PriceAI 的精确模型目录 `https://priceai.cc/api-transit/models`，以及 CardNav 的精确列表入口 `https://cardnav.xyz/llm-gateway`。CardNav 只可读取列表 DOM 已出现、且匹配同域 `/llm-gateway/<safe-slug>` 的一层详情页；不能访问详情中的外部“打开”链接、模型页、广告或其它路径。PriceAI 模型页只保存 raw payload 并提供本批次允许模型集合，不发布模型排行。模型标准名为 trim、连续空白合并、Unicode casefold、空格替换为 `-`，例如 `GPT 5.6 Luna` -> `gpt-5.6-luna`；CardNav 详情中未命中该集合的模型不入运行库。一个详情页对应一个 `gateway_site` raw 稳定键，其白名单 `metadata_json` 可承载多个模型覆盖和公开价格；merge/import 在同一既有事务更新 `gateway_sites`、`gateway_model_coverage`、`gateway_model_prices` 及中转快照。来源可见评分只保留 raw，`site.score` 仍为展示初始值 50。
+中转站当前批准来源为 PriceAI 的精确模型目录 `https://priceai.cc/api-transit/models`、CardNav 的精确列表入口 `https://cardnav.xyz/llm-gateway`，以及 Hvoy AI 开源仓库的精确公开 JSON `https://raw.githubusercontent.com/hvoyai/awesome-ai-api/main/data.json`。CardNav 只可读取列表 DOM 已出现、且匹配同域 `/llm-gateway/<safe-slug>` 的一层详情页；不能访问详情中的外部“打开”链接、模型页、广告或其它路径。PriceAI 模型页只保存 raw payload 并提供本批次允许模型集合，不发布模型排行。Hvoy AI JSON 仅保存其原始 `rank`、站点名称、Hvoy 详情 URL、模型数/家族、可用率、延迟、用户评分/人数、支付/退款/发票等公开参考字段；其 `rank` 为来源参考位次，不是本站评分、模型能力或价格排名，Hvoy 详情 URL 不能被继续抓取。模型标准名为 trim、连续空白合并、Unicode casefold、空格替换为 `-`，例如 `GPT 5.6 Luna` -> `gpt-5.6-luna`；CardNav 详情中未命中该集合的模型不入运行库。一个详情页对应一个 `gateway_site` raw 稳定键，其白名单 `metadata_json` 可承载多个模型覆盖和公开价格；merge/import 在同一既有事务更新 `gateway_sites`、`gateway_model_coverage`、`gateway_model_prices` 及中转快照。来源可见评分只保留 raw，`site.score` 仍为展示初始值 50。
 
 当前 MVP 的目标是本机 MySQL `ailovemoney`。采集器不在 `ai.lovemoney.live` 生产服务器运行。MVP 验收后，才可以单独批准把同一个 merge/import 事务切换到运行时服务器 MySQL；不得为远程目标创建第二种原始数据格式。
 

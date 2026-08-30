@@ -161,6 +161,12 @@ function applyLocaleLocals(
 
 export const onRequest = defineMiddleware(async (context, next) => {
   const url = new URL(context.request.url);
+  if (url.hostname === 'ai.lovemoney.live') {
+    const target = new URL(url);
+    target.protocol = 'https:';
+    target.hostname = 'aigate.live';
+    return context.redirect(target.toString(), 308);
+  }
   const localePathInfo = getLocalePathInfo(url.pathname);
 
   if (!context.isPrerendered && localePathInfo.hasLocalePrefix && localePathInfo.locale === defaultLocale) {

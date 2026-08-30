@@ -1,6 +1,6 @@
 ![](assets/banner.webp)
 
-<h1 align="center">AI LoveMoney · AI LoveMoney</h1>
+<h1 align="center">AIGATE · AIGATE</h1>
 
 <p align="center">
   <strong>中文</strong> ·
@@ -12,8 +12,8 @@
 </p>
 
 <p align="center">
-  <a href="https://ai.lovemoney.live">
-    <img src="" alt="AI LoveMoney官网" />
+  <a href="https://aigate.live">
+    <img src="" alt="AIGATE官网" />
   </a>
   <a href="https://t.me/+AX9TXrzMaS04OWI1">
     <img src="https://img.shields.io/badge/Telegram-%E7%BE%A4%E7%BB%84-26a5e4?style=flat-square&logo=telegram&logoColor=white" alt="Telegram 群组" />

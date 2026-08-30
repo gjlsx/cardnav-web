@@ -3,7 +3,7 @@
  */
 import 'dotenv/config';
 
-export const publicSiteUrl = process.env.PUBLIC_SITE_URL || 'https://ai.lovemoney.live';
+export const publicSiteUrl = process.env.PUBLIC_SITE_URL || 'https://aigate.live';
 export const defaultSeoImagePath = '/og-cardnav.webp';
 export const indexNowKey = process.env.INDEXNOW_KEY || 'ailovemoneyindexnow2026';
 export const telegramGroupUrl = 'https://t.me/+AX9TXrzMaS04OWI1';

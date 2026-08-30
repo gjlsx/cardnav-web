@@ -13,5 +13,9 @@ const messagesByLocale: Record<Locale, Messages> = {
 };
 
 export function getMessages(locale: Locale): Messages {
-  return messagesByLocale[locale] ?? zhMessages;
+  // Keep historic source text untouched while making every user-facing message
+  // use the current public brand.
+  return JSON.parse(JSON.stringify(messagesByLocale[locale] ?? zhMessages)
+    .replaceAll('AI LoveMoney', 'AIGATE')
+    .replaceAll('ai.lovemoney.live', 'aigate.live')) as Messages;
 }

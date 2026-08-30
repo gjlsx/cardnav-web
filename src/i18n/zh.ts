@@ -97,8 +97,8 @@ const ipPurityRuntime = {
 
 export const zhMessages = {
   site: {
-    name: 'AI LoveMoney',
-    domain: 'ai.lovemoney.live',
+    name: 'AIGATE',
+    domain: 'aigate.live',
     tagline: '一站式 AI 大模型账号购买导航',
     heroDescription:
       '不知道 AI 账号去哪买便宜又靠谱？这里聚合 AI 中转网站、卡网、官方网站价格参考，还有模型排行、帮助和实用工具，帮你少踩坑，少花钱。',

@@ -98,8 +98,8 @@ const ipPurityRuntime = {
 
 export const ruMessages: Messages = {
   site: {
-    name: 'AI LoveMoney',
-    domain: 'ai.lovemoney.live',
+    name: 'AIGATE',
+    domain: 'aigate.live',
     tagline: 'Единый навигатор для доступа к аккаунтам AI-моделей',
     heroDescription:
       'Не знаете, где купить AI-аккаунт дешевле и надежнее? AI LoveMoney собирает сайты-шлюзы, сторонние магазины, справочные цены официальных сайтов, а также рейтинги моделей, раздел помощи и практичные инструменты, чтобы вы меньше ошибались и меньше тратили.',

@@ -69,7 +69,10 @@ test('sponsors render images only without outbound links or copy', () => {
   assert.match(sponsorsSource, /<img src=\{sponsor\.image\.src\}/);
 });
 
-test('old domain stays available until the AIGATE domain is connected', () => {
-  assert.doesNotMatch(middlewareSource, /url\.hostname === 'ai\.lovemoney\.live'/);
-  assert.doesNotMatch(middlewareSource, /target\.hostname = 'aigate\.live'/);
+test('old domain redirects to AIGATE while preserving the request URL', () => {
+  assert.match(middlewareSource, /if \(url\.hostname === 'ai\.lovemoney\.live'\)/);
+  assert.match(middlewareSource, /const target = new URL\(url\)/);
+  assert.match(middlewareSource, /target\.protocol = 'https:'/);
+  assert.match(middlewareSource, /target\.hostname = 'aigate\.live'/);
+  assert.match(middlewareSource, /context\.redirect\(target\.toString\(\), 308\)/);
 });

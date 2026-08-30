@@ -12,6 +12,7 @@ const publicPageSource = readSource('src/layouts/PublicPage.astro');
 const sponsorsSource = readSource('src/components/Sponsors.astro');
 const supportSource = readSource('src/components/SponsorSupport.astro');
 const gatewaySource = readSource('src/pages/llm-gateway.astro');
+const middlewareSource = readSource('src/middleware.ts');
 const chineseReadme = readSource('README.md');
 const englishReadme = readSource('README.en.md');
 
@@ -66,4 +67,9 @@ test('support panel is a Stripe-only support action and the logo is the local fu
 test('sponsors render images only without outbound links or copy', () => {
   assert.doesNotMatch(sponsorsSource, /<a\s+href=|sponsor-name|sponsor-copy|sponsor-plan-title|sponsor-plan-grid/);
   assert.match(sponsorsSource, /<img src=\{sponsor\.image\.src\}/);
+});
+
+test('old domain stays available until the AIGATE domain is connected', () => {
+  assert.doesNotMatch(middlewareSource, /url\.hostname === 'ai\.lovemoney\.live'/);
+  assert.doesNotMatch(middlewareSource, /target\.hostname = 'aigate\.live'/);
 });

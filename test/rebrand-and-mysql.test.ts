@@ -15,7 +15,7 @@ const gatewaySource = readSource('src/pages/llm-gateway.astro');
 const packageSource = readSource('package.json');
 
 test('public runtime uses the approved sponsor, Telegram, and QQ community values', () => {
-  assert.match(siteSource, /publicSiteUrl = process\.env\.PUBLIC_SITE_URL \|\| 'https:\/\/ai\.lovemoney\.live'/);
+  assert.match(siteSource, /publicSiteUrl = process\.env\.PUBLIC_SITE_URL \|\| 'https:\/\/aigate\.live'/);
   assert.match(siteSource, /telegramGroupUrl = 'https:\/\/t\.me\/\+AX9TXrzMaS04OWI1'/);
   assert.match(siteSource, /sponsorUrl = 'https:\/\/buy\.stripe\.com\/cNi8wRgiq26I1Ese0V0Fi00'/);
   assert.match(siteSource, /qqGroupNumber = '1106704568'/);

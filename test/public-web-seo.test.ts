@@ -37,7 +37,7 @@ test('cardnav-web sitemap, text sitemap and llms include every public SEO route'
   const sitemapTxt = buildSitemapTxt('https://ai.lovemoney.live', routes);
   const llmsTxt = buildLlmsTxt('https://ai.lovemoney.live', routes);
 
-  assert.match(llmsTxt, /AI LoveMoney \/ AI LoveMoney/);
+  assert.match(llmsTxt, /AI LoveMoney \/ AIGATE/);
   assert.match(llmsTxt, /does not authorize model-training/);
 
   for (const route of routes) {
@@ -263,7 +263,7 @@ test('seo context includes Organization structured data', () => {
   const seo = buildSeoContext({
     baseUrl: 'https://ai.lovemoney.live',
     pathname: '/',
-    title: 'AI LoveMoney',
+    title: 'AIGATE',
     description: '首页。',
     imagePath: '/og-cardnav.png',
     type: 'website',
@@ -272,7 +272,7 @@ test('seo context includes Organization structured data', () => {
   const graph = (seo.jsonLd as { '@graph': Array<Record<string, unknown>> })['@graph'];
   const organizationNode = graph.find(node => node['@type'] === 'Organization');
   assert.ok(organizationNode);
-  assert.equal(organizationNode.name, 'AI LoveMoney');
+  assert.equal(organizationNode.name, 'AIGATE');
   assert.match(String(organizationNode.logo), /\/lovemoney-mark\.svg$/);
 });
 
@@ -431,7 +431,7 @@ test('shops query pages should use noindex while keeping canonical /shops', () =
   assert.equal(seo.ogLocale, 'zh_CN');
   assert.equal(seo.ogImageWidth, 1200);
   assert.equal(seo.ogImageHeight, 630);
-  assert.equal(seo.ogSiteName, 'AI LoveMoney');
+  assert.equal(seo.ogSiteName, 'AIGATE');
 });
 
 test('quick plan search SEO metadata uses slug canonical and alternates', () => {

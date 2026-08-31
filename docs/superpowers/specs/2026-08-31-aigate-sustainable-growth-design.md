@@ -1,8 +1,9 @@
 # AIGATE 可持续自扩展增长战略设计（三方案待统一裁决）
 
-日期：2026-08-31  
-状态：战略候选，不代表用户已批准实施  
+日期：2026-08-31
+状态：战略候选，不代表用户已批准实施
 事实基线：[`../../CURRENT_STATUS.md`](../../CURRENT_STATUS.md)
+实施排序：[`../../GOALS_MILESTONES_ROADMAP.md`](../../GOALS_MILESTONES_ROADMAP.md)
 
 ## 1. 对任务的理解与重述
 

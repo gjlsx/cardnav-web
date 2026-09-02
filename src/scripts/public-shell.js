@@ -121,6 +121,22 @@ function initCopyButtons() {
   });
 }
 
+function initBackToTop() {
+  const button = document.querySelector('[data-back-to-top]');
+  if (!(button instanceof HTMLButtonElement)) return;
+
+  const updateVisibility = () => {
+    const shouldShow = window.scrollY > window.innerHeight;
+    button.classList.toggle('hidden', !shouldShow);
+  };
+
+  button.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+  window.addEventListener('scroll', updateVisibility, { passive: true });
+  updateVisibility();
+}
+
 function initPublicShell() {
   const languageMenus = Array.from(document.querySelectorAll('[data-language-menu]'));
 
@@ -194,3 +210,4 @@ initHeaderAd();
 initInlineHelp();
 initAnnouncement();
 initCopyButtons();
+initBackToTop();

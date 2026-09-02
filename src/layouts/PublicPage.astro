@@ -335,6 +335,20 @@ function navClickAttrs(targetPage: string, name: string) {
   </footer>
 )}
 
+{!isGuidePage && (
+  <button
+    type="button"
+    data-back-to-top
+    aria-label="回到顶部"
+    title="回到顶部"
+    class="btn btn-circle fixed bottom-6 right-6 z-40 hidden h-11 min-h-11 w-11 min-w-11 border border-base-300 bg-base-100 text-base-content shadow-lg hover:border-primary hover:bg-primary hover:text-primary-content"
+  >
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m18 15-6-6-6 6"></path>
+    </svg>
+  </button>
+)}
+
 <script is:inline defer src={publicShellScriptUrl}></script>
 <slot name="scripts" />
 </body>

@@ -9,4 +9,4 @@
 | tasklist08292253.md | 2608292253 | wind | archived | docs/backuptask/ | PriceAI Crawlee 浏览器采集与本机入库 |
 | tasklist08300447.md | 2608300447 | wind | active | ./ | 后备采集源与首页公告编辑发布（当前执行） |
 | tasklist08311831.md | 2608311831 | wind | archived | docs/backuptask/ | AIGATE 项目战略、目标里程碑与可持续增长路线图 |
-| tasklist09030447.md | 2609030447 | wind | active | ./ | 全局回顶、允许来源数据刷新与 VPS 发布 |
+| tasklist09030447.md | 2609030447 | wind | archived | docs/backuptask/ | 全局回顶、允许来源数据刷新与 VPS 发布 |

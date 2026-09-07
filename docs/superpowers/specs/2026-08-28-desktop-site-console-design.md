@@ -1,5 +1,7 @@
 # AI LoveMoney 本地网站总控台设计
 
+> 2026-09-07 补充：这是 legacy 控制台历史设计，不是新的战略/路线图。当前使用 [Crawlee CLI](../../../scripts/crawlee_collection/README.md)；保留旧总控台及被复用的数据服务，不根据本设计启用旧采集或恢复 staging 发布。
+
 > 历史设计记录。2026-08-29 起，采集数据流以 [../../collection-data-lifecycle.md](../../collection-data-lifecycle.md) 为准；本文件中“staging 自动发布”仅描述已废弃的 p011–p019 方案，不能作为实现依据。
 
 ## 目标与边界

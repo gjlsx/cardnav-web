@@ -1,5 +1,7 @@
 # 采集引擎选择与本机对照记录
 
+> 历史技术对照记录（2026-09-07 标注）：下文保留八月选型和本机修改，不是现行接入状态。正式采集已采用 Crawlee + Playwright，worker 已接入；当前合同见 [数据导航与采集](data-nav-and-collection.md)、[数据生命周期](collection-data-lifecycle.md) 和 [CLI](../scripts/crawlee_collection/README.md)。下文 HttpCrawler 设想及“尚未接入”不能覆盖现行实现。
+
 日期：2026-08-29  
 状态：已确认后续适配器选择；尚未新增或启用真实来源。
 

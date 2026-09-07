@@ -1,6 +1,6 @@
 # AI LoveMoney Desktop Site Console Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans task-by-task. The authoritative TaskExec rows are `taskexec/cardnav-web/tasklist08281547.md` p011–p019 and their linked details.
+> Historical implementation plan. See [archived tasklist08281547](../../../taskexec/cardnav-web/docs/backuptask/tasklist08281547.md) for actual row outcomes; archival does not turn its historical partial row into done. The staging design below was superseded by [the raw-first lifecycle](../../collection-data-lifecycle.md) and the [Crawlee CLI](../../../scripts/crawlee_collection/README.md). Do not execute this old plan as current instructions.
 
 **Goal:** Deliver the approved local Python/Tkinter console and a raw-to-public MySQL data pipeline without changing public routes or enabling unapproved network collection.
 

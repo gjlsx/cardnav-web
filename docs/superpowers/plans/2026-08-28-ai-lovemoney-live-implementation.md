@@ -1,6 +1,6 @@
 # ai.lovemoney.live Implementation Plan
 
-> **For agentic workers:** Taskexec scope is `taskexec/cardnav-web/`. Active work is `tasklist08280357.md`. Preserve unrelated changes.
+> Historical implementation plan, not active work. Delivery is recorded in [archived tasklist08280357](../../../taskexec/cardnav-web/docs/backuptask/tasklist08280357.md). Branding and current priorities are superseded by [PRODUCT_STRATEGY](../../PRODUCT_STRATEGY.md), [ROADMAP](../../ROADMAP.md) and [CURRENT_STATUS](../../CURRENT_STATUS.md). Do not rerun these steps from historical checkboxes.
 
 **Goal:** Rebrand and simplify the public site, make MySQL its only database, and deploy it safely behind Apache on port 80.
 

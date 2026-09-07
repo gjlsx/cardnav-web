@@ -184,7 +184,7 @@ pnpm dev
 - Samples, upstream references and captured observations are not live independent evaluations. An upstream rank or initial `site.score=50` is not the planned composite score.
 - Submission/cooperation, sponsored display and some click tracking exist. Full organic/sponsored separation, qualified referral attribution and a commercial feedback loop still need verification.
 - New sources, cadence and automation follow existing approval rules; collection and merge loops default to off. Read actual parameters from `catch.config` and the [source registry](scripts/crawlee_collection/sources.py).
-- Secrets, connection strings and SQL dumps stay out of Git. Russian is not supported.
+- Secrets, connection strings and SQL dumps stay out of Git. The code supports Chinese, English and Russian with language-switching entries; the strategy prioritizes Chinese depth and then English growth, without removing Russian support.
 
 See [data/navigation boundaries](docs/data-nav-and-collection.md) and the [collection lifecycle](docs/collection-data-lifecycle.md). Older architecture documents retain historical branding; use [CURRENT_STATUS](docs/CURRENT_STATUS.md) for current entry points and task state.
 

@@ -1,71 +1,48 @@
-# AI LoveMoney 数据导航与采集边界（当前事实）
+# AIGATE 数据导航与采集边界
 
-日期：2026-08-28  
-范围：`tasklist08281547` 已确认决策。本文给后续 AI / 发布者使用；冲突时以本文和仓库代码为准，不以旧头脑风暴为授权。
+核对日期：2026-09-07。当前技术边界以本文与源码为准；业务方向见 [PRODUCT_STRATEGY](PRODUCT_STRATEGY.md)，验收顺序见 [ROADMAP](ROADMAP.md)，运行与验证状态见 [CURRENT_STATUS](CURRENT_STATUS.md)。历史设计不是当前执行授权。
 
-## 公开站点事实
+## 公开站点与导航
 
-- 站点：`https://ai.lovemoney.live/`
-- 运行时：Astro 7 SSR + Node standalone，`127.0.0.1:3101`
-- Apache `*:80` / `*:443` 只服务 `ai.lovemoney.live`
-- 数据库：MySQL/MariaDB `ailovemoney`；公开页优先读 `public_snapshot_entries`
-- LikeShop 只走 `8086` / `8090` / `8095`，不占用 80
-- 生产站只读展示，不运行采集器或调度器
+- 当前品牌/主域为 AIGATE / `https://aigate.live/`；旧 `ai.lovemoney.live` 保留路径和查询参数并转向新域。9 月 3 日发布 QA 记录旧域 HTTP/HTTPS 308 与新域浏览器结果；本轮未访问生产站。
+- Astro SSR + Node standalone，本机与服务器 Node 入口为 `127.0.0.1:3101`；MySQL/MariaDB `ailovemoney`，公开页读取 runtime 表和 `public_snapshot_entries`。
+- Apache 80/443 承接 AIGATE 与旧域兼容；LikeShop 保持 8086/8090/8095 隔离，不改其 vhost。
+- 代码支持 zh/en/ru，公共布局均提供语言入口。优先建设中文再扩英文是经营顺序，不是“俄语不可用”。本轮未复跑三语浏览器验收。
 
-路由保持不变，只改导航显示名：
-
-| 路由 | 中文导航 | English | Русский |
+| 路由 | 中文导航 | English | 当前用途 |
 |---|---|---|---|
-| `/llm-gateway` | 中转网站 | Gateway sites | Сайты-шлюзы |
-| `/official-price` | 官方网站 | Official sites | Официальные сайты |
-| `/guide` | 帮助 | Help | Помощь |
-| `/shops` | 卡网商品 | Card shops | Карточные магазины |
-| `/model-leaderboard` | 模型排行榜 | Model leaderboard | Рейтинг моделей |
+| `/llm-gateway` | 中转网站 | Gateway sites | 站点列表、模型覆盖与可比价格，详情及站内关联 |
+| `/official-price` | 官方网站 | Official sites | 官方计划参考与内部关联 |
+| `/guide` | 帮助 | Help | 使用路径、准备条件及风险说明 |
+| `/shops` | 卡网商品 | AI shops | 标准 SKU 聚合，同站去重与来源参考 |
+| `/model-leaderboard` | 排名参考 | Ranking reference | 模型表现、中转参考、价格参考；保留旧路由兼容 |
 
-## 本轮已实现（可手工验证）
+模型/计划可关联到 `/shops?target=` 或 `/llm-gateway?model=`，没有声明关系则显示空态。提交/合作入口不会因此自动获准采集或写入公开快照。上游 Hvoy rank、上游可见评分、初始 `site.score=50` 和未来本站综合评分不得混称；商业/自然榜分离的完整产品验收仍属于 M1。
 
-- `/shops` 默认按权威 SKU 聚合：一行一个 `catalog_products.slug`，同站去重后按来源 `priority` 取有效字段，同优先级取最低价；`site.score` 展示初值为 50，来源没有 score。
-- 模型 / 官方计划可跳到内部结果：`/shops?target=`、`/llm-gateway?model=`。无声明关系时显示空态，不猜测映射。
-- `/llm-gateway`、`/official-price`、`/model-leaderboard` 有公开参考样例；样例无购买外链。
-- 模型分类：`coding`、`creative-writing`、`math`、`text-to-image`、`video-generation`。视频生成有标签和数据结构，当前无核验样例，显示「暂无公开参考样例」。
-- 现有 `/partnership` 与商家/中转站提交入口继续可用；提交结果不自动联网、不自动写入公开快照。
+## 当前采集入口与合同
 
-种子：
+正式入口为 [Crawlee CLI](../scripts/crawlee_collection/README.md)，仅通过 Crawlee + Playwright 采集精确已登记来源，并发固定 1。新版 `scripts/crawlee_collection/gui.py` 当前为本机未跟踪文件，不能当作新检出已包含的能力；`scripts/collection/gui.py` 是保留的 legacy 总控台，不作为新采集入口。
 
-```bash
-pnpm run seed:reference-samples
-```
+唯一数据流：已批准来源 -> 本机 raw payload / `collection_raw_records` -> 显式独立 merge/import -> runtime 表 / public snapshots。采集本身不写运行库；独立入库事务才更新其目标数据库的公开读数据。生产站不运行采集器/定时器，也不通过公开浏览器路由采集或写采集数据。
 
-只刷新样例实体行和对应公开快照，不覆盖 `popular-search-terms`。
+- 来源/URL 登记在 `scripts/crawlee_collection/sources.py`；现有六个 registry 项包括 PriceAI 四个入口、CardNav 列表/一层详情与 Hvoy GitHub JSON。登记数不是 `collect --all` 的配置任务数；CardNav 任务会先读取 PriceAI 标准模型目录。
+- 配置仅用 `scripts/crawlee_collection/catch.config`；缺少本机文件时读取模板。程序与顺序写死，不能在配置添加任意 URL。具体键和手工命令边界见采集 README。
+- merge/import worker 已接入，默认不自动启动；串行处理 `raw_completed` 批次，只读 raw，不采集网页。轮询间隔来自 `merge.poll_interval_seconds`，模板为 10 秒。
+- 调度 enabled 默认关闭不是手工 CLI 安全锁；显式 `collect`、`--loop`、`merge-once`、`worker --loop` 会执行相应操作，不得在文档验证时随手运行。
+- 新鲜度、来源优先级、同级最低可比价和手工锁/隐藏规则见 [数据生命周期](collection-data-lifecycle.md)。raw 保留事实，手工闸门作用于 merge/import；来源故障不清空运行数据。
 
-## 采集分层
+[旧采集引擎对照记录](collection-capture-engine.md) 保留八月选择过程及本机笔记；其中“尚未接入”或按需 HttpCrawler 的历史设想，不覆盖现行 Playwright CLI。禁止重新启用旧采集入口、增加第二 schema 或平行 staging 流水线。
 
-采集层保存比展示层更详细的白名单字段；公开 DTO 继续紧凑。
+## 数据与部署分界
 
-合并优先级（同一规范化目标站）：
+当前 CLI 以本机 `.env` 的 `MYSQL_*` 为目标，禁止把本机直连远程数据库当作默认采集链路。获批远程数据库管理是独立运维能力，不等于采集自动获准远程写库。
 
-1. 该站自己的 API
-2. 该站公开网页
-3. 聚合站：PriceAI > CardNav > OpenPrice
+本机 merge/import 与 VPS 发布是两种操作：前者更新本机运行库/快照，后者按 [发布指南](../howtorunvpsnew.md) 备份远程、上传构建并导入本机运行数据。文档整合不授权二者执行，发布也不能部署采集器。
 
-规则：按规范化站名去重；每个来源只取本机 `captured_at` 最近 24 小时内的最新有效 raw。高优先级来源在这 24 小时窗口内有数据时，高优先级覆盖有效字段、低优先级只补空；高优先级超过 24 小时没有该稳定键的有效 raw，低优先级的新鲜数据才可接管。同优先级选最低价。所有来源均超时不隐藏既有运行时数据，页面继续显示最后采样时间。`site.score=50` 属于网站展示初值，来源配置不得覆盖。
+`pnpm run seed:reference-samples` 仅用于明确批准的隔离样例数据库；会写实体和公开快照，不得作为现有真实数据的启动/发布前置步骤。九月三日发布证据见 [QA](../taskexec/cardnav-web/docs/qa/p0_codex_t09030447.p003.md)，不以八月样例清单代表当前库存。
 
-来源配置默认值：`enabled=false`、`interval_minutes=60`、`max_items_per_run=1000`；`0` 表示不限条数。批准状态默认 `draft`。未批准来源只跑 fixture；已批准且 allowlist 明确的来源可真实 HTTP 写入**本机** MySQL 的统一 raw 表。后续 merge/import 才按稳定键和本节优先级写运行时表/快照；该入库即发布。本机总控台：`python scripts/collection/gui.py`。
+## 敏感数据与扩张
 
-## 已批准的本机总控台方向（p011–p019）
+只采明确白名单的公开字段；不跟随商家外链，不登录、不处理 CAPTCHA、不绕过访问控制。需求队列可以提出新来源，不能自动扩张 allowlist。
 
-仍禁止：未批准来源联网、在 `ai.lovemoney.live` 上跑采集器、MVP 本机直连远程 MySQL。定时采集和定时 merge/import 均默认关闭，必须分别启用。
-
-已批准、公开且字段白名单明确的来源可由本机 GUI 手工真实 HTTP 采集，保存来源 raw payload 与带来源标签的统一 `collection_raw_records`；来源字段缺失时保持 `NULL`。新采集不再把数据双写进 staging 或自动写正式表。人工或独立启用的定时 `merge_import_batch` 才对 raw 按稳定键、来源优先级、同级最低价整合，并在一个事务写入运行时实体表/快照；写入即发布。来源仍默认 `enabled=false`，`interval_minutes=60`、`max_items_per_run=1000`；人工运行忽略 enabled 但不忽略上限。原始公开响应保留 30 天，解析记录和审计长期保留；账号、Cookie、验证码、订单和交付数据均不得保存。
-
-已确认的后续运行方式：raw 采集完成后，由一个默认关闭的本机单例、单线程 merge/import worker 每 10 秒串行轮询 `raw_completed` batch；它只读取 raw 并调用同一事务服务写运行时库/快照，不发采集 HTTP、不处理验证码、不在生产服务器运行。每批仍适用 24 小时来源新鲜度规则；所有候选过期时保留前端现有记录和最后采样时间。该 worker 尚未在本期 MVP 接入。
-
-站点级手工覆盖/隐藏按稳定键在 merge/import 阶段生效：批量来源响应与统一 raw 均继续保存，覆盖记录不覆盖运行时展示。解除覆盖后可重新 merge/import；不恢复旧快照。`collection_staging_observations` 仅保留作唯一历史兼容/查看 staging 表。MVP 只管理本机 MySQL；远程 MySQL 的本机直连读写属于 MVP 后另行批准的任务。服务器发布经合作运维 Tab 的二次确认后，遵循项目根目录 `howtorunvpsnew.md` 真执行，并保持 LikeShop 8086/8090/8095 不受影响。
-
-当前唯一采集生命周期与字段合同见 [collection-data-lifecycle.md](collection-data-lifecycle.md)。
-
-采集引擎的已确认后续选择、测试事实和禁止边界见 [collection-capture-engine.md](collection-capture-engine.md)。
-
-## 秘密边界
-
-密码、SSH 私钥、token、cookie、数据库连接串、SQL dump、完整第三方 HTML 不得写入 git、tasklog 或 README。仅允许白名单公开响应在本机 MySQL raw 审计表保存 30 天；连接方式只引用本机受控安全文件。
+密码、密钥、Token、Cookie、连接串、SQL dump 和完整第三方响应不得进入 Git/日志/README。公开 raw 响应仅保留在受控本机审计存储，按既有生命周期管理。新增商家 Feed、自营域名和商业归因必须在后续任务明确主体、授权、目的和字段；不能从本轮战略推定具体站点所有权。

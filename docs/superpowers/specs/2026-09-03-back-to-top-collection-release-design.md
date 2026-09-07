@@ -1,5 +1,7 @@
 # 右下回顶、数据更新与发布设计
 
+> 已交付历史设计。完成证据见 [归档清单](../../../taskexec/cardnav-web/docs/backuptask/tasklist09030447.md) 和 [发布 QA](../../../taskexec/cardnav-web/docs/qa/p0_codex_t09030447.p003.md)，不因阅读本文再次采集或发布。当前推进顺序以 [ROADMAP](../../ROADMAP.md) 为准。
+
 ## 目标
 
 为 AIGATE 的所有公开页面提供统一的回到顶部入口；用当前已批准的 Crawlee allowlist 更新本机数据并 merge/import；随后将该构建和本机运行库发布到 VPS。

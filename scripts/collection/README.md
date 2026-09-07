@@ -2,6 +2,8 @@
 
 > 此目录保留供历史回溯，暂不删除；新的正式采集入口是 `scripts/crawlee_collection/` 的 Crawlee + Playwright 程序。新 CLI 和新 worker 不调用本目录的旧采集入口。
 
+> 2026-09-07 说明：以下命令和 GUI 描述属于 legacy 使用记录，不是推荐的新采集操作流程。新程序仍复用本目录 `collection_lib` 的数据合同、raw/merge 事务服务；“不调用旧采集入口”不等于“不依赖共享库”。现行入口见 [Crawlee README](../crawlee_collection/README.md)，当前边界见 [数据导航与采集](../../docs/data-nav-and-collection.md)。
+
 本机网站总控台（Python/Tkinter）。入口：`python gui.py`。根 Tab：采集数据、网站配置、合作运维。采集子 Tab：中转网站、卡网商品、官方网站、模型排行。每页底部独立日志。
 
 ## 安全边界与已批准方向

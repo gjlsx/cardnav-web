@@ -1,9 +1,9 @@
 ---
 scope: cardnav-web
-updated_at: 2026-09-07 08:11 Asia/Hong_Kong
+updated_at: 2026-09-07 08:25 Asia/Hong_Kong
 timezone: Asia/Hong_Kong
 tags: [aigate, strategy, roadmap, documentation, taskexec]
-summary: Product decisions are confirmed and consolidated into PRODUCT_STRATEGY and ROADMAP; September 3 release evidence is recorded, while measurement and commercial implementation remain future milestones.
+summary: Strategy and roadmap are consolidated; related operating docs and historical-plan boundaries are reconciled against source. Measurement and commercial implementation remain future milestones.
 ---
 
 # Current Status
@@ -19,11 +19,11 @@ summary: Product decisions are confirmed and consolidated into PRODUCT_STRATEGY 
 
 ## Implemented foundation and remaining gaps
 
-- Public surfaces: standard-SKU shops, gateway/model details, official subscription references, ranking-reference tabs, help/tools, cooperation/submission, sponsor and community entries; Chinese and English public content.
+- Public surfaces: standard-SKU shops, gateway/model details, official subscription references, ranking-reference tabs, help/tools, cooperation/submission, sponsor and community entries. Source supports Chinese, English and Russian with public language-switching entries; language quality/browser coverage was not retested in this documentation task.
 - September 3 added a shared back-to-top control and refreshed the allowlisted data through the existing local raw → merge/import → runtime/snapshot lifecycle.
 - Existing sponsor pinning and partial Umami/search/click events are reusable. They do not yet prove an independent organic/sponsored ranking product, qualified referral attribution, advertiser billing, recurring revenue or a merchant analytics system.
 - No verified traffic/Search Console baseline, GEO citation trend, new composite-score method, owned-site asset list or revenue baseline is recorded. These remain ROADMAP M0-M7 work.
-- READMEs now point to the two approved documents and describe current branding and dated evidence. Older architecture docs retain some historical brand wording; runtime source and newer task evidence govern current facts.
+- READMEs and current data/deployment docs align with the approved documents. Historical technical plans are explicitly marked as such; old checkboxes and brand wording are not active execution instructions. Routine deployment excludes sample seed.
 
 ## Runtime boundaries and entry points
 
@@ -32,6 +32,7 @@ summary: Product decisions are confirmed and consolidated into PRODUCT_STRATEGY 
 - New GUI `scripts/crawlee_collection/gui.py` exists locally but is untracked. A fresh checkout should use the tracked CLI. Legacy console: `python scripts/collection/gui.py`.
 - MySQL database: ailovemoney; settings only from local .env MYSQL_* values. No secrets in docs or task evidence.
 - Exact approved sources feed existing raw tables; explicit local singleton/serial merge/import writes runtime tables and snapshots. All operational controls use catch.config; no arbitrary source URLs.
+- Single-worker operation is a required constraint. The current worker guard is process-local, not proof of cross-process exclusion; do not launch simultaneous import commands. Default-off configuration does not block explicitly invoked CLI collection/import.
 - Production serves public data and does not run a collector/scheduler. LikeShop ports 8086/8090/8095 stay isolated. Public browser routes do not collect or write collection data.
 - Source facts, upstream ranks, editorial judgment and sponsorship are distinct. Do not present upstream rank or initial score 50 as a newly verified AIGATE score.
 
@@ -43,6 +44,7 @@ The following is historical repository evidence, not tests rerun on September 7.
 - September 3 release QA: Node tests 106/106, typecheck 0 errors/warnings/hints, successful build; 426 gateway sites, 2,344 gateway model-price rows and 11 public snapshots.
 - Browser verified old-domain arrival at aigate.live/llm-gateway and the back-to-top interaction. LikeShop 8086/8090/8095 returned 200; no production collector/timer. [Release QA](../taskexec/cardnav-web/docs/qa/p0_codex_t09030447.p003.md)
 - September 7 task is documentation only. Link, decision-coverage, backup and Git checks are recorded in [documentation QA](../taskexec/cardnav-web/docs/qa/p1_codex_t09070222.p003.md).
+- Follow-up documentation/source consistency checks are recorded in [closure QA](../taskexec/cardnav-web/docs/qa/p1_codex_t09070820.p001.md). This corrects the earlier documentation claim that Russian was unsupported; no language code was changed.
 
 ## Task state and preserved local changes
 
@@ -50,7 +52,8 @@ The following is historical repository evidence, not tests rerun on September 7.
 - tasklist08300447 remains active: grok p001-p007 remain todo; p008-p022 done. Do not claim those grok rows under this documentation task.
 - tasklist08311831 and tasklist09030447 are archived and complete as documentation/release tasks respectively; that does not mark business milestones complete.
 - tasklist09070222 delivers the approved strategy/roadmap and README/status closure; its implementation/status commits and final archive are recorded in the task index.
-- Existing uncommitted .gitignore, AGENTS.md, collection engine notes, database.py, local GUI, database notes and caches are preserved. They are not part of this documentation delivery.
+- tasklist09070820 closes related technical/deployment docs and historical-plan status; see the task index for its implementation/status/archive record.
+- Existing uncommitted .gitignore, AGENTS.md, collection engine paragraph, database.py, local GUI, database notes and caches are preserved. Only the separate historical-status banner in the engine document belongs to this delivery; the pre-existing paragraph edit is excluded.
 
 ## Next TODO
 

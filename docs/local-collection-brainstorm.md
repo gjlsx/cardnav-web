@@ -1,5 +1,7 @@
 # 本机自动采集与发布方案（头脑风暴，待确认，不实施）
 
+> 2026-09-07 归类：历史输入，不再等待本轮重新确认，也不是当前路线图。当前战略与实施顺序只见 [PRODUCT_STRATEGY](PRODUCT_STRATEGY.md)、[ROADMAP](ROADMAP.md)；下文待确认、来源候选及命令均按原日期理解，不能自动执行。
+
 > 历史头脑风暴记录。当前实施合同已经由用户在 2026-08-29 确认为“统一 raw 记录 → 独立 merge/import 写运行时表即发布”；请以 [collection-data-lifecycle.md](collection-data-lifecycle.md) 为准，不要从本文的 staging/publish 命令示意推导当前行为。
 
 ## 本文状态

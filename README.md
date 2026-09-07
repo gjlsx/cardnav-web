@@ -183,7 +183,7 @@ pnpm dev
 - 样例、上游参考和采样数据不等同实时评测；上游 rank 和初始 `site.score=50` 不能冒充新的综合评分。
 - 现有合作/提交、赞助展示和部分点击记录可复用，完整双榜治理、有效导流归因与商业闭环仍需验证。
 - 新来源、运行频率和自动化按既有规则批准；采集与 merge 循环默认关闭。实际参数由 `catch.config` 和 [来源代码](scripts/crawlee_collection/sources.py) 确认，不照抄旧默认值。
-- 秘密、数据库连接串和 SQL dump 不进入仓库；不支持俄语。
+- 秘密、数据库连接串和 SQL dump 不进入仓库。代码保留中文、英文、俄语及语言切换入口；战略上优先做深中文、再扩英文，不代表删除俄语支持。
 
 数据架构见 [数据导航边界](docs/data-nav-and-collection.md) 和 [采集生命周期](docs/collection-data-lifecycle.md)。旧架构文档中的品牌/日期仅描述当时事实，当前入口和任务进度以 [CURRENT_STATUS](docs/CURRENT_STATUS.md) 为准。
 

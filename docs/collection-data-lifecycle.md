@@ -1,6 +1,6 @@
-# AI LoveMoney 采集数据生命周期（当前规则）
+# AIGATE 采集数据生命周期（当前规则）
 
-日期：2026-08-29  
+更新核对：2026-09-07（原始规则确认于 2026-08-29）
 适用范围：本机 Python 采集器、`ailovemoney` MySQL、桌面总控台。本文取代旧文档中的 `raw -> staging -> 自动发布` 描述。
 
 ## 唯一数据流
@@ -28,19 +28,19 @@
 
 ## 项目固定原始数据格式
 
-`collection_raw_records` 是唯一的来源无关原始记录格式。它使用固定列/字段集合，兼容中转站、卡网商品、官方计划和模型排行；来源没有的字段必须为 `NULL`，不能补造值。来源原响应细节只存入 `collection_raw_payloads`，与统一 raw 记录通过 run/source 关联。
+`collection_raw_records` 是唯一的来源无关原始记录格式，采用审计/身份 SQL 列加固定 `payload` JSON 字段；不是下表每个业务字段都独立建列。兼容中转站、卡网商品、官方计划和模型排行；缺失业务值不得伪造，按解析合同保持空值。来源原响应细节只存入 `collection_raw_payloads`，经 `raw_payload_id`、run/source 关联。
 
 | 字段组 | 固定字段 | 用途 |
 |---|---|---|
-| 批次和来源 | `batch_id`, `run_id`, `source_id`, `source_class`, `source_priority`, `source_url`, `observed_at`, `collected_at`, `source_record_hash` | 审计、来源排序、变更定位 |
+| SQL 批次和来源 | `batch_id`, `run_id`, `source_id`, `source_class`, `source_priority`, `source_url`, `captured_at`, `source_record_hash` | 审计、来源排序、变更定位；`observed_at` 在 JSON，不能代替本机 `captured_at` |
 | 记录身份 | `record_kind`, `record_key`, `canonical_site`, `canonical_sku`, `plan_slug`, `country_code`, `task_slug`, `normalised_model` | 四种页面数据的稳定键 |
-| 展示映射 | `site_name`, `platform`, `product_type`, `display_name`, `model_name`, `currency_code`, `price_text`, `price_number`, `supply_state` | 运行时表所需的共同业务字段 |
-| 可选指标 | `channel_count`, `available_channel_count`, `out_of_stock_channel_count`, `price_unit`, `metadata_json` | 来源有值则写入，缺失保持 `NULL`；`metadata_json` 仅容纳白名单公开字段 |
-| 处理状态 | `validation_state`, `validation_reason`, `manual_state`, `merged_at`, `imported_at` | 保留校验与人工状态，不改变原始来源事实 |
+| JSON 展示映射 | `site_name`, `platform_family`, `product_type`, `display_name`, `model_name`, `currency`, `price_text`, `price_number`, `stock_status` | 运行时表所需的共同业务字段；以 `pipeline.RAW_FIELDS` 为准 |
+| JSON 可选指标 | `channel_count`, `available_channel_count`, `out_of_stock_channel_count`, `billing_unit`, `metadata_json` | 来源有值则写入；`metadata_json` 仅容纳白名单公开字段 |
+| 处理状态 | SQL `validation_state`, `validation_reason`, `merged_at`, `imported_at`；JSON `manual_state` | 实际人工闸门由 `collection_manual_overrides` 管理，不改变原始来源事实 |
 
 `collection_staging_observations` 保留为唯一旧 staging 表，供历史兼容和查看；新采集流程不向它双写，也绝不新增 `collection_staging_records`。
 
-各表职责、采集写哪些、merge 写哪些见 [数据库说明](数据库说明.md)。
+表/事务实现以 `src/database.ts`、`scripts/collection/collection_lib/migrations.py`、`pipeline.py` 和 `repository.py` 为准；本机 `数据库说明.md` 当前未跟踪，不作为新检出的必备文档。当前入口与运行分界见 [数据导航与采集](data-nav-and-collection.md)。
 
 ## 合并与入库规则
 
@@ -54,14 +54,14 @@
 6. `site.score` 只控制前端站点展示排序，当前初始值为 50，绝不参与来源合并。
 7. 手工锁定或隐藏不阻止 raw 记录保存；它阻止对应 stable key 的 merge/import。取消标志后，可以重新执行 merge/import，不必重新抓取。
 
-默认 `merge_import_enabled=false`。人工按钮可执行明确的 `merge_import_batch(batch_id)`；若未来开启定时 merge/import，必须调用同一事务服务并记录来源、批次、数量与结果。
+正式 CLI 调度配置为 `catch.config` 的 `merge.enabled=false`，轮询参数为 `merge.poll_interval_seconds`。人工 `merge-once --batch <batch-id>` 与显式 `worker --loop` 调用同一事务链路；enabled 不作为手工 CLI 命令的拒绝开关。旧 `merge_import_enabled` 名称属于 legacy 配置，不能替代当前配置键。
 
-## 独立 merge/import worker（已确认运行约束，尚未接入）
+## 独立 merge/import worker（已接入，默认不自动启动）
 
 采集来源只负责把批准来源的响应和解析记录写入 raw。后续读取 raw、按稳定键合并/清洗并事务写入运行时库/快照，统一由一个本机独立 worker 负责；它不承担网页采集。
 
 - worker 默认关闭，只有人工或明确配置后才能运行；不在生产服务器运行。
-- 同一时刻只能有一个 worker 实例和一条执行线程。它以 10 秒间隔轮询，串行挑选一个 `raw_completed` batch，调用既有 `merge_import_batch(batch_id)` 完成后才处理下一个 batch。
+- 运行约束为同一时刻一个 worker、串行处理。CLI 从 `merge.poll_interval_seconds` 读取轮询间隔，模板为 10 秒；每轮按序处理就绪批次，前一个 `merge_import_batch(batch_id)` 返回后才处理下一个。现有类内单例是进程内保护，不能据此声称多个独立 CLI 进程之间已有全局互斥；操作时不得并行启动多个入库命令。
 - worker 沿用本节全部合并规则：手工闸门、来源优先级、同级最低价和本机 `captured_at` 24 小时新鲜度。成功后的 batch 保持幂等；候选均过期仍标记已处理，但不删除或隐藏当前运行时数据。
 - 该约束只定义 merge/import 的运行位置与串行度；不改变来源审批、allowlist、raw 审计格式、生产发布或远程 MySQL 的边界。
 
@@ -70,4 +70,4 @@
 - 未批准或 allowlist 不明确的来源只能使用 fixture，不能发 HTTP。
 - 不存 Cookie、账号、验证码、订单、交付/售后内容、密码、Token 或私钥。
 - 白名单公开响应可在本机 raw payload 审计表保留 30 天；解析后的统一 raw 记录及运行审计按保留策略保存。
-- 生产发布、备份、恢复仍由合作运维 Tab 的独立双确认流程处理，不能和数据 merge/import 混为一件事。
+- GUI 的生产发布、备份、恢复保留独立确认流程；正式 CLI/脚本的操作授权与核验见 [发布指南](../howtorunvpsnew.md)。本机入库即更新本机公开读数据，不等于已经发布到 VPS。

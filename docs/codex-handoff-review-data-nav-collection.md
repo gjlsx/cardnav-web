@@ -1,5 +1,7 @@
 # Codex 交接 Review：数据展示、示范数据、采集与导航
 
+> 历史交接（2026-09-07 标注）：下文状态、优先级和“冲突时以本文为准”只适用于八月交接，不能覆盖当前 [数据边界](data-nav-and-collection.md)、[CURRENT_STATUS](CURRENT_STATUS.md) 或已确认 [战略](PRODUCT_STRATEGY.md)/[路线图](ROADMAP.md)。不按本文重新领取旧任务；TaskExec 原清单保留实际完成/partial 证据。
+
 > 2026-08-29 纠偏：本文的原始“staging → 人工/规则批准 → 快照”方向继续保留，但现行实现合同改为固定统一 raw 格式、后续 merge/import 直接写运行时表即发布。请以 [collection-data-lifecycle.md](collection-data-lifecycle.md) 和 `tasklist08281547` p024–p028 为准；本文不能授权真实来源联网。
 
 > 2026-08-29 验收补充：一个来源循环可只产生单来源 raw 批次，但该批次合并时必须读取受影响稳定键下各来源的最新有效 raw；不得让后到的低优先级来源覆盖当前高优先级赢家。手工锁定/隐藏仍只阻止 merge/import，原始响应和 raw 记录必须保留。当前已在本机 MySQL 与公开 `/shops` 读取链路验证；生产服务器直写、真实来源联网、定时器启用仍为后续单独批准事项。

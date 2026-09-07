@@ -1,5 +1,7 @@
 # ai.lovemoney.live 站点改造设计
 
+> 历史改造设计，非当前产品战略。八月旧域、社群空链接等裁决后来已有更新；当前以 [产品战略](../../PRODUCT_STRATEGY.md)、[路线图](../../ROADMAP.md) 与 [当前状态](../../CURRENT_STATUS.md) 为准。保留当时实现依据，不重新执行旧品牌替换或删除现有入口。
+
 ## 目标
 
 将 CardNav 公开站改造成 `ai.lovemoney.live`，以 MySQL `ailovemoney` 为唯一数据库，并发布至 `206.119.177.74` 的 HTTP 80 端口。LikeShop 现有的 `8086`、`8090`、`8095` 服务必须不受影响。

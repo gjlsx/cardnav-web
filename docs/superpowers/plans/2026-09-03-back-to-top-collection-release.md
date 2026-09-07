@@ -1,6 +1,6 @@
 # Back To Top, Collection Refresh, and Release Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> Delivered historical plan. Actual completion and exceptions are recorded in [archived tasklist09030447](../../../taskexec/cardnav-web/docs/backuptask/tasklist09030447.md) and [release QA](../../../taskexec/cardnav-web/docs/qa/p0_codex_t09030447.p003.md). Original planning checkboxes below are not a live task queue and must not trigger another collection/deployment. Next work follows [ROADMAP](../../ROADMAP.md) and [CURRENT_STATUS](../../CURRENT_STATUS.md).
 
 **Goal:** Add a global, accessible fixed back-to-top action, refresh approved local collection data, and publish the verified result.
 

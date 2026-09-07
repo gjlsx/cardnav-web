@@ -10,4 +10,4 @@
 | tasklist08300447.md | 2608300447 | wind | active | ./ | 后备采集源与首页公告编辑发布（当前执行） |
 | tasklist08311831.md | 2608311831 | wind | archived | docs/backuptask/ | AIGATE 项目战略、目标里程碑与可持续增长路线图 |
 | tasklist09030447.md | 2609030447 | wind | archived | docs/backuptask/ | 全局回顶、允许来源数据刷新与 VPS 发布 |
-| tasklist09070222.md | 2609070222 | wind | active | ./ | AIGATE 战略裁决、里程碑与 README 文档闭环（本次执行） |
+| tasklist09070222.md | 2609070222 | wind | archived | docs/backuptask/ | AIGATE 战略裁决、里程碑与 README 文档闭环（3/3 完成） |

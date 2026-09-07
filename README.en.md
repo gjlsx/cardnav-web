@@ -1,6 +1,6 @@
 ![](assets/banner.webp)
 
-<h1 align="center">AI LoveMoney</h1>
+<h1 align="center">AIGATE</h1>
 
 <p align="center">
   <a href="README.md">中文</a> ·
@@ -8,23 +8,20 @@
 </p>
 
 <p align="center">
-  <strong>A one-stop guide to buying AI model accounts. It brings together AI gateways, card shops, official subscription price comparisons, model rankings, usage guides, and practical tools to help you avoid pitfalls and spend less.</strong>
+  <strong>A credible AI selection and purchasing decision hub. Compare models, prices and providers, understand evidence and risks, and find an appropriate next step.</strong>
 </p>
 
 <p align="center">
-  <a href="https://ai.lovemoney.live">
-    <img src="" alt="AI LoveMoney website" />
+  <a href="https://aigate.live">
+    AIGATE website
   </a>
   <a href="https://t.me/+AX9TXrzMaS04OWI1">
     <img src="https://img.shields.io/badge/Telegram-Group-26a5e4?style=flat-square&logo=telegram&logoColor=white" alt="Telegram group" />
   </a>
   <a href="https://buy.stripe.com/cNi8wRgiq26I1Ese0V0Fi00">
-    <img src="https://img.shields.io/badge/Support-Stripe-635bff?style=flat-square&logo=stripe&logoColor=white" alt="Support AI LoveMoney" />
+    <img src="https://img.shields.io/badge/Support-Stripe-635bff?style=flat-square&logo=stripe&logoColor=white" alt="Support AIGATE" />
   </a>
   <img src="https://img.shields.io/badge/QQ-1106704568-12b7f5?style=flat-square" alt="QQ group 1106704568" />
-  <a href="">
-    <img src="https://img.shields.io/badge/X-placeholder-000000?style=flat-square&logo=x&logoColor=white" alt="X placeholder" />
-  </a>
 </p>
 
 <p align="center">
@@ -45,9 +42,15 @@
 
 ## Overview
 
-AI LoveMoney brings AI model accounts, official subscriptions, gateway services, card shop merchants, model rankings, usage guides, and practical tools into one public entry point so users can choose, compare, search, and make better pre-purchase decisions faster.
+AIGATE helps users understand AI models, official subscriptions, gateway services, prices and usage risks, compare credible evidence, and find an appropriate next step. Existing directories, reference rankings, guides and tools form the starting point for the approved decision and referral strategy.
 
-For more on the thinking behind AI LoveMoney and why it was created, read [About AI LoveMoney](content/pages/en/about.md).
+## Strategy and roadmap
+
+- [Product strategy](docs/PRODUCT_STRATEGY.md): confirmed purpose, user value, business model and reconciled historical decisions (Chinese).
+- [Goals and milestone roadmap](docs/ROADMAP.md): sequence, acceptance gates, metrics and future implementation inputs (Chinese).
+- [Current status](docs/CURRENT_STATUS.md): implemented capabilities, dated verification evidence and next steps.
+
+Fixed sponsorship, clearly labeled paid placement and advertising come first, followed by referrals to specified operator-owned gateways and commercial sites with ownership/affiliation disclosure. Organic scores and rankings stay independent. SEO/GEO are acquisition channels; the core metric is weekly users making qualified outbound referrals after a credible comparison. The purchasing assistant, merchant growth system and complete ranking governance remain roadmap work.
 
 ## Public operating links
 
@@ -64,7 +67,7 @@ These values have one code source in `src/site.ts`. When changing one, check the
 | --- | --- |
 | Help | Connect model selection, usage methods, practical setup, merchant evaluation, network environment, payment methods, KYC, and daily risk control into one complete path so users can fill in key judgments before placing an order |
 | Card shops | Aggregates third-party quotes as standard SKUs: one canonical product per row, with a lowest reference price, channel count, and in-stock channels. Merchant details are a drill-down, not the default view |
-| Model rankings | View public reference rankings for coding, creative writing, math, text-to-image, and video generation. Video generation is currently an empty placeholder. Scores come from public pages, not this site’s live evaluation |
+| Ranking references | Model performance, gateway references and comparable prices, with source and sampling context. Upstream rankings are not independent AIGATE scores |
 | Official sites | Compare ChatGPT, Claude, Gemini, and Grok official plan prices across regions, then jump to related shop SKUs and gateway sites that support the model family |
 | Toolset | Provides ChatGPT Session conversion, IP cleanliness checks, and external helper tools such as Codex credential assistant and Outlook quick pickup to help users complete quick checks and processing before registration, login, payment, import, or format conversion |
 | Merchant submission and cooperation | Provides merchant submission, public listing, sponsorship slots, and cooperation entrances so quality merchants can get clearer display and exposure paths |
@@ -80,9 +83,9 @@ These values have one code source in `src/site.ts`. When changing one, check the
 
 ## How To Use It
 
-AI LoveMoney does not try to throw everything at you at once. It tries to put the order in a clearer sequence:
+AIGATE does not try to throw everything at you at once. It tries to put the order in a clearer sequence:
 
-1. Check model rankings first to see which models matter for different tasks
+1. Check model performance in Ranking references to see which models matter for different tasks
 2. Compare official subscription prices to understand regional price differences
 3. When a third-party channel is needed, search merchants, products, stock, and prices on the homepage
 4. Before placing an order, read Help to prepare network access, payment, delivery expectations, KYC, and risk-control basics
@@ -91,11 +94,11 @@ AI LoveMoney does not try to throw everything at you at once. It tries to put th
 
 ## Help
 
-[Help](https://ai.lovemoney.live/guide) is AI LoveMoney's usage path for new users. It is not a loose tutorial collection. It systematically separates the issues that are often mixed together, following the order of choosing a model, choosing a usage method, preparing network and payment basics, and then handling daily risk control.
+[Help](https://aigate.live/guide) is AIGATE's usage path for new users. It is not a loose tutorial collection. It systematically separates the issues that are often mixed together, following the order of choosing a model, choosing a usage method, preparing network and payment basics, and then handling daily risk control.
 
-The following are the original Markdown guide documents. Reading them directly on the [official website](https://ai.lovemoney.live/guide) is recommended for the best layout and browsing experience.
+The following are the original Markdown guide documents. Reading them directly on the [official website](https://aigate.live/guide) is recommended for the best layout and browsing experience.
 
-Guide Markdown rendering rules for cards, frontmatter, and internal links are documented in [AI LoveMoney Guide Markdown Rendering](content/guide/README.md).
+Guide Markdown rendering rules for cards, frontmatter, and internal links are documented in [AIGATE Guide Markdown Rendering](content/guide/README.md).
 
 | Guide | Description |
 | --- | --- |
@@ -126,9 +129,10 @@ Guide Markdown rendering rules for cards, frontmatter, and internal links are do
 ## Local Development
 
 ```bash
-npm install
-cp .env.example .env
-npm run dev
+pnpm install
+# First setup only; preserve an existing .env
+# PowerShell: Copy-Item .env.example .env
+pnpm dev
 ```
 
 By default, the project reads `.env` from the current directory.
@@ -142,7 +146,7 @@ MYSQL_USER=root
 MYSQL_PASSWORD=
 MYSQL_DATABASE=ailovemoney
 PORT=3101
-PUBLIC_SITE_URL=https://ai.lovemoney.live
+PUBLIC_SITE_URL=https://aigate.live
 ABUSEIPDB_API_KEY=
 GREYNOISE_API_KEY=
 ```
@@ -152,7 +156,6 @@ GREYNOISE_API_KEY=
 ```bash
 pnpm install
 pnpm run dev
-pnpm run seed:reference-samples
 pnpm test
 pnpm run typecheck
 pnpm run build
@@ -168,26 +171,26 @@ pnpm dev
 ```
 
 - Website: <http://127.0.0.1:3101/> (`pnpm exec astro dev status` / `pnpm exec astro dev stop`)
-- Local collection console: `python scripts/collection/gui.py`
+- Current collector CLI: `python -m scripts.crawlee_collection check-config`
+- Legacy console: `python scripts/collection/gui.py`
 
-`seed:reference-samples` writes a bounded public reference sample set into local MySQL `ailovemoney` and the public snapshots. It is not live collection.
+`pnpm run seed:reference-samples` is for isolated sample environments and writes to the database. Do not run it as a startup step against existing real data.
 
 ## Current implementation boundary
 
-Canonical decisions: [data navigation and collection boundary](docs/data-nav-and-collection.md).
+- Existing surfaces include standard SKU aggregation, gateway/model details, official plans, ranking references (model performance, gateway references and comparable prices), guides and tools. Public content supports Chinese and English.
+- The current collector CLI is in `scripts/crawlee_collection/`, with one `catch.config` and an exact source allowlist: raw → independent merge/import → runtime tables and snapshots. Public data pages read those results; the production server does not run collection.
+- `scripts/collection/` retains the legacy console and historical code. See the [collector README](scripts/crawlee_collection/README.md). The newer GUI file is currently untracked; a fresh clone should use the tracked CLI.
+- Samples, upstream references and captured observations are not live independent evaluations. An upstream rank or initial `site.score=50` is not the planned composite score.
+- Submission/cooperation, sponsored display and some click tracking exist. Full organic/sponsored separation, qualified referral attribution and a commercial feedback loop still need verification.
+- New sources, cadence and automation follow existing approval rules; collection and merge loops default to off. Read actual parameters from `catch.config` and the [source registry](scripts/crawlee_collection/sources.py).
+- Secrets, connection strings and SQL dumps stay out of Git. Russian is not supported.
 
-- Done: renamed three-locale nav, standard SKU aggregation, gateway/official/leaderboard reference samples, and internal model/plan relation queries. Production is display-only.
-- Manual check: after seeding, open `/shops`, `/llm-gateway`, `/official-price`, and `/model-leaderboard` on <http://127.0.0.1:3101/>. Samples are labeled non-live and have no purchase outbound links.
-- Requires per-source user approval: real HTTP collection, Windows/remote schedulers, auto-publishing staging to public snapshots. Unapproved sources must not make network requests.
-- Existing partnership/submit forms stay; submissions are not auto-published.
-- Source defaults: `enabled=false`, `interval_minutes=60`, `max_items_per_run=1000` (`0` = unlimited). `site.score=50` is a display initial value only.
-- This site does not support Russian. `README.ru.md` has been removed; there is no Russian README, and Russian is not a supported public language.
-- Passwords, SSH keys, connection strings, and SQL dumps stay out of this repository.
+See [data/navigation boundaries](docs/data-nav-and-collection.md) and the [collection lifecycle](docs/collection-data-lifecycle.md). Older architecture documents retain historical branding; use [CURRENT_STATUS](docs/CURRENT_STATUS.md) for current entry points and task state.
 
 ## Current production deployment
 
-Public site: `https://ai.lovemoney.live/`  
-The app is an Astro standalone Node process on `127.0.0.1:3101`. Apache ports 80 and 443 serve only `ai.lovemoney.live`. The database is server-local MySQL/MariaDB `ailovemoney`. LikeShop stays on `8086/8090/8095` and no longer uses port 80.
+Public site: [AIGATE](https://aigate.live/). The recorded 2026-09-03 verification shows the legacy `ai.lovemoney.live` host redirecting with HTTP 308 while preserving the path and query. Astro standalone Node runs on loopback `127.0.0.1:3101`; Apache serves the site and old-domain redirects on 80/443. The database is server-local MySQL/MariaDB `ailovemoney`. LikeShop remains on `8086/8090/8095`. This documentation update did not recheck live availability.
 
 - Release directory: `/www/wwwroot/ai.lovemoney.live`
 - Process: `ai-lovemoney.service` (systemd, enabled)
@@ -221,8 +224,8 @@ Issues and Pull Requests are welcome for:
 
 ## License
 
-AI LoveMoney's software code is open sourced under the [GNU Affero General Public License v3.0](./LICENSE).
+AIGATE's software code is open sourced under the [GNU Affero General Public License v3.0](./LICENSE).
 
-The `AI LoveMoney` and `AI LoveMoney` names, Logo, domain, visual brand, online production data, merchant data, product data, search data, guide content, screenshots, and public page copy are not licensed together with the software code. Before forking, secondary development, or deploying a public service, please read the [Data and Content License](./DATA_LICENSE.md) and [Brand and Trademark Policy](./TRADEMARKS.md), and avoid making users believe your service is the official website.
+The `AIGATE` name, Logo, domain, visual brand, online production data, merchant data, product data, search data, guide content, screenshots, and public page copy are not licensed together with the software code. Before forking, secondary development, or deploying a public service, please read the [Data and Content License](./DATA_LICENSE.md) and [Brand and Trademark Policy](./TRADEMARKS.md), and avoid making users believe your service is the official website.
 
 

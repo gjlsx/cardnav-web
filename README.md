@@ -1,6 +1,6 @@
 ![](assets/banner.webp)
 
-<h1 align="center">AIGATE · AIGATE</h1>
+<h1 align="center">AIGATE</h1>
 
 <p align="center">
   <strong>中文</strong> ·
@@ -8,21 +8,18 @@
 </p>
 
 <p align="center">
-  <strong>一站式 AI 大模型账号购买导航。聚合 AI 中转网站、卡网、官方网站价格参考，还有模型排行、帮助和实用工具，帮你少踩坑，少花钱。</strong>
+  <strong>可信 AI 选择与购买决策入口。比较模型、价格和渠道，理解依据与风险，找到合适的下一步。</strong>
 </p>
 
 <p align="center">
   <a href="https://aigate.live">
-    <img src="" alt="AIGATE官网" />
+    AIGATE 官网
   </a>
   <a href="https://t.me/+AX9TXrzMaS04OWI1">
     <img src="https://img.shields.io/badge/Telegram-%E7%BE%A4%E7%BB%84-26a5e4?style=flat-square&logo=telegram&logoColor=white" alt="Telegram 群组" />
   </a>
   <a href="https://buy.stripe.com/cNi8wRgiq26I1Ese0V0Fi00">
-    <img src="https://img.shields.io/badge/%E6%94%AF%E6%8C%81%E4%BD%9C%E8%80%85-Stripe-635bff?style=flat-square&logo=stripe&logoColor=white" alt="支持 AI LoveMoney" />
-  </a>
-  <a href="">
-    <img src="https://img.shields.io/badge/X-placeholder-000000?style=flat-square&logo=x&logoColor=white" alt="X placeholder" />
+    <img src="https://img.shields.io/badge/%E6%94%AF%E6%8C%81%E4%BD%9C%E8%80%85-Stripe-635bff?style=flat-square&logo=stripe&logoColor=white" alt="支持 AIGATE" />
   </a>
 </p>
 
@@ -44,9 +41,15 @@
 
 ## 产品简介
 
-AI LoveMoney把 AI 大模型账号、官方网站订阅价格、中转网站、卡网商家、模型排行、帮助和实用工具放在同一个公开入口里，帮助用户更快完成选型、比价、搜索和购买前判断。
+AIGATE 帮助用户理解 AI 模型、官方订阅、中转站、价格和使用风险，更快完成可信比较并找到合适的下一步。网站现有目录、参考榜单、帮助和工具；持续自扩展的决策与商业闭环是已确认的发展方向。
 
-想了解AI LoveMoney背后的故事，可以阅读 [关于AI LoveMoney](https://ai.lovemoney.live/about)。
+## 战略与路线图
+
+- [产品战略](docs/PRODUCT_STRATEGY.md)：已确认的目标、用户价值、商业模式和历史整合结论。
+- [目标与里程碑路线图](docs/ROADMAP.md)：推进顺序、验收条件、指标和未来实施输入。
+- [当前进度](docs/CURRENT_STATUS.md)：已实现能力、带日期的验证证据和下一步。
+
+收入优先固定赞助、明确标注的付费排名和广告，随后对接我方中转站与商业站，并披露自营/关联关系。自然评分与自然榜单保持独立。SEO/GEO 是获客手段，核心衡量每周可信比较后的有效站外导流用户数。AI 选购代理、商家增长系统与完整排名治理属于后续里程碑，不能将这些规划当作已上线能力。
 
 ## 公开运营入口
 
@@ -63,7 +66,7 @@ AI LoveMoney把 AI 大模型账号、官方网站订阅价格、中转网站、�
 | --- | --- |
 | 帮助 | 把模型选择、使用方式、实操准备、商家判断、网络环境、支付方式、KYC 和日常风控串成一条完整路径，帮助用户在真正下单前先把关键判断补齐 |
 | 卡网商品 | 按标准 SKU 聚合第三方卡网报价：一行一个权威商品，展示最低参考价、渠道数和有货渠道；商家明细为下钻，不是默认视图 |
-| 模型排行榜 | 按编程、创意写作、数学、文生图、视频生成查看公开参考排行；视频生成当前为空态。分数来自公开页面整理，不是本站实时评测 |
+| 排名参考 | 模型表现、中转参考、价格参考；结合来源和采样时间阅读，同单位价格才作比较，上游参考不等于本站独立评分 |
 | 官方网站 | 对比 ChatGPT、Claude、Gemini、Grok 等官方订阅在不同地区的价格和折算，并可跳到关联卡网商品与支持该模型族的中转网站 |
 | 工具集 | 集中提供 ChatGPT Session 转换工具、IP 纯净度检测，以及 Codex 凭证助手、Outlook 快速取件等外部辅助工具，帮助用户在注册、登录、支付、导入和格式处理前先完成快速检查与处理 |
 | 商家提交与合作 | 提供商家提交、公开收录、赞助位和合作入口，让优质商家获得更清晰的展示和曝光路径 |
@@ -79,9 +82,9 @@ AI LoveMoney把 AI 大模型账号、官方网站订阅价格、中转网站、�
 
 ## 使用方式
 
-AI LoveMoney不是把所有东西都塞给你，而是尽量把顺序排清楚一点：
+AIGATE不是把所有东西都塞给你，而是尽量把顺序排清楚一点：
 
-1. 先看模型排行榜，知道不同任务下大概该看谁
+1. 先看排名参考中的模型表现，知道不同任务下大概该看谁
 2. 再看官方网站价格参考，弄明白不同地区的价格差异
 3. 需要第三方渠道时，再去首页搜商家、商品、库存和价格
 4. 下单前看看帮助，把网络、支付、交付、KYC 和风控这几件事补齐
@@ -90,11 +93,11 @@ AI LoveMoney不是把所有东西都塞给你，而是尽量把顺序排清楚�
 
 ## 帮助
 
-[帮助](https://ai.lovemoney.live/guide) 是AI LoveMoney给新手用户准备的使用路径。它不是零散教程集合，而是按“先选模型、再选使用方式、再补齐网络与支付准备、最后处理日常风控”的顺序，系统性的把容易混在一起的问题拆开讲清楚。
+[帮助](https://aigate.live/guide) 是AIGATE给新手用户准备的使用路径。它不是零散教程集合，而是按“先选模型、再选使用方式、再补齐网络与支付准备、最后处理日常风控”的顺序，系统性的把容易混在一起的问题拆开讲清楚。
 
-以下为向导内容的 Markdown 原始文档，推荐直接在 [官网](https://ai.lovemoney.live/guide) 阅读，以获得最佳排版与浏览体验。
+以下为向导内容的 Markdown 原始文档，推荐直接在 [官网](https://aigate.live/guide) 阅读，以获得最佳排版与浏览体验。
 
-向导 Markdown 的卡片、frontmatter 和站内链接渲染规则见 [AI LoveMoney向导 Markdown 渲染说明](content/guide/README.md)。
+向导 Markdown 的卡片、frontmatter 和站内链接渲染规则见 [AIGATE向导 Markdown 渲染说明](content/guide/README.md)。
 
 | 向导 | 说明 |
 | --- | --- |
@@ -125,9 +128,10 @@ AI LoveMoney不是把所有东西都塞给你，而是尽量把顺序排清楚�
 ## 本地运行
 
 ```bash
-npm install
-cp .env.example .env
-npm run dev
+pnpm install
+# 仅首次配置；已有 .env 时保留
+# PowerShell: Copy-Item .env.example .env
+pnpm dev
 ```
 
 默认读取当前目录下的 `.env`。
@@ -141,7 +145,7 @@ MYSQL_USER=root
 MYSQL_PASSWORD=
 MYSQL_DATABASE=ailovemoney
 PORT=3101
-PUBLIC_SITE_URL=https://ai.lovemoney.live
+PUBLIC_SITE_URL=https://aigate.live
 ABUSEIPDB_API_KEY=
 GREYNOISE_API_KEY=
 ```
@@ -151,7 +155,6 @@ GREYNOISE_API_KEY=
 ```bash
 pnpm install
 pnpm run dev
-pnpm run seed:reference-samples
 pnpm test
 pnpm run typecheck
 pnpm run build
@@ -167,29 +170,26 @@ pnpm dev
 ```
 
 - 网站：<http://127.0.0.1:3101/>（状态/停止：`pnpm exec astro dev status`、`pnpm exec astro dev stop`）
-- 本机采集总控台：`python scripts/collection/gui.py`
+- 新采集 CLI：`python -m scripts.crawlee_collection check-config`
+- Legacy 总控台：`python scripts/collection/gui.py`
 
-`seed:reference-samples` 把有限公开参考样例写入本机 MySQL `ailovemoney` 和公开快照，供 `/shops`、`/llm-gateway`、`/official-price`、`/model-leaderboard` 验证。它不是实时采集。
+`pnpm run seed:reference-samples` 仅供独立样例环境，会写数据库；已有真实数据时不要作为启动步骤运行。
 
 ## 当前实现边界
 
-完整决策见 [数据导航与采集边界](docs/data-nav-and-collection.md)。摘要：
+- 现有入口包括标准 SKU 商品、中转站与模型详情、官方网站、排名参考（模型表现/中转参考/价格参考）、帮助和工具；公开内容支持中文与英文。
+- 当前采集入口是 `scripts/crawlee_collection/` 的 CLI；共用 `catch.config`，精确来源白名单，raw → 独立 merge/import → 运行表与快照。公开数据页面读取这些结果，生产服务器不运行采集器。
+- `scripts/collection/` 保留 legacy 控制台和历史代码；新采集路径见 [采集器 README](scripts/crawlee_collection/README.md)。工作区的新 GUI 文件尚未纳入版本控制，克隆仓库后以已跟踪 CLI 为准。
+- 样例、上游参考和采样数据不等同实时评测；上游 rank 和初始 `site.score=50` 不能冒充新的综合评分。
+- 现有合作/提交、赞助展示和部分点击记录可复用，完整双榜治理、有效导流归因与商业闭环仍需验证。
+- 新来源、运行频率和自动化按既有规则批准；采集与 merge 循环默认关闭。实际参数由 `catch.config` 和 [来源代码](scripts/crawlee_collection/sources.py) 确认，不照抄旧默认值。
+- 秘密、数据库连接串和 SQL dump 不进入仓库；不支持俄语。
 
-- 已完成：三语导航改名、标准 SKU 聚合、中转网站/官方网站/模型排行参考样例、模型与订阅计划的内部关联查询。生产站只读。
-- 可手工验证：`pnpm run seed:reference-samples` 后打开本地 <http://127.0.0.1:3101/> 的上述页面；样例带「参考样例 / 非实时」提示，无购买外链。
-- 本机采集 MVP：`scripts/collection/` CLI + GUI。采集只做简单清洗并写带来源标签的统一 raw 记录；合并并写入运行时表/快照才是发布，默认人工触发。
-- 必须由用户逐来源批准后才能做：真实 HTTP 采集、Windows/远程调度。未批准来源不得发网；定时 merge/import 也必须单独启用。
-- 现有合作/提交表单继续使用，结果不自动公开发布。
-- 来源默认 `enabled=false`、`interval_minutes=60`、`max_items_per_run=1000`（`0` 不限）。`site.score=50` 只是展示初值。
-- 本站不支持俄语。已删除 `README.ru.md`，不再提供俄语 README，也不再把俄语当作受支持的公开语言。
-- 密码、SSH 私钥、数据库连接串和 SQL dump 不进本仓库。
-
-采集生命周期、统一 raw 格式和 MVP 后直写运行时服务器 MySQL 的方向见 [采集数据生命周期](docs/collection-data-lifecycle.md)。
+数据架构见 [数据导航边界](docs/data-nav-and-collection.md) 和 [采集生命周期](docs/collection-data-lifecycle.md)。旧架构文档中的品牌/日期仅描述当时事实，当前入口和任务进度以 [CURRENT_STATUS](docs/CURRENT_STATUS.md) 为准。
 
 ## 当前生产部署
 
-公开站点：`https://ai.lovemoney.live/`  
-应用以 Astro standalone Node 跑在服务器回环地址 `127.0.0.1:3101`，Apache **80 和 443 只服务** `ai.lovemoney.live`。数据库是服务器本地 MySQL/MariaDB `ailovemoney`。LikeShop 只走 `8086/8090/8095`，不再占用 80。
+公开站点：[AIGATE](https://aigate.live/)。2026-09-03 已记录的发布验证显示，旧域 `ai.lovemoney.live` 以 308 转向新域并保留路径和查询。应用是回环 `127.0.0.1:3101` 上的 Astro standalone Node，Apache 80/443 提供网站和旧域跳转；数据库为服务器 MySQL/MariaDB `ailovemoney`。LikeShop 保持 `8086/8090/8095`。本次文档更新未重新验证在线状态。
 
 - 发布目录：`/www/wwwroot/ai.lovemoney.live`
 - 进程：`ai-lovemoney.service`（systemd，开机自启）
@@ -223,8 +223,8 @@ cardnav-web/
 
 ## License
 
-AI LoveMoney (AI LoveMoney) 的软件代码使用 [GNU Affero General Public License v3.0](./LICENSE) 开源。
+AIGATE 的软件代码使用 [GNU Affero General Public License v3.0](./LICENSE) 开源。
 
-`AI LoveMoney`、`AI LoveMoney` 名称、Logo、域名、视觉品牌、线上生产数据、商家数据、商品数据、搜索数据、指南内容、截图和公开页面文案不随软件代码授权。Fork、二次开发或部署公开服务时，请阅读 [数据与内容授权](./DATA_LICENSE.md) 和 [品牌与商标政策](./TRADEMARKS.md)，并避免让用户误认为你的服务是官方网站。
+`AIGATE` 名称、Logo、域名、视觉品牌、线上生产数据、商家数据、商品数据、搜索数据、指南内容、截图和公开页面文案不随软件代码授权。Fork、二次开发或部署公开服务时，请阅读 [数据与内容授权](./DATA_LICENSE.md) 和 [品牌与商标政策](./TRADEMARKS.md)，并避免让用户误认为你的服务是官方网站。
 
 

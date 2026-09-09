@@ -1,9 +1,9 @@
 ---
 scope: cardnav-web
-updated_at: 2026-09-09 15:29 Asia/Hong_Kong
+updated_at: 2026-09-07 08:25 Asia/Hong_Kong
 timezone: Asia/Hong_Kong
 tags: [aigate, strategy, roadmap, documentation, taskexec]
-summary: Strategy review clarified minimum readiness versus later scoring/growth validation, official referral counting and sponsorship lifecycle. This is a documentation revision, not product implementation.
+summary: Strategy and roadmap are consolidated; related operating docs and historical-plan boundaries are reconciled against source. Measurement and commercial implementation remain future milestones.
 ---
 
 # Current Status
@@ -16,7 +16,6 @@ summary: Strategy review clarified minimum readiness versus later scoring/growth
 - Organic ranking and scoring remain independent of sponsorship or ownership. Transparent composite scoring is approved as a direction, but its formula and full UI separation still need implementation and verification.
 - Priority innovations: purchasing assistant and merchant growth system. The primary metric is weekly qualified outbound-referral users after a credible comparison.
 - Current documents: [PRODUCT_STRATEGY](PRODUCT_STRATEGY.md) and [ROADMAP](ROADMAP.md). The historical August 31 strategy and combined roadmap were consolidated and removed by user request; Git retains their history.
-- September 8–9 review preserves those decisions: M0 minimum measurement and M1 core trust may progress together, while full scores and growth evidence are separate outputs. Qualified official-site referrals count equally; fixed sponsorship needs review, expiry/pause and delivery checks. [Design review](../taskexec/cardnav-web/docs/issues/ISSUE-005.md)
 
 ## Implemented foundation and remaining gaps
 
@@ -39,7 +38,7 @@ summary: Strategy review clarified minimum readiness versus later scoring/growth
 
 ## Latest recorded verification
 
-The following is historical repository evidence, not product tests rerun in the September 7–9 documentation work.
+The following is historical repository evidence, not tests rerun on September 7.
 
 - September 3 collection QA: configured allowlisted sources completed without source failures; 1,269 raw records, 1,268 runtime writes; Crawlee suite 42 tests passed. [Data QA](../taskexec/cardnav-web/docs/qa/p0_codex_t09030447.p002.md)
 - September 3 release QA: Node tests 106/106, typecheck 0 errors/warnings/hints, successful build; 426 gateway sites, 2,344 gateway model-price rows and 11 public snapshots.
@@ -58,7 +57,7 @@ The following is historical repository evidence, not product tests rerun in the 
 
 ## Next TODO
 
-Start with one existing user scenario: M0 minimum measurement and M1 core trust, with M2 user/merchant problem discovery in parallel. Reuse the existing comparison path for M3 before adding a tool. M5a needs verified minimum measurement, core trust and a usable comparison flow, not a completed composite score or statistically proven growth; unfinished observation must remain explicitly incomplete. Resolve scoring methodology, specific sponsor contracts and owned-site domains in their implementation tasks. This review does not authorize production commercial changes.
+Start with ROADMAP M0 measurement-baseline, then M1 trust-and-ranking. The strategic direction no longer needs another choice round. Resolve scoring methodology, specific sponsor contracts and owned-site domains when their implementation tasks need them; no production commercial change is implied by completing these documents.
 
 ## Durable references
 

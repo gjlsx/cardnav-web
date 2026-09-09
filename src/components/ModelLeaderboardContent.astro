@@ -102,8 +102,8 @@ function relatedLinks(modelFamily: string) {
             const related = relatedLinks(item.modelFamily);
             const sampledAt = item.sampledAt ? formatBeijingRefreshTime(item.sampledAt) : '';
             return (
-            <tr data-sort-sequence={String(item.rank)}>
-              <DataTableCell label={t.labels.sequence} align="center" sequence>{item.rank}</DataTableCell>
+            <tr data-sort-sequence={item.rank === null ? '' : String(item.rank)}>
+              <DataTableCell label={t.labels.sequence} align="center" sequence>{item.rank ?? '-'}</DataTableCell>
               <DataTableCell label={t.labels.model} class="text-base-content">
                 <div class="flex min-w-0 flex-col gap-1">
                   <div class="flex flex-wrap items-center gap-2">
@@ -144,7 +144,7 @@ function relatedLinks(modelFamily: string) {
                   </div>
                 </div>
               </DataTableCell>
-              <DataTableCell label={t.leaderboard.referenceScore} class="font-mono font-bold text-primary">{item.score.toFixed(2)}</DataTableCell>
+              <DataTableCell label={t.leaderboard.referenceScore} class="font-mono font-bold text-primary">{item.score === null ? '-' : item.score.toFixed(2)}</DataTableCell>
             </tr>
             );
           })}

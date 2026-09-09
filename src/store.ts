@@ -5,6 +5,7 @@ import 'dotenv/config';
 import { createHash } from 'node:crypto';
 import mysql from 'mysql2/promise';
 import { aggregateCatalogProducts, catalogProductSlugsForTarget } from './catalog.js';
+import { parseReferenceScore } from './leaderboard-evidence.js';
 import { mergeModelLeaderboardTaskSlugs } from './model-leaderboard.js';
 import type { PackedShopProductsData, PublicShopProductsData } from './shop-products-data.js';
 import { validatePublicSubmittedUrl, type PublicSubmittedUrlRejectReason } from './submitted-url.js';
@@ -835,10 +836,10 @@ export type PublicModelLeaderboardRow = {
   sourceUrl: string;
   sourceGroupSlug: string;
   sourceBoardSlug: string;
-  rank: number;
+  rank: number | null;
   modelName: string;
   modelFamily: string;
-  score: number;
+  score: number | null;
   sourceId: string;
   sampledAt: string;
   isSample: boolean;
@@ -969,7 +970,7 @@ export async function loadModelLeaderboardRowsForTask(taskSlug: string, options:
     return snapshot
       .filter(row => row.taskSlug.trim().toLowerCase() === normalizedTaskSlug)
       .map(normalizeModelLeaderboardRow)
-      .sort((a, b) => a.rank - b.rank)
+      .sort(compareModelLeaderboardRank)
       .slice(0, limit ?? snapshot.length);
   }
 
@@ -1001,7 +1002,7 @@ export async function loadModelLeaderboardRowsForTaskPage(taskSlug: string, opti
   const limit = safeListLimit(options.limit);
   const snapshot = await loadPublicSnapshot<PublicModelLeaderboardRow[]>('model-leaderboards');
   const allRows = snapshot
-    ? snapshot.filter(row => row.taskSlug.trim().toLowerCase() === normalizedTaskSlug).map(normalizeModelLeaderboardRow).sort((a, b) => a.rank - b.rank)
+    ? snapshot.filter(row => row.taskSlug.trim().toLowerCase() === normalizedTaskSlug).map(normalizeModelLeaderboardRow).sort(compareModelLeaderboardRank)
     : (await getPool().query(`SELECT task_slug, source_name, source_url, source_group_slug, source_board_slug, rank, model_name, model_family, score, source_id, sampled_at, is_sample, fetched_at FROM model_leaderboards WHERE lower(trim(task_slug)) = ? ORDER BY rank ASC`, [normalizedTaskSlug])).rows.map(mapModelLeaderboardRow);
   const latestFetchedAt = allRows.reduce<string | null>((latest, row) => !latest || new Date(row.fetchedAt).getTime() > new Date(latest).getTime() ? row.fetchedAt : latest, null);
   return { rows: allRows.slice(0, limit ?? allRows.length), totalCount: allRows.length, latestFetchedAt };
@@ -1014,10 +1015,10 @@ function mapModelLeaderboardRow(row: Record<string, unknown>): PublicModelLeader
     sourceUrl: String(row.source_url ?? row.sourceUrl ?? ''),
     sourceGroupSlug: String(row.source_group_slug ?? row.sourceGroupSlug ?? ''),
     sourceBoardSlug: String(row.source_board_slug ?? row.sourceBoardSlug ?? ''),
-    rank: Number(row.rank),
+    rank: parseLeaderboardRank(row.rank),
     modelName: String(row.model_name ?? row.modelName ?? ''),
     modelFamily: String(row.model_family ?? row.modelFamily ?? ''),
-    score: Number(row.score),
+    score: parseReferenceScore(row.score),
     sourceId: row.source_id == null && row.sourceId == null ? '' : String(row.source_id ?? row.sourceId),
     sampledAt: row.sampled_at == null && row.sampledAt == null ? '' : String(row.sampled_at ?? row.sampledAt),
     isSample: row.is_sample === true || row.is_sample === 1 || row.is_sample === '1' || row.isSample === true,
@@ -1032,15 +1033,24 @@ function normalizeModelLeaderboardRow(row: PublicModelLeaderboardRow): PublicMod
     sourceUrl: String(row.sourceUrl || ''),
     sourceGroupSlug: String(row.sourceGroupSlug || ''),
     sourceBoardSlug: String(row.sourceBoardSlug || ''),
-    rank: Number(row.rank) || 0,
+    rank: parseLeaderboardRank(row.rank),
     modelName: String(row.modelName || ''),
     modelFamily: String(row.modelFamily || ''),
-    score: Number(row.score) || 0,
+    score: parseReferenceScore(row.score),
     sourceId: String(row.sourceId || ''),
     sampledAt: String(row.sampledAt || ''),
     isSample: row.isSample === true,
     fetchedAt: String(row.fetchedAt || ''),
   };
+}
+
+function parseLeaderboardRank(value: unknown): number | null {
+  const parsed = parseReferenceScore(value);
+  return parsed !== null && Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+}
+
+function compareModelLeaderboardRank(a: PublicModelLeaderboardRow, b: PublicModelLeaderboardRow) {
+  return (a.rank ?? Number.MAX_SAFE_INTEGER) - (b.rank ?? Number.MAX_SAFE_INTEGER);
 }
 
 export async function loadModelLeaderboards(): Promise<PublicModelLeaderboardRow[]> {

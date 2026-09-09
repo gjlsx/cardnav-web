@@ -63,3 +63,22 @@ test('leaderboard related paths use declared families only and do not invent sho
     gatewayPath: '/llm-gateway?model=not-a-declared-family',
   });
 });
+
+test('unknown ranks sort after cited ranks and never mutate the supplied rows', () => {
+  const rows = [
+    {
+      taskSlug: 'coding', sourceName: '未知来源', sourceUrl: '', sourceGroupSlug: 'text', sourceBoardSlug: 'coding',
+      rank: null, modelName: 'unknown-rank', modelFamily: 'Unknown', score: null, sourceId: 'unknown',
+      sampledAt: '', isSample: false, fetchedAt: '',
+    },
+    {
+      taskSlug: 'coding', sourceName: '已引用来源', sourceUrl: 'https://example.com/coding', sourceGroupSlug: 'text', sourceBoardSlug: 'coding',
+      rank: 2, modelName: 'second', modelFamily: 'Known', score: 12, sourceId: 'reference',
+      sampledAt: '2026-09-10T00:00:00.000Z', isSample: false, fetchedAt: '',
+    },
+  ];
+  const originalOrder = rows.map(row => row.modelName);
+  const group = buildModelLeaderboardGroupsFromSlugs(['coding'], rows);
+  assert.deepEqual(group[0].rows.map(row => row.modelName), ['second', 'unknown-rank']);
+  assert.deepEqual(rows.map(row => row.modelName), originalOrder);
+});

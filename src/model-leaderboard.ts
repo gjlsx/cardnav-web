@@ -82,7 +82,7 @@ export function buildModelLeaderboardGroups(rows: PublicModelLeaderboardRow[]): 
   return Array.from(groupMap.values())
     .map(group => ({
       ...group,
-      rows: group.rows.sort((a, b) => a.rank - b.rank),
+      rows: group.rows.sort(compareLeaderboardRank),
     }))
     .sort((a, b) => compareTaskSlug(a.taskSlug, b.taskSlug));
 }
@@ -100,7 +100,7 @@ export function buildModelLeaderboardGroupsFromSlugs(
     taskSlug,
     displayName: taskSlug,
     pathname: modelLeaderboardPathname(taskSlug),
-    rows: (byTask.get(taskSlug) ?? []).slice().sort((a, b) => a.rank - b.rank),
+    rows: (byTask.get(taskSlug) ?? []).slice().sort(compareLeaderboardRank),
   }));
 }
 
@@ -116,7 +116,11 @@ export function buildModelLeaderboardGroupsForActiveTask(
       displayName: taskSlug,
       pathname: modelLeaderboardPathname(taskSlug),
       rows: taskSlug === normalizedActiveTask
-        ? activeRows.slice().sort((a, b) => a.rank - b.rank)
+        ? activeRows.slice().sort(compareLeaderboardRank)
         : [],
     }));
+}
+
+function compareLeaderboardRank(a: PublicModelLeaderboardRow, b: PublicModelLeaderboardRow) {
+  return (a.rank ?? Number.MAX_SAFE_INTEGER) - (b.rank ?? Number.MAX_SAFE_INTEGER);
 }

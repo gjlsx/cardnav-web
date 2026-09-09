@@ -6,6 +6,7 @@ import type { Messages } from './i18n/zh.js';
 import type { ModelLeaderboardGroup } from './model-leaderboard.js';
 import type { OfficialPriceGroup } from './official-price.js';
 import type { PublicModelLeaderboardRow, PublicOfficialPriceRow } from './store.js';
+import { buildReferenceEvidence, type LeaderboardEvidence } from './leaderboard-evidence.js';
 
 export type LocalizedOfficialPriceRow = PublicOfficialPriceRow & {
   localizedCountryLabel: string;
@@ -18,6 +19,7 @@ export type LocalizedOfficialPriceGroup = OfficialPriceGroup<LocalizedOfficialPr
 
 export type LocalizedModelLeaderboardRow = PublicModelLeaderboardRow & {
   localizedSourceName: string;
+  evidence: LeaderboardEvidence;
 };
 
 export type LocalizedModelLeaderboardGroup = ModelLeaderboardGroup<LocalizedModelLeaderboardRow>;
@@ -88,6 +90,7 @@ export function localizeModelLeaderboardGroups(
       rows: group.rows.map(row => ({
         ...row,
         localizedSourceName: localizeLeaderboardSource(row.sourceId, row.sourceName, locale),
+        evidence: buildReferenceEvidence(row),
       })),
     };
   });

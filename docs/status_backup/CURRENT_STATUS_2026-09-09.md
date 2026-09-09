@@ -1,9 +1,9 @@
 ---
 scope: cardnav-web
-updated_at: 2026-09-10 01:18 Asia/Hong_Kong
+updated_at: 2026-09-09 15:29 Asia/Hong_Kong
 timezone: Asia/Hong_Kong
 tags: [aigate, strategy, roadmap, documentation, taskexec]
-summary: First implementation tasklist drafted for external leaderboard references and minimal first-party measurement; user confirmed external references before open-source self-tests. Execution awaits explicit tasklist approval.
+summary: Strategy review clarified minimum readiness versus later scoring/growth validation, official referral counting and sponsorship lifecycle. This is a documentation revision, not product implementation.
 ---
 
 # Current Status
@@ -17,8 +17,6 @@ summary: First implementation tasklist drafted for external leaderboard referenc
 - Priority innovations: purchasing assistant and merchant growth system. The primary metric is weekly qualified outbound-referral users after a credible comparison.
 - Current documents: [PRODUCT_STRATEGY](PRODUCT_STRATEGY.md) and [ROADMAP](ROADMAP.md). The historical August 31 strategy and combined roadmap were consolidated and removed by user request; Git retains their history.
 - September 8–9 review preserves those decisions: M0 minimum measurement and M1 core trust may progress together, while full scores and growth evidence are separate outputs. Qualified official-site referrals count equally; fixed sponsorship needs review, expiry/pause and delivery checks. [Design review](../taskexec/cardnav-web/docs/issues/ISSUE-005.md)
-
-- September 10 sequencing clarification: external leaderboard references first, open-source self-tests afterward; scoring remains a product requirement. Competitor parity plus focused differentiators, first-party measurement and attributed external platform aggregates are recorded in the two canonical documents.
 
 ## Implemented foundation and remaining gaps
 
@@ -52,7 +50,6 @@ The following is historical repository evidence, not product tests rerun in the 
 ## Task state and preserved local changes
 
 - [Task index](../taskexec/cardnav-web/tasklistall.md) is authoritative for active/archive locations.
-- [tasklist09100118](../taskexec/cardnav-web/tasklist09100118.md) is the creator-selected plan for this request: 7 todo tasks, no execution claim. It proposes existing reference-score provenance/UI fixes and local session-level measurement; new-source crawling, self-tests, public telemetry activation and deployment are excluded.
 - tasklist08300447 remains active: grok p001-p007 remain todo; p008-p022 done. Do not claim those grok rows under this documentation task.
 - tasklist08311831 and tasklist09030447 are archived and complete as documentation/release tasks respectively; that does not mark business milestones complete.
 - tasklist09070222 delivers the approved strategy/roadmap and README/status closure; its implementation/status commits and final archive are recorded in the task index.
@@ -61,7 +58,7 @@ The following is historical repository evidence, not product tests rerun in the 
 
 ## Next TODO
 
-Wait for wind to approve tasklist09100118 before claiming any row. Proposed first slice: traceable existing external scores plus leaderboard-to-gateway interaction measurement. Session counts are not weekly unique users; north-star remains unavailable. This does not finish new source ingestion, full M0/M1, self-tests, traffic baselines or commercial readiness. Exact new-source permissions and later benchmark repository/targets/budget need separate approval; do not begin production or commercial operations.
+Start with one existing user scenario: M0 minimum measurement and M1 core trust, with M2 user/merchant problem discovery in parallel. Reuse the existing comparison path for M3 before adding a tool. M5a needs verified minimum measurement, core trust and a usable comparison flow, not a completed composite score or statistically proven growth; unfinished observation must remain explicitly incomplete. Resolve scoring methodology, specific sponsor contracts and owned-site domains in their implementation tasks. This review does not authorize production commercial changes.
 
 ## Durable references
 

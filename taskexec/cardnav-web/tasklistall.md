@@ -12,3 +12,4 @@
 | tasklist09030447.md | 2609030447 | wind | archived | docs/backuptask/ | 全局回顶、允许来源数据刷新与 VPS 发布 |
 | tasklist09070222.md | 2609070222 | wind | archived | docs/backuptask/ | AIGATE 战略裁决、里程碑与 README 文档闭环（3/3 完成） |
 | tasklist09070820.md | 2609070820 | wind | archived | docs/backuptask/ | AIGATE 关联文档一致性自动收尾（1/1 完成） |
+| tasklist09100118.md | 2609100118 | wind | active | ./ | 外部榜单引用与最小计量；7 项待确认执行（codex 本轮目标） |

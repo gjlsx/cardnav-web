@@ -2,6 +2,7 @@
  * 文件说明: 维护模型排行榜页的任务分组、排序、关联查询和独立 URL 规则。
  */
 import { catalogProductSlugsForTarget } from './catalog.js';
+import { evidenceGroupKey } from './leaderboard-evidence.js';
 import type { PublicModelLeaderboardRow } from './store.js';
 
 export type ModelLeaderboardGroup<Row extends PublicModelLeaderboardRow = PublicModelLeaderboardRow> = {
@@ -122,5 +123,6 @@ export function buildModelLeaderboardGroupsForActiveTask(
 }
 
 function compareLeaderboardRank(a: PublicModelLeaderboardRow, b: PublicModelLeaderboardRow) {
-  return (a.rank ?? Number.MAX_SAFE_INTEGER) - (b.rank ?? Number.MAX_SAFE_INTEGER);
+  const groupDiff = evidenceGroupKey(a).localeCompare(evidenceGroupKey(b), 'zh-Hans-CN', { numeric: true });
+  return groupDiff || (a.rank ?? Number.MAX_SAFE_INTEGER) - (b.rank ?? Number.MAX_SAFE_INTEGER);
 }

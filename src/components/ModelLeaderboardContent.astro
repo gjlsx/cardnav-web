@@ -100,21 +100,25 @@ function relatedLinks(modelFamily: string) {
           </Fragment>
           {visibleRows.map(item => {
             const related = relatedLinks(item.modelFamily);
-            const sampledAt = item.sampledAt ? formatBeijingRefreshTime(item.sampledAt) : '';
+            const evidence = item.evidence;
+            const sampledAt = evidence.sampledAt ? formatBeijingRefreshTime(evidence.sampledAt) : '';
             return (
-            <tr data-sort-sequence={item.rank === null ? '' : String(item.rank)}>
-              <DataTableCell label={t.labels.sequence} align="center" sequence>{item.rank ?? '-'}</DataTableCell>
+            <tr data-sort-sequence={evidence.displayRank === null ? '' : String(evidence.displayRank)} data-leaderboard-evidence-group={evidence.groupKey}>
+              <DataTableCell label={t.labels.sequence} align="center" sequence>{evidence.displayRank ?? t.leaderboard.notProvided}</DataTableCell>
               <DataTableCell label={t.labels.model} class="text-base-content">
                 <div class="flex min-w-0 flex-col gap-1">
                   <div class="flex flex-wrap items-center gap-2">
                     <span class="font-semibold break-all">{item.modelName}</span>
-                    {item.isSample && <span class="badge badge-ghost badge-sm">{t.leaderboard.sampleBadge}</span>}
+                    {evidence.status === 'sample' && <span class="badge badge-ghost badge-sm">{t.leaderboard.sampleBadge}</span>}
                   </div>
-                  {sampledAt && (
-                    <span class="text-xs leading-5 text-base-content/60">
-                      {sampledAt}
-                    </span>
-                  )}
+                  <div class="flex flex-wrap items-center gap-x-2 text-xs leading-5 text-base-content/60" data-leaderboard-evidence>
+                    <span>{t.leaderboard.sourceLabel}：{item.localizedSourceName || t.leaderboard.notProvided}</span>
+                    {evidence.sourceUrl && <a href={evidence.sourceUrl} target="_blank" rel="noreferrer" class="link link-hover" data-umami-event="leaderboard-source-click" data-umami-event-url={evidence.sourceUrl}>{t.leaderboard.sourceLink}</a>}
+                    {sampledAt && <span>{t.leaderboard.sampledAt}：{sampledAt}</span>}
+                    <span>{t.leaderboard.sourceBoard}：{item.sourceBoardSlug || t.leaderboard.notProvided}</span>
+                    <span>{t.leaderboard[evidence.status]}</span>
+                    {evidence.methodStatus === 'not-recorded' && <span>{t.leaderboard.methodNotRecorded}</span>}
+                  </div>
                   <div class="flex flex-row flex-wrap items-center gap-2">
                     {related.shopPath && (
                       <a
@@ -144,7 +148,7 @@ function relatedLinks(modelFamily: string) {
                   </div>
                 </div>
               </DataTableCell>
-              <DataTableCell label={t.leaderboard.referenceScore} class="font-mono font-bold text-primary">{item.score === null ? '-' : item.score.toFixed(2)}</DataTableCell>
+              <DataTableCell label={t.leaderboard.referenceScore} class="font-mono font-bold text-primary">{evidence.displayScore === null ? t.leaderboard.notProvided : evidence.displayScore.toFixed(2)}</DataTableCell>
             </tr>
             );
           })}

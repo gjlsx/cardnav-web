@@ -22,9 +22,10 @@ test('gateway list keeps only useful comparison columns and provides review cont
   assert.match(siteSource, /https:\/\/t\.me\/\+AX9TXrzMaS04OWI1/);
 });
 
-test('product and leaderboard presentation omit public reference-source names', () => {
+test('product presentation omits merchant provider names while the leaderboard discloses its evidence source', () => {
   const shopsSource = readSource('src/scripts/index.js');
   const leaderboardSource = readSource('src/components/ModelLeaderboardContent.astro');
   assert.doesNotMatch(shopsSource, /channel\.siteName/);
-  assert.doesNotMatch(leaderboardSource, /localizedSourceName/);
+  assert.match(leaderboardSource, /item\.localizedSourceName/);
+  assert.match(leaderboardSource, /evidence\.sourceUrl/);
 });

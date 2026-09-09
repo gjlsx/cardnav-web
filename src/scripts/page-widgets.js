@@ -375,10 +375,30 @@ function initModelLeaderboard() {
       titleRow.append(badge);
     }
     wrap.append(titleRow);
-    if (item.sourceName || item.sampledAt) {
+    if (item.sourceName || item.sampledAt || item.methodNotice) {
       const source = document.createElement('span');
       source.className = 'text-xs leading-5 text-base-content/60';
-      source.textContent = [item.sourceName, item.sampledAt].filter(Boolean).join(' · ');
+      source.dataset.leaderboardEvidence = '';
+      source.append(document.createTextNode([item.sourceLabel, item.sourceName].filter(Boolean).join('：')));
+      if (item.sourceUrl && item.sourceLinkLabel) {
+        source.append(document.createTextNode(' · '));
+        const sourceLink = document.createElement('a');
+        sourceLink.href = item.sourceUrl;
+        sourceLink.target = '_blank';
+        sourceLink.rel = 'noreferrer';
+        sourceLink.className = 'link link-hover';
+        sourceLink.dataset.umamiEvent = 'leaderboard-source-click';
+        sourceLink.dataset.umamiEventUrl = item.sourceUrl;
+        sourceLink.textContent = item.sourceLinkLabel;
+        source.append(sourceLink);
+      }
+      const evidenceText = [
+        item.sampledAt ? [item.sampledAtLabel, item.sampledAt].filter(Boolean).join('：') : '',
+        item.sourceBoard ? [item.sourceBoardLabel, item.sourceBoard].filter(Boolean).join('：') : '',
+        item.statusLabel,
+        item.methodNotice,
+      ].filter(Boolean);
+      if (evidenceText.length) source.append(document.createTextNode(`${item.sourceName || item.sourceLabel ? ' · ' : ''}${evidenceText.join(' · ')}`));
       wrap.append(source);
     }
     const links = document.createElement('div');
@@ -399,15 +419,16 @@ function initModelLeaderboard() {
   function rowElement(item) {
     const row = document.createElement('tr');
     row.className = 'hover';
-    const rank = Number(item.rank);
-    const score = Number(item.score);
+    const rank = item.rank === null || item.rank === undefined ? null : Number(item.rank);
+    const score = item.score === null || item.score === undefined ? null : Number(item.score);
     if (Number.isFinite(rank)) row.dataset.sortSequence = String(rank);
+    if (item.groupKey) row.dataset.leaderboardEvidenceGroup = item.groupKey;
     const sequenceCell = textCell('data-table-sequence-cell', Number.isFinite(rank) ? rank : '');
     sequenceCell.setAttribute('data-table-sequence-cell', '');
     row.append(
       sequenceCell,
       modelCell(item),
-      textCell('font-mono font-bold text-primary', Number.isFinite(score) ? score.toFixed(2) : '-'),
+      textCell('font-mono font-bold text-primary', Number.isFinite(score) ? score.toFixed(2) : (item.notProvided || '-')),
     );
     return row;
   }
@@ -438,7 +459,7 @@ function initModelLeaderboard() {
         apiUrl,
         summaryTemplate: summary?.dataset.summaryTemplate || 'Showing {rendered} / {total}',
         entryFromRow: (row, index) => ({ index, row, item: null, sort: { sequence: Number(row.dataset.sortSequence) || index + 1 } }),
-        entryFromItem: (item, index) => ({ index, row: null, item, sort: { sequence: Number(item.rank) || index + 1 } }),
+        entryFromItem: (item, index) => ({ index, row: null, item, sort: { sequence: item.rank === null || item.rank === undefined ? index + 1 : Number(item.rank) || index + 1 } }),
         ensureRow: entry => {
           if (!entry.row) entry.row = rowElement(entry.item);
           entry.row.classList.remove('hidden');

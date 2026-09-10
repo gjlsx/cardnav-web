@@ -113,7 +113,7 @@ function relatedLinks(modelFamily: string) {
                   </div>
                   <div class="flex flex-wrap items-center gap-x-2 text-xs leading-5 text-base-content/60" data-leaderboard-evidence>
                     <span>{t.leaderboard.sourceLabel}：{item.localizedSourceName || t.leaderboard.notProvided}</span>
-                    {evidence.sourceUrl && <a href={evidence.sourceUrl} target="_blank" rel="noreferrer" class="link link-hover" data-umami-event="leaderboard-source-click" data-umami-event-url={evidence.sourceUrl}>{t.leaderboard.sourceLink}</a>}
+                    {evidence.sourceUrl && <a href={evidence.sourceUrl} target="_blank" rel="noreferrer" class="link link-hover" data-umami-event="leaderboard-source-click" data-umami-event-url={evidence.sourceUrl} data-measurement-name="evidence_open" data-measurement-page-kind="leaderboard" data-measurement-entity-id={item.modelFamily} data-measurement-source-id={item.sourceId}>{t.leaderboard.sourceLink}</a>}
                     {sampledAt && <span>{t.leaderboard.sampledAt}：{sampledAt}</span>}
                     <span>{t.leaderboard.sourceBoard}：{item.sourceBoardSlug || t.leaderboard.notProvided}</span>
                     <span>{t.leaderboard[evidence.status]}</span>

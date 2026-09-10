@@ -1,9 +1,9 @@
 ---
 scope: cardnav-web
-updated_at: 2026-09-10 01:18 Asia/Hong_Kong
+updated_at: 2026-09-10 16:50 Asia/Hong_Kong
 timezone: Asia/Hong_Kong
 tags: [aigate, strategy, roadmap, documentation, taskexec]
-summary: First implementation tasklist drafted for external leaderboard references and minimal first-party measurement; user confirmed external references before open-source self-tests. Execution awaits explicit tasklist approval.
+summary: External leaderboard reference disclosure and a default-off local measurement foundation were implemented and locally verified; real-source onboarding, self-tests and production telemetry remain unapproved.
 ---
 
 # Current Status
@@ -52,7 +52,7 @@ The following is historical repository evidence, not product tests rerun in the 
 ## Task state and preserved local changes
 
 - [Task index](../taskexec/cardnav-web/tasklistall.md) is authoritative for active/archive locations.
-- [tasklist09100118](../taskexec/cardnav-web/tasklist09100118.md) is the creator-selected plan for this request: 7 todo tasks, no execution claim. It proposes existing reference-score provenance/UI fixes and local session-level measurement; new-source crawling, self-tests, public telemetry activation and deployment are excluded.
+- [tasklist09100118](../taskexec/cardnav-web/tasklist09100118.md) implemented traceable sample/reference display and default-off local session-level measurement. New-source crawling, self-tests, public telemetry activation and deployment remain excluded.
 - tasklist08300447 remains active: grok p001-p007 remain todo; p008-p022 done. Do not claim those grok rows under this documentation task.
 - tasklist08311831 and tasklist09030447 are archived and complete as documentation/release tasks respectively; that does not mark business milestones complete.
 - tasklist09070222 delivers the approved strategy/roadmap and README/status closure; its implementation/status commits and final archive are recorded in the task index.
@@ -61,7 +61,7 @@ The following is historical repository evidence, not product tests rerun in the 
 
 ## Next TODO
 
-Wait for wind to approve tasklist09100118 before claiming any row. Proposed first slice: traceable existing external scores plus leaderboard-to-gateway interaction measurement. Session counts are not weekly unique users; north-star remains unavailable. This does not finish new source ingestion, full M0/M1, self-tests, traffic baselines or commercial readiness. Exact new-source permissions and later benchmark repository/targets/budget need separate approval; do not begin production or commercial operations.
+Next work requires separate approval for exact external source/usage permission, benchmark repository/revision/data/fees, production telemetry/privacy review, and any commercial deployment. Session counts are not weekly unique users; north-star remains unavailable. This does not finish M0/M1, self-tests, traffic baselines or commercial readiness.
 
 ## Durable references
 

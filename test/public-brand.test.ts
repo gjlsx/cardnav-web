@@ -38,10 +38,11 @@ test('gateway submission and README files use the centralized public contacts', 
   }
 });
 
-test('the public site does not support Russian', () => {
+test('the public site keeps Russian runtime support while README avoids a separate Russian translation link', () => {
   assert.equal(fs.existsSync(path.resolve('README.ru.md')), false);
-  assert.match(chineseReadme, /不支持俄语/);
-  assert.match(englishReadme, /does not support Russian/i);
+  assert.match(readSource('src/i18n/config.ts'), /'ru'/);
+  assert.doesNotMatch(chineseReadme, /不支持俄语/);
+  assert.doesNotMatch(englishReadme, /does not support Russian/i);
 });
 
 test('shared page shell renders the published announcement with a QQ copy entry', () => {

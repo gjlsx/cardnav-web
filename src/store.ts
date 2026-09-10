@@ -634,6 +634,11 @@ export async function withMeasurementTransaction<T>(operation: (connection: mysq
   }
 }
 
+export async function loadMeasurementEvents(start: string, end: string, environment: string) {
+  const result = await getPool().query('SELECT session_id, name, channel, received_at FROM measurement_events WHERE environment = ? AND received_at >= ? AND received_at < ? ORDER BY received_at ASC', [environment, start, end]);
+  return result.rows.map(row => ({ sessionId: String(row.session_id), name: String(row.name), channel: String(row.channel || 'direct-or-unknown'), receivedAt: String(row.received_at) }));
+}
+
 export function normalizeHomepageAnnouncement(payload: unknown, fallbackMessage: string) {
   const message = typeof payload === 'object' && payload && 'message' in payload
     ? String((payload as { message?: unknown }).message || '').trim()

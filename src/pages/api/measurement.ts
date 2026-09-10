@@ -9,7 +9,8 @@ export const POST: APIRoute = async ({ request }) => {
   if (!config.enabled) return new Response(null, { status: 204, headers });
   const origin = request.headers.get('origin');
   const site = new URL(request.url).origin;
-  if (origin !== site || (request.headers.get('sec-fetch-site') && request.headers.get('sec-fetch-site') !== 'same-origin')) return new Response(null, { status: 403, headers });
+  if (origin !== site || request.headers.get('sec-fetch-site') !== 'same-origin') return new Response(null, { status: 403, headers });
+  if (!request.headers.get('content-type')?.toLowerCase().startsWith('application/json')) return new Response(null, { status: 415, headers });
   const reader = request.body?.getReader(); let size = 0; const chunks: Uint8Array[] = [];
   if (!reader) return new Response(null, { status: 400, headers });
   try { for (;;) { const part = await reader.read(); if (part.done) break; size += part.value.byteLength; if (size > config.maxEventBytes) return new Response(null, { status: 413, headers }); chunks.push(part.value); } } catch { return new Response(null, { status: 400, headers }); }

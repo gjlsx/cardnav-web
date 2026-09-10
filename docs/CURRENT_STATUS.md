@@ -1,9 +1,9 @@
 ---
 scope: cardnav-web
-updated_at: 2026-09-10 16:50 Asia/Hong_Kong
+updated_at: 2026-09-10 17:20 Asia/Hong_Kong
 timezone: Asia/Hong_Kong
 tags: [aigate, strategy, roadmap, documentation, taskexec]
-summary: External leaderboard reference disclosure and a default-off local measurement foundation were implemented and locally verified; real-source onboarding, self-tests and production telemetry remain unapproved.
+summary: External leaderboard reference disclosure and a default-off local measurement foundation were implemented and locally verified; the 2026-09-10 code review repaired its remaining P1 acceptance gaps. Real-source onboarding, self-tests and production telemetry remain unapproved.
 ---
 
 # Current Status
@@ -19,6 +19,7 @@ summary: External leaderboard reference disclosure and a default-off local measu
 - September 8–9 review preserves those decisions: M0 minimum measurement and M1 core trust may progress together, while full scores and growth evidence are separate outputs. Qualified official-site referrals count equally; fixed sponsorship needs review, expiry/pause and delivery checks. [Design review](../taskexec/cardnav-web/docs/issues/ISSUE-005.md)
 
 - September 10 sequencing clarification: external leaderboard references first, open-source self-tests afterward; scoring remains a product requirement. Competitor parity plus focused differentiators, first-party measurement and attributed external platform aggregates are recorded in the two canonical documents.
+- September 10 code review corrected the local measurement's Hong Kong day boundary, concurrent idempotency, consented channel/outbound events, report aggregation and retention cleanup. The repair is tracked in [ISSUE-006](../taskexec/cardnav-web/docs/issues/ISSUE-006.md); it does not enable telemetry or create a real baseline.
 
 ## Implemented foundation and remaining gaps
 
@@ -52,7 +53,7 @@ The following is historical repository evidence, not product tests rerun in the 
 ## Task state and preserved local changes
 
 - [Task index](../taskexec/cardnav-web/tasklistall.md) is authoritative for active/archive locations.
-- [tasklist09100118](../taskexec/cardnav-web/tasklist09100118.md) implemented traceable sample/reference display and default-off local session-level measurement. New-source crawling, self-tests, public telemetry activation and deployment remain excluded.
+- [tasklist09100118](../taskexec/cardnav-web/docs/backuptask/tasklist09100118.md) is archived after implementing traceable sample/reference display and default-off local session-level measurement. New-source crawling, self-tests, public telemetry activation and deployment remain excluded.
 - tasklist08300447 remains active: grok p001-p007 remain todo; p008-p022 done. Do not claim those grok rows under this documentation task.
 - tasklist08311831 and tasklist09030447 are archived and complete as documentation/release tasks respectively; that does not mark business milestones complete.
 - tasklist09070222 delivers the approved strategy/roadmap and README/status closure; its implementation/status commits and final archive are recorded in the task index.

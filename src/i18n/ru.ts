@@ -151,6 +151,8 @@ export const ruMessages: Messages = {
     loadMoreProducts: 'Показать еще товары',
     sponsor: 'Поддержать',
     supportAuthor: 'Поддержать автора',
+    allowSessionAnalytics: 'Разрешить статистику сеанса',
+    stopSessionAnalytics: 'Остановить статистику сеанса',
   },
   external: {
     telegramGroup: 'Telegram',

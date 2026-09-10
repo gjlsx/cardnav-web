@@ -635,8 +635,31 @@ export async function withMeasurementTransaction<T>(operation: (connection: mysq
 }
 
 export async function loadMeasurementEvents(start: string, end: string, environment: string) {
-  const result = await getPool().query('SELECT session_id, name, channel, received_at FROM measurement_events WHERE environment = ? AND received_at >= ? AND received_at < ? ORDER BY received_at ASC', [environment, start, end]);
-  return result.rows.map(row => ({ sessionId: String(row.session_id), name: String(row.name), channel: String(row.channel || 'direct-or-unknown'), receivedAt: String(row.received_at) }));
+  const result = await getPool().query('SELECT session_id, name, channel, received_at FROM measurement_events WHERE environment = ? AND received_at >= ? AND received_at < ? ORDER BY received_at ASC, event_id ASC', [environment, start, end]);
+  return result.rows.map(row => ({
+    sessionId: String(row.session_id),
+    name: String(row.name),
+    channel: String(row.channel || 'direct-or-unknown'),
+    receivedAt: row.received_at instanceof Date ? row.received_at.toISOString() : new Date(`${String(row.received_at).replace(' ', 'T')}Z`).toISOString(),
+  }));
+}
+
+export async function loadMeasurementDailyLimits(startDay: string, endDay: string, environment: string) {
+  const result = await getPool().query('SELECT day_key, accepted_count, limited_count FROM measurement_daily_limits WHERE environment = ? AND day_key >= ? AND day_key < ? ORDER BY day_key ASC', [environment, startDay, endDay]);
+  return result.rows.map(row => ({ day: String(row.day_key), acceptedCount: Number(row.accepted_count), limitedCount: Number(row.limited_count) }));
+}
+
+export async function cleanupMeasurementData(cutoff: string, cutoffDay: string, environment: string, apply: boolean) {
+  const measurementPool = getPool();
+  const events = await measurementPool.query('SELECT COUNT(*) AS count FROM measurement_events WHERE environment = ? AND received_at < ?', [environment, cutoff]);
+  const limits = await measurementPool.query('SELECT COUNT(*) AS count FROM measurement_daily_limits WHERE environment = ? AND day_key < ?', [environment, cutoffDay]);
+  const eventCount = Number((events.rows[0] as { count?: unknown } | undefined)?.count || 0);
+  const limitCount = Number((limits.rows[0] as { count?: unknown } | undefined)?.count || 0);
+  if (apply) {
+    await measurementPool.query('DELETE FROM measurement_events WHERE environment = ? AND received_at < ?', [environment, cutoff]);
+    await measurementPool.query('DELETE FROM measurement_daily_limits WHERE environment = ? AND day_key < ?', [environment, cutoffDay]);
+  }
+  return { events: eventCount, dailyLimits: limitCount, applied: apply };
 }
 
 export function normalizeHomepageAnnouncement(payload: unknown, fallbackMessage: string) {

@@ -151,6 +151,8 @@ export const enMessages: Messages = {
     loadMoreProducts: 'Load more products',
     sponsor: 'Sponsor',
     supportAuthor: 'Support the author',
+    allowSessionAnalytics: 'Allow session analytics',
+    stopSessionAnalytics: 'Stop session analytics',
   },
   external: {
     telegramGroup: 'Telegram',

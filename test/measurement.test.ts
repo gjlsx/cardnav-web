@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readMeasurementConfig } from '../src/measurement-config.js';
-import { validateMeasurementEvent } from '../src/measurement.js';
+import { hongKongDay, validateMeasurementEvent } from '../src/measurement.js';
 
 const uuid = 'f0c7d42f-72a9-4f96-bd6d-5dbe934d4b72';
 
@@ -20,4 +20,8 @@ test('measurement events have a strict allowlist and never accept URLs or identi
   assert.equal(validateMeasurementEvent({ name: 'purchase', email: 'x' }), null);
   assert.equal(validateMeasurementEvent({ eventId: uuid, sessionId: uuid, name: 'outbound_click', pageKind: 'leaderboard', url: 'https://x/?token=y' }), null);
   assert.equal(validateMeasurementEvent({ eventId: uuid, sessionId: uuid, name: 'outbound_click', pageKind: 'leaderboard', unknown: true }), null);
+});
+
+test('daily quotas use the Hong Kong calendar day rather than UTC', () => {
+  assert.equal(hongKongDay(new Date('2026-09-06T16:30:00.000Z')), '2026-09-07');
 });

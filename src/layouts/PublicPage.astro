@@ -353,7 +353,7 @@ function navClickAttrs(targetPage: string, name: string) {
 )}
 
 <script is:inline defer src={publicShellScriptUrl}></script>
-{measurementEnabled && <button type="button" data-measurement-consent class="btn btn-ghost btn-xs fixed bottom-4 left-4 z-40">Allow session analytics</button>}
+{measurementEnabled && <button type="button" data-measurement-consent data-measurement-allow-label={t.actions.allowSessionAnalytics} data-measurement-stop-label={t.actions.stopSessionAnalytics} class="btn btn-ghost btn-xs fixed bottom-4 left-4 z-40">{t.actions.allowSessionAnalytics}</button>}
 {measurementEnabled && <script is:inline defer src={measurementScriptUrl}></script>}
 <slot name="scripts" />
 </body>

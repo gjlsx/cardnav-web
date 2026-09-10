@@ -150,6 +150,8 @@ export const zhMessages = {
     loadMoreProducts: '加载更多商品',
     sponsor: '我要赞助',
     supportAuthor: '支持作者',
+    allowSessionAnalytics: '允许本次会话统计',
+    stopSessionAnalytics: '停止本次会话统计',
   },
   external: {
     telegramGroup: 'Telegram',

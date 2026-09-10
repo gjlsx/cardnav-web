@@ -133,7 +133,7 @@ const gatewayMailto = `mailto:${gatewaySubmissionEmail}?subject=${encodeURICompo
       <span>{t.llmGateway.empty}</span>
     </section>
   ) : (
-    <section class="card bg-base-100 border border-base-300 shadow-sm overflow-hidden" data-gateway-home>
+    <section class="card bg-base-100 border border-base-300 shadow-sm overflow-hidden" data-gateway-home data-measurement-entry="gateway-list">
       <div class="border-b border-base-300 bg-base-100 px-4 py-3">
         <div class="tool-tablist-wrap">
           <div class="tabs tabs-box gateway-home-tablist" role="tablist" aria-label={t.llmGateway.title}>

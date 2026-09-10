@@ -13,6 +13,8 @@ When you visit AI LoveMoney, servers and analytics tools may record basic access
 
 When you submit a merchant site URL or contact us through Telegram, we receive the URL, message content, and account information shown by the corresponding platform that you voluntarily provide. This information is used to process submissions, communicate about partnerships, and maintain site content.
 
+If “session analytics” is enabled on the site, it records a limited on-site event only after you explicitly allow it in the current browser tab: random session and event identifiers, page kind, a stable ID of a displayed directory item, a whitelisted acquisition channel, and placement/target categories. It does not collect IP addresses, cookies, full links, search terms, raw referrers, request bodies, or cross-device identifiers. Consent and the random session identifier are kept only in the current session and are cleared when you withdraw consent.
+
 ### How We Use Information
 
 We use collected information to maintain site operation, analyze visit trends, improve search and page experience, process merchant submissions, identify spam submissions or abnormal access, and respond to users or merchants.
@@ -27,7 +29,7 @@ Unless required to process user requests, comply with laws and regulations, inve
 
 ### Data Retention And Security
 
-We retain relevant information for a reasonable period needed to fulfill the purposes above and take reasonable measures to reduce the risk of unauthorized access, leakage, or misuse. However, internet transmission and communication through third-party platforms cannot be guaranteed to be absolutely secure.
+We retain relevant information for a reasonable period needed to fulfill the purposes above. These session-analytics events have a short configured retention period and are cleaned up accordingly; they can be incomplete because of refusal, withdrawal, blocking, or capacity limits and do not represent every visitor. We take reasonable measures to reduce the risk of unauthorized access, leakage, or misuse. However, internet transmission and communication through third-party platforms cannot be guaranteed to be absolutely secure.
 
 ### Contact Us
 

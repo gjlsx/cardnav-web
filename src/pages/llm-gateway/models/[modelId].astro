@@ -112,7 +112,7 @@ function isStickyGatewaySite(site: { sponsor?: boolean }) {
     </div>
   </PageHero>
 
-  <section class="card bg-base-100 border border-base-300 shadow-sm overflow-hidden" data-gateway-deferred-table="modelSites">
+  <section class="card bg-base-100 border border-base-300 shadow-sm overflow-hidden" data-gateway-deferred-table="modelSites" data-measurement-entry="gateway-model" data-measurement-entity-id={model.modelId}>
     <DataTable
       variant="gatewayModelSites"
       emptyHidden={sites.length > 0}

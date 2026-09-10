@@ -3,7 +3,7 @@
 裁决日期：2026-09-07（Asia/Hong_Kong）。方向已确认；本轮仅完成文档。战略依据：[PRODUCT_STRATEGY](PRODUCT_STRATEGY.md)；当前事实：[CURRENT_STATUS](CURRENT_STATUS.md)。
 设计复核：2026-09-08 至 2026-09-09。保留里程碑编号；区分核心可用、效果观察和条件性增强，避免以远期平台能力阻塞首轮验证。
 
-执行顺序补充（2026-09-10）：先引用外部榜单，再推进开源项目自测；第一份实施清单为 [tasklist09100118](../taskexec/cardnav-web/tasklist09100118.md)，目前只建单，等待用户确认执行。
+执行顺序补充（2026-09-10）：先引用外部榜单，再推进开源项目自测；第一份实施清单 [tasklist09100118](../taskexec/cardnav-web/docs/backuptask/tasklist09100118.md) 已完成本机实施并归档，后续真实来源、自测和生产启用仍各自需要批准。
 
 ## 1. 当前起点与成功标准
 

@@ -1,0 +1,2 @@
+import assert from 'node:assert/strict'; import test from 'node:test'; import { hongKongWeekWindow } from '../src/measurement.js';
+test('Hong Kong week windows are strict Monday UTC half-open ranges', () => { assert.deepEqual(hongKongWeekWindow('2026-09-07'), { start: '2026-09-06T16:00:00.000Z', end: '2026-09-13T16:00:00.000Z' }); assert.throws(() => hongKongWeekWindow('2026-09-08')); assert.throws(() => hongKongWeekWindow('2026-02-30')); });

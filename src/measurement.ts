@@ -36,3 +36,10 @@ export async function recordMeasurementEvent(event: MeasurementEvent, receivedAt
     return 'accepted';
   });
 }
+
+export function hongKongWeekWindow(monday: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(monday)) throw new Error('week start must be an ISO date');
+  const date = new Date(`${monday}T00:00:00.000+08:00`);
+  if (Number.isNaN(date.getTime()) || date.getUTCDay() !== 0 || new Date(date.getTime() + 8 * 3600_000).toISOString().slice(0, 10) !== monday) throw new Error('week start must be a valid Hong Kong Monday');
+  return { start: date.toISOString(), end: new Date(date.getTime() + 7 * 86400_000).toISOString() };
+}

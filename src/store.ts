@@ -618,6 +618,22 @@ export async function loadPackedShopProductsSnapshot(): Promise<PackedShopProduc
   return loadPublicSnapshot<PackedShopProductsData>('shop-products-packed');
 }
 
+export async function withMeasurementTransaction<T>(operation: (connection: mysql.PoolConnection) => Promise<T>): Promise<T> {
+  getPool();
+  const connection = await pool!.getConnection();
+  try {
+    await connection.beginTransaction();
+    const result = await operation(connection);
+    await connection.commit();
+    return result;
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
+}
+
 export function normalizeHomepageAnnouncement(payload: unknown, fallbackMessage: string) {
   const message = typeof payload === 'object' && payload && 'message' in payload
     ? String((payload as { message?: unknown }).message || '').trim()

@@ -195,6 +195,11 @@ const statements = [
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
 ];
 
+const measurementStatements = [
+  `CREATE TABLE IF NOT EXISTS measurement_events (event_id CHAR(36) NOT NULL PRIMARY KEY, session_id CHAR(36) NOT NULL, environment VARCHAR(16) NOT NULL, received_at DATETIME NOT NULL, name VARCHAR(32) NOT NULL, page_kind VARCHAR(32) NOT NULL, entity_id VARCHAR(128) NULL, source_id VARCHAR(128) NULL, channel VARCHAR(32) NULL, placement VARCHAR(16) NULL, target_kind VARCHAR(16) NULL, KEY measurement_events_environment_received (environment, received_at), KEY measurement_events_session_received (session_id, received_at)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+  `CREATE TABLE IF NOT EXISTS measurement_daily_limits (environment VARCHAR(16) NOT NULL, day_key DATE NOT NULL, accepted_count INT NOT NULL DEFAULT 0, limited_count INT NOT NULL DEFAULT 0, PRIMARY KEY (environment, day_key)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+];
+
 const shopProductColumns = [
   ['source_id', 'VARCHAR(64) NULL'],
   ['standard_product', "VARCHAR(255) NOT NULL DEFAULT ''"],
@@ -321,4 +326,9 @@ export async function initializeMySqlSchema(config: MySqlConnectionConfig) {
   } finally {
     await connection.end();
   }
+}
+
+export async function initializeMeasurementSchema(config: MySqlConnectionConfig) {
+  const connection = await mysql.createConnection(config);
+  try { for (const statement of measurementStatements) await connection.query(statement); } finally { await connection.end(); }
 }

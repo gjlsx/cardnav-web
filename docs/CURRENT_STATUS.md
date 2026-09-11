@@ -1,6 +1,6 @@
 ---
 scope: cardnav-web
-updated_at: 2026-09-10 17:20 Asia/Hong_Kong
+updated_at: 2026-09-11 16:42 Asia/Hong_Kong
 timezone: Asia/Hong_Kong
 tags: [aigate, strategy, roadmap, documentation, taskexec]
 summary: External leaderboard reference disclosure and a default-off local measurement foundation were implemented and locally verified; the 2026-09-10 code review repaired its remaining P1 acceptance gaps. Real-source onboarding, self-tests and production telemetry remain unapproved.
@@ -36,6 +36,7 @@ summary: External leaderboard reference disclosure and a default-off local measu
 - New GUI `scripts/crawlee_collection/gui.py` exists locally but is untracked. A fresh checkout should use the tracked CLI. Legacy console: `python scripts/collection/gui.py`.
 - MySQL database: ailovemoney; settings only from local .env MYSQL_* values. No secrets in docs or task evidence.
 - Exact approved sources feed existing raw tables; explicit local singleton/serial merge/import writes runtime tables and snapshots. All operational controls use catch.config; no arbitrary source URLs.
+- 当前运营节奏：每天一次，由本机未跟踪 GUI 或同一 CLI 手动选择批准模块运行；核对 raw 结果后再显式执行对应 batch 的 merge/import。不得据此启用 `--loop`、计划任务、生产采集器或并行 worker。
 - Single-worker operation is a required constraint. The current worker guard is process-local, not proof of cross-process exclusion; do not launch simultaneous import commands. Default-off configuration does not block explicitly invoked CLI collection/import.
 - Production serves public data and does not run a collector/scheduler. LikeShop ports 8086/8090/8095 stay isolated. Public browser routes do not collect or write collection data.
 - Source facts, upstream ranks, editorial judgment and sponsorship are distinct. Do not present upstream rank or initial score 50 as a newly verified AIGATE score.
@@ -62,7 +63,7 @@ The following is historical repository evidence, not product tests rerun in the 
 
 ## Next TODO
 
-Next work requires separate approval for exact external source/usage permission, benchmark repository/revision/data/fees, production telemetry/privacy review, and any commercial deployment. Session counts are not weekly unique users; north-star remains unavailable. This does not finish M0/M1, self-tests, traffic baselines or commercial readiness.
+已有上游公开评分/数据仅作来源参考，算法未公开，不是 AIGATE 综合评分。下一个产品输入是用户提供并批准自测开源仓库、revision、数据使用、执行模型/服务商与费用上限；在此之前自测仅保留为 Next TODO。生产统计启用不进入下一任务；会话计数不是周唯一用户，北极星仍 unavailable。这不完成 M0/M1、自测、流量基线或商业准备。
 
 ## Durable references
 

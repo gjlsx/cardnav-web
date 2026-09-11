@@ -27,4 +27,6 @@ Hvoy 只读取 `https://raw.githubusercontent.com/hvoyai/awesome-ai-api/main/dat
 
 新版 GUI 本机文件 `gui.py` 尚未跟踪，新检出不要假定存在。已有此文件时可用 `python -m scripts.crawlee_collection.gui`：采集/入库两个模块、独立日志，经 subprocess 调用同一 CLI。旧 `python scripts/collection/gui.py` 仍是 legacy 总控台，不启动本程序。
 
+当前人工运营节奏为每天一次：在本机 GUI 或同一 CLI 中只运行所选已批准模块，核对 raw 结果后才显式执行对应 batch 的 merge/import。它不是 `--loop`、计划任务或生产调度授权；不得并行启动 worker 或入库命令。
+
 它不访问下游商户链接，也不处理登录、验证码、CAPTCHA、挑战页或访问控制绕过。`scripts/collection/` 的旧采集入口保留但不调用；本目录仍复用其 `collection_lib` 的合同、raw/merge 事务等基础服务，不能把整个目录删除。

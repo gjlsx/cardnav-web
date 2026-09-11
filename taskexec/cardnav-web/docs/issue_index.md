@@ -8,3 +8,4 @@
 | ISSUE-004 | P1 | done | Publish exports local SQL and imports it on the VPS | docs/issues/ISSUE-004.md |
 | ISSUE-005 | P1 | done | Clarify strategy readiness gates, referral metrics and sponsorship lifecycle | docs/issues/ISSUE-005.md |
 | ISSUE-006 | P1 | done | Repair measurement correctness and incomplete tasklist09100118 acceptance | docs/issues/ISSUE-006.md |
+| ISSUE-007 | P2 | done | Record upstream-reference, daily manual-operation, and benchmark-placeholder decisions | docs/issues/ISSUE-007.md |

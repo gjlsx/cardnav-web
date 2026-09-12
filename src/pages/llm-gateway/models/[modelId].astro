@@ -128,6 +128,7 @@ function gatewaySiteClickAttrs(site: { name: string; slug: string }) {
       scoreLabel={t.labels.score}
       clickAttrs={site => gatewaySiteClickAttrs({ name: site.name, slug: site.slug })}
     />
+    <p class="px-4 pt-3 text-sm leading-6 text-base-content/75">{t.llmGateway.rankingIndependenceNote}</p>
     <DataTable
       variant="gatewayModelSites"
       emptyHidden={sites.length > 0}

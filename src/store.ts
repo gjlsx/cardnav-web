@@ -8,6 +8,7 @@ import { aggregateCatalogProducts, catalogProductSlugsForTarget } from './catalo
 import { parseReferenceScore } from './leaderboard-evidence.js';
 import { mergeModelLeaderboardTaskSlugs } from './model-leaderboard.js';
 import type { PackedShopProductsData, PublicShopProductsData } from './shop-products-data.js';
+import { compareGatewaySitesNatural } from './gateway-ranking.js';
 import { validatePublicSubmittedUrl, type PublicSubmittedUrlRejectReason } from './submitted-url.js';
 
 export type PublicSiteRow = {
@@ -691,11 +692,7 @@ export async function loadGatewaySites(options: PublicListLimitOptions = {}): Pr
 
 /** Public default order: score first, then broader observed model coverage, then a stable name tie-breaker. */
 export function sortGatewaySites(sites: PublicGatewaySiteRow[]) {
-  return sites.slice().sort((left, right) =>
-    (right.siteScore ?? 0) - (left.siteScore ?? 0)
-    || right.modelCount - left.modelCount
-    || left.name.localeCompare(right.name, 'zh-Hans-CN'),
-  );
+  return sites.slice().sort(compareGatewaySitesNatural);
 }
 
 /** Keeps only sites with an explicit observed coverage family; no name inference. */

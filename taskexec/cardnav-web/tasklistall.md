@@ -13,4 +13,4 @@
 | tasklist09070222.md | 2609070222 | wind | archived | docs/backuptask/ | AIGATE 战略裁决、里程碑与 README 文档闭环（3/3 完成） |
 | tasklist09070820.md | 2609070820 | wind | archived | docs/backuptask/ | AIGATE 关联文档一致性自动收尾（1/1 完成） |
 | tasklist09100118.md | 2609100118 | wind | archived | docs/backuptask/ | 外部榜单引用与最小计量；7/7 本机实现与验收完成，生产启用仍需单独批准 |
-| tasklist09122137.md | 2609122137 | wind | active | ./ | AIGATE M1 中转站自然榜与赞助展示可信隔离；待用户审查后由 Grok 执行 |
+| tasklist09122137.md | 2609122137 | wind | archived | docs/backuptask/ | AIGATE M1 中转站自然榜与赞助展示可信隔离；5/5 本机完成，未部署 |

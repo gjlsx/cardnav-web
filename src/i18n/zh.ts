@@ -401,6 +401,7 @@ export const zhMessages = {
     gatewayScoreHelpLabel: '中转站评分说明',
     gatewayScoreTip: '此列为既有展示分（常见初始值 50），只用于当前自然榜排序参考。它不是 AIGATE 自有综合评分，也不是上游 Hvoy 排名。',
     rankingIndependenceNote: '下方为完整自然榜，按展示分、模型覆盖和名称排序。合作展示（如有）在独立区域，不会插入或改写自然结果。如发现错误可报错。',
+    rankingDetailNote: '本页展示分只是既有列表排序参考（常见初始值 50），不是 AIGATE 自有综合评分。合作商家会单独标注；付费外链带赞助关系。如发现错误可报错。',
     siteName: '站点',
     siteType: '类型',
     rank: '排序',

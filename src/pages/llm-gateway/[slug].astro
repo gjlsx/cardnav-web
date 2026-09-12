@@ -13,6 +13,7 @@ import {
   formatPrice,
   shortList,
 } from '../../gateway-display.js';
+import { gatewayOutboundRel } from '../../gateway-ranking.js';
 import PublicPage from '../../layouts/PublicPage.astro';
 import DataTableHeader from '../../components/DataTableHeader.astro';
 import { buildSeoContext } from '../../seo.js';
@@ -114,7 +115,7 @@ function gatewayModelClickAttrs(modelId: string) {
       {site.displayFamily ? <span class="badge badge-ghost">{site.displayFamily}</span> : null}
     </div>
     <p slot="note" class="page-hero-note">
-      {t.llmGateway.rankingIndependenceNote}
+      {t.llmGateway.rankingDetailNote}
       {' '}
       <a href={telegramGroupUrl} target="_blank" rel="noopener noreferrer" class="font-medium text-primary no-underline hover:text-[color:var(--color-primary-hover)] focus:outline-none focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-primary/30" data-umami-event="gateway-report-click" data-umami-event-url={telegramGroupUrl} data-umami-event-name={t.llmGateway.reportIssue}>{t.llmGateway.reportIssue}</a>
     </p>
@@ -164,7 +165,7 @@ function gatewayModelClickAttrs(modelId: string) {
       </div>
       <p class="rounded-xl bg-warning/10 px-4 py-3 text-sm leading-6 text-base-content">{site.benefitText || t.llmGateway.benefitEmpty}</p>
       <div class="flex flex-wrap gap-2">
-        {site.outboundUrl ? <a href={site.outboundUrl} target="_blank" rel={site.sponsor ? 'sponsored noopener noreferrer' : 'noopener noreferrer'} class="btn btn-primary btn-sm" data-measurement-name="outbound_click" data-measurement-page-kind="gateway-detail" data-measurement-entity-id={site.slug} data-measurement-source-id={site.slug} data-measurement-target-kind="unknown" {...gatewayBenefitForwardAttrs()}>{t.llmGateway.benefitForward}</a> : null}
+        {site.outboundUrl ? <a href={site.outboundUrl} target="_blank" rel={gatewayOutboundRel(site.sponsor)} class="btn btn-primary btn-sm" data-measurement-name="outbound_click" data-measurement-page-kind="gateway-detail" data-measurement-entity-id={site.slug} data-measurement-source-id={site.slug} data-measurement-target-kind="unknown" {...gatewayBenefitForwardAttrs()}>{t.llmGateway.benefitForward}</a> : null}
         <a href={telegramGroupUrl} target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" data-umami-event="gateway-benefit-community-click" data-umami-event-name="TELG" data-umami-event-url={telegramGroupUrl}>TELG</a>
         <a href={qqGroupJoinUrl} target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" data-umami-event="gateway-benefit-community-click" data-umami-event-name="QQ群" data-umami-event-url={qqGroupJoinUrl}>QQ群</a>
       </div>

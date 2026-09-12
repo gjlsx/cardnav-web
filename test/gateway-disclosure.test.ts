@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
+import { gatewayOutboundRel } from '../src/gateway-ranking.js';
 import { getMessages } from '../src/i18n/messages.js';
 
 function read(relativePath: string) {
@@ -24,8 +25,11 @@ test('gateway score copy is not claimed as an AIGATE composite score', () => {
 test('sponsored outbound links use sponsored rel and organic source links do not', () => {
   const detailPage = read('src/pages/llm-gateway/[slug].astro');
   const siteRow = read('src/components/GatewaySiteTableRow.astro');
-  assert.match(detailPage, /rel=\{site\.sponsor \? 'sponsored noopener noreferrer' : 'noopener noreferrer'\}/);
+  assert.equal(gatewayOutboundRel(true), 'sponsored noopener noreferrer');
+  assert.equal(gatewayOutboundRel(false), 'noopener noreferrer');
+  assert.match(detailPage, /rel=\{gatewayOutboundRel\(site\.sponsor\)\}/);
   assert.doesNotMatch(siteRow, /site\.outboundUrl \?/);
+  assert.doesNotMatch(siteRow, /data-sort-sticky/);
   assert.doesNotMatch(detailPage, /telegramGroupUrl[\s\S]{0,80}rel="sponsored/);
 });
 
@@ -35,7 +39,8 @@ test('correction and ranking independence copy sit next to gateway results', () 
   const detailPage = read('src/pages/llm-gateway/[slug].astro');
   assert.match(homePage, /rankingIndependenceNote/);
   assert.match(modelPage, /rankingIndependenceNote/);
-  assert.match(detailPage, /rankingIndependenceNote/);
+  assert.match(detailPage, /rankingDetailNote/);
+  assert.doesNotMatch(getMessages('zh').llmGateway.rankingDetailNote, /下方为完整自然榜/);
   assert.match(homePage, /reportIssue/);
   assert.match(detailPage, /reportIssue/);
 });

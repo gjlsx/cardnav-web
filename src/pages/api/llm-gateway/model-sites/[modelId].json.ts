@@ -6,7 +6,7 @@ import {
   publicReadApiCacheControl,
   publicReadApiCloudflareCacheControl,
 } from '../../../../public-data-cache.js';
-import { splitGatewaySiteRanking } from '../../../../gateway-ranking.js';
+import { paginateGatewayRanking } from '../../../../gateway-ranking.js';
 import { loadGatewayModelDetail } from '../../../../store.js';
 
 export const GET: APIRoute = async ({ params, request }) => {
@@ -25,11 +25,11 @@ export const GET: APIRoute = async ({ params, request }) => {
     });
   }
 
-  const ranking = splitGatewaySiteRanking(detail.sites);
+  const ranking = paginateGatewayRanking(detail.sites, offset);
   return new Response(JSON.stringify({
-    offset,
+    offset: ranking.offset,
     totalCount: detail.model.supportSiteCount,
-    items: ranking.natural.slice(offset),
+    items: ranking.items,
     sponsored: ranking.sponsored,
   }), {
     headers: {

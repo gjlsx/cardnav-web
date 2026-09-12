@@ -27,3 +27,17 @@ export function splitGatewaySiteRanking<T extends RankedGatewaySite>(sites: read
     sponsored: natural.filter(site => site.sponsor === true),
   };
 }
+
+export function paginateGatewayRanking<T extends RankedGatewaySite>(sites: readonly T[], offset: number) {
+  const ranking = splitGatewaySiteRanking(sites);
+  const safeOffset = Math.max(0, Math.floor(Number(offset) || 0));
+  return {
+    ...ranking,
+    offset: safeOffset,
+    items: ranking.natural.slice(safeOffset),
+  };
+}
+
+export function gatewayOutboundRel(sponsor?: boolean) {
+  return sponsor === true ? 'sponsored noopener noreferrer' : 'noopener noreferrer';
+}

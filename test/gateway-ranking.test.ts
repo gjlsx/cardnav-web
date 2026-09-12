@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
-import { splitGatewaySiteRanking, type RankedGatewaySite } from '../src/gateway-ranking.js';
+import { paginateGatewayRanking, splitGatewaySiteRanking, type RankedGatewaySite } from '../src/gateway-ranking.js';
 
 function site(overrides: Partial<RankedGatewaySite> & Pick<RankedGatewaySite, 'name'>): RankedGatewaySite {
   return {
@@ -64,6 +64,19 @@ test('no sponsor input keeps the existing natural sort and an empty sponsored li
   assert.deepEqual(ranking.sponsored, []);
 });
 
+test('ranking pagination slices the natural list without dropping sponsored rows', () => {
+  const rows = [
+    site({ name: 'High', siteScore: 90, modelCount: 2, sponsor: true }),
+    site({ name: 'Mid', siteScore: 40, modelCount: 1 }),
+    site({ name: 'Low', siteScore: 10, modelCount: 8 }),
+  ];
+  const page = paginateGatewayRanking(rows, 1);
+
+  assert.deepEqual(page.items.map(row => row.name), ['Mid', 'Low']);
+  assert.deepEqual(page.sponsored.map(row => row.name), ['High']);
+  assert.equal(page.offset, 1);
+});
+
 test('aiapipk-style multipliers and source ranks are not used as natural sort keys', () => {
   const ranking = splitGatewaySiteRanking([
     site({ name: 'Low', siteScore: 50, modelCount: 1, sponsor: true }),
@@ -77,8 +90,8 @@ test('aiapipk-style multipliers and source ranks are not used as natural sort ke
 test('gateway JSON endpoints reuse the same split helper for SSR and deferred loads', () => {
   const sitesApi = fs.readFileSync(path.resolve('src/pages/api/llm-gateway/sites.json.ts'), 'utf8');
   const modelSitesApi = fs.readFileSync(path.resolve('src/pages/api/llm-gateway/model-sites/[modelId].json.ts'), 'utf8');
-  assert.match(sitesApi, /splitGatewaySiteRanking/);
+  assert.match(sitesApi, /paginateGatewayRanking/);
   assert.match(sitesApi, /sponsored/);
-  assert.match(modelSitesApi, /splitGatewaySiteRanking/);
+  assert.match(modelSitesApi, /paginateGatewayRanking/);
   assert.match(modelSitesApi, /sponsored/);
 });

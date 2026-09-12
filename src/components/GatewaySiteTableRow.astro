@@ -34,7 +34,6 @@ type Props = {
   detailHref: string;
   clickAttrs?: DataAttrs;
   rowAttrs?: DataAttrs;
-  sticky?: boolean;
   showScore?: boolean;
   scoreLabel?: string;
   scoreClass?: string;
@@ -57,7 +56,6 @@ const {
   detailHref,
   clickAttrs = {},
   rowAttrs = {},
-  sticky = false,
   showScore = true,
   scoreLabel = '',
   scoreClass = 'font-mono',
@@ -70,7 +68,6 @@ const {
 const mergedRowAttrs = {
   ...rowAttrs,
   'data-sort-sequence': String(sequence),
-  'data-sort-sticky': sticky ? '1' : '0',
 };
 ---
 

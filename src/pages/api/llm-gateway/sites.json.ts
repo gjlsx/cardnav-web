@@ -6,18 +6,17 @@ import {
   publicReadApiCacheControl,
   publicReadApiCloudflareCacheControl,
 } from '../../../public-data-cache.js';
-import { splitGatewaySiteRanking } from '../../../gateway-ranking.js';
+import { paginateGatewayRanking } from '../../../gateway-ranking.js';
 import { loadGatewaySites } from '../../../store.js';
 
 export const GET: APIRoute = async ({ request }) => {
   const url = new URL(request.url);
-  const offset = Math.max(0, Number(url.searchParams.get('offset') || '0') || 0);
   const data = await loadGatewaySites({ modelFamily: url.searchParams.get('model') || '' });
-  const ranking = splitGatewaySiteRanking(data.sites);
+  const ranking = paginateGatewayRanking(data.sites, Number(url.searchParams.get('offset') || '0'));
   return new Response(JSON.stringify({
-    offset,
+    offset: ranking.offset,
     totalCount: ranking.natural.length,
-    items: ranking.natural.slice(offset),
+    items: ranking.items,
     sponsored: ranking.sponsored,
   }), {
     headers: {

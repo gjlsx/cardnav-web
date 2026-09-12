@@ -402,6 +402,7 @@ export const enMessages: Messages = {
     gatewayScoreHelpLabel: 'Gateway score help',
     gatewayScoreTip: 'This is an existing display score (often an initial 50) used only for the current organic list order. It is not an AIGATE composite score and not an upstream Hvoy rank.',
     rankingIndependenceNote: 'The organic list below is complete and ordered by display score, model coverage, and name. Partner placements, if any, stay in a separate area and do not rewrite organic results. Report an issue if something looks wrong.',
+    rankingDetailNote: 'The display score on this page is only the existing list-order reference (often an initial 50), not an AIGATE composite score. Partner sites are labeled separately, and paid outbound links use a sponsored relationship. Report an issue if something looks wrong.',
     siteName: 'Site',
     siteType: 'Type',
     rank: 'Rank',

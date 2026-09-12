@@ -397,6 +397,8 @@ export const enMessages: Messages = {
     sitesWithPrices: 'With price data',
     modelRecords: 'Model records',
     tableHint: 'The list shows only model coverage summaries from public reference samples. A missing price record does not mean a site lacks model support.',
+    sponsoredSectionTitle: 'Partner placements',
+    sponsoredSectionDescription: 'These are labeled partner placements, separate from the organic list below. A partnership does not change organic scores, order, or results.',
     gatewayScoreHelpLabel: 'Gateway score help',
     gatewayScoreTip: 'The score considers model count, pricing, user feedback, stability, and other factors. It is for reference only and will launch soon.',
     siteName: 'Site',

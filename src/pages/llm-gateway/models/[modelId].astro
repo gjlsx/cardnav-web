@@ -4,9 +4,11 @@
 */
 import PageHero from '../../../components/PageHero.astro';
 import GatewaySiteTableRow from '../../../components/GatewaySiteTableRow.astro';
+import GatewaySponsoredSites from '../../../components/GatewaySponsoredSites.astro';
 import DataTable from '../../../components/DataTable.astro';
 import DataTableCell from '../../../components/DataTableCell.astro';
 import { displayPriceUnit, formatPrice } from '../../../gateway-display.js';
+import { splitGatewaySiteRanking } from '../../../gateway-ranking.js';
 import PublicPage from '../../../layouts/PublicPage.astro';
 import DataTableHeader from '../../../components/DataTableHeader.astro';
 import { buildSeoContext } from '../../../seo.js';
@@ -22,11 +24,14 @@ const t = Astro.locals.messages;
 const linkTo = Astro.locals.localizePath;
 const rawModelIdParam = Astro.params.modelId || '';
 const MODEL_SITE_PAGE_SIZE = 100;
-const detail = await loadGatewayModelDetail(rawModelIdParam, { siteLimit: MODEL_SITE_PAGE_SIZE });
+const detail = await loadGatewayModelDetail(rawModelIdParam);
 
 if (!detail) return Astro.redirect(Astro.locals.localizePath('/llm-gateway'), 302);
 
-const { model, sites } = detail;
+const { model } = detail;
+const siteRanking = splitGatewaySiteRanking(detail.sites);
+const sites = siteRanking.natural.slice(0, MODEL_SITE_PAGE_SIZE);
+const sponsoredSites = siteRanking.sponsored;
 const canonicalModelPath = encodeURIComponent(model.modelId);
 if (rawModelIdParam !== model.modelId) return Astro.redirect(Astro.locals.localizePath(`/llm-gateway/models/${canonicalModelPath}`), 301);
 const modelSiteTableConfig = {
@@ -86,9 +91,6 @@ function gatewaySiteClickAttrs(site: { name: string; slug: string }) {
   };
 }
 
-function isStickyGatewaySite(site: { sponsor?: boolean }) {
-  return Boolean(site.sponsor);
-}
 ---
 
 <PublicPage activeNav="llm-gateway" {...seo}>
@@ -113,6 +115,19 @@ function isStickyGatewaySite(site: { sponsor?: boolean }) {
   </PageHero>
 
   <section class="card bg-base-100 border border-base-300 shadow-sm overflow-hidden" data-gateway-deferred-table="modelSites" data-measurement-entry="gateway-model" data-measurement-entity-id={model.modelId}>
+    <GatewaySponsoredSites
+      sites={sponsoredSites}
+      title={t.llmGateway.sponsoredSectionTitle}
+      description={t.llmGateway.sponsoredSectionDescription}
+      sponsorLabel={t.sponsors.sponsorLabel}
+      sponsorDescription={t.sponsors.sponsorDescription}
+      sponsorHref={linkTo('/partnership')}
+      sponsorLinkLabel={t.sponsors.partnershipLinkLabel}
+      detailLabel={t.llmGateway.viewDetail}
+      detailHref={slug => linkTo(`/llm-gateway/${slug}`)}
+      scoreLabel={t.labels.score}
+      clickAttrs={site => gatewaySiteClickAttrs({ name: site.name, slug: site.slug })}
+    />
     <DataTable
       variant="gatewayModelSites"
       emptyHidden={sites.length > 0}
@@ -123,7 +138,6 @@ function isStickyGatewaySite(site: { sponsor?: boolean }) {
       loadMoreText={model.supportSiteCount > sites.length ? t.labels.loadMore : ''}
       loadMoreHidden={model.supportSiteCount <= sites.length}
       loadMoreDataAttrs={{ 'data-gateway-detail-load-more': 'modelSites' }}
-      stickySortKey="sticky"
     >
       <Fragment slot="head">
         <DataTableHeader label={t.labels.sequence} sortKey="sequence" sortType="number" align="center" />
@@ -154,7 +168,6 @@ function isStickyGatewaySite(site: { sponsor?: boolean }) {
             detailLabel={t.llmGateway.viewDetail}
             detailHref={linkTo(`/llm-gateway/${site.slug}`)}
             clickAttrs={gatewaySiteClickAttrs(site)}
-            sticky={isStickyGatewaySite(site)}
             showScore={false}
             referenceSampleLabel={t.shops.referenceSample}
             sampledAtLabel={t.llmGateway.sampledAt}

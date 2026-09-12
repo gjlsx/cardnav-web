@@ -396,6 +396,8 @@ export const zhMessages = {
     sitesWithPrices: '有价格数据',
     modelRecords: '模型记录',
     tableHint: '列表只展示公开参考样例的模型覆盖摘要；没有价格记录不表示站点不支持该模型。',
+    sponsoredSectionTitle: '合作商家展示',
+    sponsoredSectionDescription: '以下为明确标注的合作展示，独立于下方自然榜。合作关系不改变自然评分、自然排序或自然榜结论。',
     gatewayScoreHelpLabel: '中转站评分说明',
     gatewayScoreTip: '评分系统根据模型数量、价格、用户评价、稳定性等多维因素决定，仅供参考，即将上线。',
     siteName: '站点',

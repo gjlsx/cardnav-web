@@ -101,6 +101,7 @@
         const response = await fetch(state.apiUrl, { headers: { accept: 'application/json' } });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const payload = await response.json();
+        options.onPayload?.(payload);
         const items = getItems(payload, state);
         const offset = getOffset(payload, state);
         state.totalCount = getTotalCount(payload, state);

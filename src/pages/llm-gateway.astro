@@ -5,10 +5,12 @@
 import PageHero from '../components/PageHero.astro';
 import PublicPage from '../layouts/PublicPage.astro';
 import GatewaySiteTableRow from '../components/GatewaySiteTableRow.astro';
+import GatewaySponsoredSites from '../components/GatewaySponsoredSites.astro';
 import DataTable from '../components/DataTable.astro';
 import DataTableCell from '../components/DataTableCell.astro';
 import DataTableHeader from '../components/DataTableHeader.astro';
 import { collectFilterOptions, uniqueLabels } from '../gateway-display.js';
+import { splitGatewaySiteRanking } from '../gateway-ranking.js';
 import { buildSeoContext } from '../seo.js';
 import { gatewaySubmissionEmail, publicSiteUrl, telegramGroupUrl } from '../site.js';
 import { loadGatewayModels, loadGatewaySites } from '../store.js';
@@ -21,9 +23,11 @@ const linkTo = Astro.locals.localizePath;
 const GATEWAY_SITE_PAGE_SIZE = 20;
 const GATEWAY_MODEL_PAGE_SIZE = 100;
 const requestedModelFamily = Astro.url.searchParams.get('model')?.trim().toLowerCase() || '';
-const gatewayData = await loadGatewaySites({ limit: GATEWAY_SITE_PAGE_SIZE, modelFamily: requestedModelFamily });
+const gatewayData = await loadGatewaySites({ modelFamily: requestedModelFamily });
 const gatewayModelData = await loadGatewayModels({ limit: GATEWAY_MODEL_PAGE_SIZE });
-const topSites = gatewayData.sites;
+const siteRanking = splitGatewaySiteRanking(gatewayData.sites);
+const topSites = siteRanking.natural.slice(0, GATEWAY_SITE_PAGE_SIZE);
+const sponsoredSites = siteRanking.sponsored;
 const topModels = gatewayModelData.models;
 const seo = buildSeoContext({
   baseUrl: publicSiteUrl,
@@ -59,10 +63,6 @@ function gatewayModelClickAttrs(model: { modelId: string; modelFamily: string })
     'data-umami-event-target-page': targetPage,
     'data-umami-event-url': targetPage,
   };
-}
-
-function isStickyGatewaySite(site: { sponsor?: boolean }) {
-  return Boolean(site.sponsor);
 }
 
 const modelFilterOptions = collectFilterOptions(gatewayData.sites.map(site => site.displayModelFamilies));
@@ -159,6 +159,19 @@ const gatewayMailto = `mailto:${gatewaySubmissionEmail}?subject=${encodeURICompo
               {modelFilterOptions.map(model => <option value={model.toLowerCase()}>{model}</option>)}
             </select>
           </div>
+          <GatewaySponsoredSites
+            sites={sponsoredSites}
+            title={t.llmGateway.sponsoredSectionTitle}
+            description={t.llmGateway.sponsoredSectionDescription}
+            sponsorLabel={t.sponsors.sponsorLabel}
+            sponsorDescription={t.sponsors.sponsorDescription}
+            sponsorHref={linkTo('/partnership')}
+            sponsorLinkLabel={t.sponsors.partnershipLinkLabel}
+            detailLabel={t.llmGateway.viewDetail}
+            detailHref={slug => linkTo(`/llm-gateway/${slug}`)}
+            scoreLabel={t.labels.score}
+            clickAttrs={site => gatewaySiteClickAttrs({ name: site.name, slug: site.slug, outboundUrl: '' })}
+          />
           <DataTable
             variant="gatewaySites"
             tbodyDataAttrs={{ 'data-gateway-home-sites-list': '' }}
@@ -173,7 +186,6 @@ const gatewayMailto = `mailto:${gatewaySubmissionEmail}?subject=${encodeURICompo
             loadMoreText={hasMoreSites ? t.labels.loadMore : ''}
             loadMoreHidden={!hasMoreSites}
             loadMoreDataAttrs={{ 'data-gateway-load-more': 'sites' }}
-            stickySortKey="sticky"
           >
             <Fragment slot="head">
               <DataTableHeader label={t.labels.sequence} sortKey="sequence" sortType="number" align="center" />
@@ -198,7 +210,6 @@ const gatewayMailto = `mailto:${gatewaySubmissionEmail}?subject=${encodeURICompo
                   detailLabel={t.llmGateway.viewDetail}
                   detailHref={linkTo(`/llm-gateway/${site.slug}`)}
                   clickAttrs={gatewaySiteClickAttrs(site)}
-                  sticky={isStickyGatewaySite(site)}
                   scoreLabel={t.labels.score}
                   referenceSampleLabel={t.shops.referenceSample}
                   sampledAtLabel={t.llmGateway.sampledAt}

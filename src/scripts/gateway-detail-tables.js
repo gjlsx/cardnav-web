@@ -105,7 +105,6 @@
       row,
       item: null,
       sort: {
-        sticky: rowSortValue(row, 'sticky', 'number'),
         sequence: rowSortValue(row, 'sequence', 'number') || index + 1,
         name: rowSortValue(row, 'name'),
         unit: rowSortValue(row, 'unit'),
@@ -141,7 +140,6 @@
       row: null,
       item: site,
       sort: {
-        sticky: site.sponsor ? 1 : 0,
         sequence: index + 1,
         name: site.name || '',
         unit: prices.map(price => displayPriceUnit(price.unit || '')).join(' '),
@@ -202,7 +200,6 @@
     const detailHref = `${gatewayLinkPrefix}/${site.slug}`;
     const row = document.createElement('tr');
     setDataset(row, {
-      sortSticky: site.sponsor ? 1 : 0,
       sortSequence: index + 1,
       sortName: site.name || '',
       sortUnit: prices.map(price => displayPriceUnit(price.unit || '')).join(' '),
@@ -269,6 +266,13 @@
     return entry.row;
   }
 
+  function syncSponsoredSection(payload) {
+    const sponsored = Array.isArray(payload.sponsored) ? payload.sponsored : [];
+    const section = root.querySelector('[data-gateway-sponsored]');
+    if (!section) return;
+    section.classList.toggle('hidden', sponsored.length === 0);
+  }
+
   const controller = window.createDeferredTableController({
     table,
     tbody,
@@ -278,6 +282,7 @@
     totalCount: Number(config.totalCount) || 0,
     apiUrl: config.apiUrl || '',
     summaryTemplate: config.displaySummary || 'Showing {rendered} / {total}',
+    onPayload: syncSponsoredSection,
     entryFromRow: (row, index) => (
       tableType === 'modelSites' ? modelSiteEntryFromRow(row, index) : priceEntryFromRow(row, index)
     ),

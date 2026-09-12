@@ -115,10 +115,6 @@ import { formatPositiveScore, uniqueLabels } from '../gateway-display.js';
     };
   }
 
-  function isStickySite(site) {
-    return Boolean(site.sponsor);
-  }
-
   function siteRowElement(site, index) {
     const families = uniqueLabels(site.displayModelFamilies, 8);
     const search = `${site.name} ${site.url} ${site.host} ${(site.displayModelFamilies || []).join(' ')}`.toLowerCase();
@@ -129,7 +125,6 @@ import { formatPositiveScore, uniqueLabels } from '../gateway-display.js';
       families: families.map(item => item.toLowerCase()).join(','),
       originalOrder: index,
       sortSequence: index + 1,
-      sortSticky: isStickySite(site) ? 1 : 0,
       sortName: site.name,
       sortScore: Number(site.siteScore) || 0,
       sortFamilies: families.join(' '),
@@ -247,7 +242,6 @@ import { formatPositiveScore, uniqueLabels } from '../gateway-display.js';
       search: row.dataset.search || '',
       families: row.dataset.families || '',
       sort: type === 'sites' ? {
-        sticky: rowSortValue(row, 'sticky', 'number'),
         sequence: rowSortValue(row, 'sequence', 'number') || index + 1,
         name: rowSortValue(row, 'name'),
         score: rowSortValue(row, 'score', 'number'),
@@ -272,7 +266,6 @@ import { formatPositiveScore, uniqueLabels } from '../gateway-display.js';
       search,
       families: families.map(item => item.toLowerCase()).join(','),
       sort: {
-        sticky: isStickySite(site) ? 1 : 0,
         sequence: index + 1,
         name: site.name,
         score: Number(site.siteScore) || 0,
@@ -313,9 +306,6 @@ import { formatPositiveScore, uniqueLabels } from '../gateway-display.js';
     return (left, right) => {
       const leftValue = left.sort[sort.key];
       const rightValue = right.sort[sort.key];
-      if ('sticky' in left.sort && 'sticky' in right.sort && left.sort.sticky !== right.sort.sticky) {
-        return (Number(right.sort.sticky) || 0) - (Number(left.sort.sticky) || 0);
-      }
       if (typeof leftValue === 'number' && typeof rightValue === 'number') {
         if (leftValue !== rightValue) return (leftValue - rightValue) * multiplier;
         return left.index - right.index;
@@ -408,8 +398,27 @@ import { formatPositiveScore, uniqueLabels } from '../gateway-display.js';
     return { keyword, visibleCount: state.filteredEntries.length };
   }
 
+  function applySponsoredFilter() {
+    const section = gatewayHome.querySelector('[data-gateway-sponsored]');
+    if (!section) return;
+    const keyword = (siteSearchInput?.value || '').trim().toLowerCase();
+    const selectedFamily = siteFamilySelect?.value || '';
+    let visible = 0;
+    section.querySelectorAll('[data-gateway-sponsored-item]').forEach(item => {
+      const search = item instanceof HTMLElement ? item.dataset.search || '' : '';
+      const families = item instanceof HTMLElement ? item.dataset.families || '' : '';
+      const matchesKeyword = !keyword || search.includes(keyword);
+      const matchesFamily = !selectedFamily || families.split(',').includes(selectedFamily);
+      const match = matchesKeyword && matchesFamily;
+      item.classList.toggle('hidden', !match);
+      if (match) visible += 1;
+    });
+    section.classList.toggle('hidden', visible === 0);
+  }
+
   function applySiteFilters({ track = true } = {}) {
     const { keyword, selectedFamily, visibleCount } = filterSiteEntries();
+    applySponsoredFilter();
     renderGatewayList(gatewayLists.sites);
     if (track) scheduleGatewayFilterTrack('sites', {
       query: keyword,
@@ -490,6 +499,7 @@ import { formatPositiveScore, uniqueLabels } from '../gateway-display.js';
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const payload = await response.json();
       const items = Array.isArray(payload.items) ? payload.items : [];
+      if (type === 'sites' && Array.isArray(payload.sponsored)) applySponsoredFilter();
       const offset = Number(payload.offset) || state.pageSize;
       const totalCount = Number(payload.totalCount);
       if (Number.isFinite(totalCount) && totalCount > 0) state.totalCount = totalCount;

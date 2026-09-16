@@ -9,7 +9,7 @@
 
 后续获批准来源的采集适配器首选 **Crawlee for Python**：公开、已 allowlist 的静态响应使用 `HttpCrawler`；只有页面确实需要执行 JavaScript、且不涉及登录、验证码或访问控制时，才使用 `PlaywrightCrawler`。所有响应仍先进入项目既有 raw 批次，独立 merge/import worker 再处理 raw；采集框架不得直接写运行时库。
 
-选择理由是本项目只有少量、异构的公开来源，而 raw 保存、合并和发布事务已经由本项目实现。Crawlee 能让每个来源保持一个小型适配器，并在同一 Python 异步模型下按需选择 HTTP 或浏览器渲染。正式接入时 worker 的采集并发上限必须为 1，以满足已确认的单例、单线程、串行处理约束。
+选择理由是本项目只有少量、异构的公开来源，而 raw 保存、合并和发布事务已经由本项目实现。Crawlee 能让每个来源保持一个小型适配器，并在同一 Python 异步模型下按需选择 HTTP 或浏览器渲染。正式接入时 worker 的采集并发上限必须为 1，以满足已确认的单例、单线程、串行处理约束。启用哪些已登记来源、每项上限和重采间隔由 `scripts/crawlee_collection/catch.config` 配置，不改程序路径。
 
 `curl_cffi` 不用于 TLS/浏览器指纹伪装或规避防护；Scrapy 不作为本项目新增来源的默认引擎。若未来需求变成大规模、深层链接爬取，再单独评估 Scrapy 的调度、重试和限速优势。
 

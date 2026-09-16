@@ -58,11 +58,20 @@ class ReusableRepository:
             repository.rollback()
             raise
 
-    def ready_batch_ids(self) -> list[str]:
-        rows = self.repository().query(
-            "SELECT batch_id FROM collection_batches WHERE status = %s ORDER BY started_at ASC, batch_id ASC",
-            ("raw_completed",),
-        )
+    def ready_batch_ids(self, source_id: str | None = None) -> list[str]:
+        if source_id:
+            rows = self.repository().query(
+                "SELECT DISTINCT batch.batch_id FROM collection_batches batch "
+                "JOIN collection_raw_records raw ON raw.batch_id = batch.batch_id "
+                "WHERE batch.status = %s AND raw.source_id = %s "
+                "ORDER BY batch.started_at ASC, batch.batch_id ASC",
+                ("raw_completed", source_id),
+            )
+        else:
+            rows = self.repository().query(
+                "SELECT batch_id FROM collection_batches WHERE status = %s ORDER BY started_at ASC, batch_id ASC",
+                ("raw_completed",),
+            )
         return [str(row["batch_id"]) for row in rows]
 
     def merge_batch(self, batch_id: str) -> dict[str, Any]:

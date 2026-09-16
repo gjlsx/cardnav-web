@@ -118,7 +118,7 @@ python scripts/deploy/publish_ai_lovemoney.py
 | 目标 | `206.119.177.74`，用户 `root` |
 | 凭据 | `D:\temp\aws\177.74 server.txt`；远程 MySQL 密码从 LikeShop 本机 deploy config 读取；本机 dump 用仓库 `.env` 的 `MYSQL_*` |
 | 上传 | `dist/` tar + 本机 `ailovemoney` SQL；不上传 `.env` |
-| 备份 | 站点 `ai.lovemoney.live-<timestamp>.tar.gz`；导入前再 `mysqldump` 远程库为 `ailovemoney-<timestamp>.sql` |
+| 备份 | 站点 `ai.lovemoney.live-<timestamp>.tar.gz`；导入前再 `mysqldump` 远程库并 gzip 为 `ailovemoney-<timestamp>.sql.gz`；两类备份各只保留最新一份（见 §4.1） |
 | 数据库 | `scripts/export-mysql.ps1` 导出本机库，服务器 `mysql < dump` 直接导入 |
 | 重启 | 只 `systemctl restart ai-lovemoney` |
 | 验证 | origin 80/443 Host 头、LikeShop 8086/8090/8095、无采集进程/timer、`public_snapshot_entries` / `gateway_sites` 计数 |
@@ -148,6 +148,18 @@ pnpm run dev
 本地浏览器入口仍是 `http://127.0.0.1:3101/`。不要把 `ai.lovemoney.live` 指到本机。
 
 远程 `.env` 保留服务器自己的配置，禁止用本机文件整份覆盖。源码 canonical 默认是 `https://aigate.live`；若服务器设置 `PUBLIC_SITE_URL`，应在获批发布时核对其是否与新主域一致，而不是照抄旧域示例。本轮未读取或修改远程环境变量。
+
+### 4.1 备份与暂存保留策略（发布脚本必须满足）
+
+服务器磁盘有限，发布脚本必须自带保留策略，不能靠人工清理：
+
+- **数据库备份要压缩**：远程库备份写成 `ailovemoney-<timestamp>.sql.gz`（`mysqldump ... | gzip -9`），不再保留未压缩 `.sql`。
+- **只保留最新一份**：`/www/wwwroot/ai.lovemoney.live-backups/` 下站点 `*.tar.gz` 与数据库 `*.sql.gz` **各保留最新 1 份**，其余按修改时间删除。
+- **临时压缩包必删**：上传到服务器临时目录的 `dist` tar 包与 SQL 在发布结束后必须删除，**成功或失败都要删**（例如 shell `trap ... EXIT`）；失败路径同样不能留下 100MB+ 的 tar.gz。
+- **站点 tar 包不额外留存**：备份只用于回滚；除最新一份外不留任何部署压缩包。
+- **本机不堆积**：`scripts/export-mysql.ps1` 产生的临时 SQL 用完即删，不放进 Git、不长期保留。
+
+现状（2026-09-15）：已人工把 `ai.lovemoney.live-backups/` 从 891M 清到 74M（只留最新 `*.tar.gz` 与最新 `*.sql.gz`），`/tmp` 从 95M 清到 12M。`scripts/deploy/publish_ai_lovemoney.py` 的自动保留逻辑**尚未实现**，由脚本维护者按本节补齐；本文只登记要求，不改脚本。
 
 ## 5. 验证命令
 
@@ -225,7 +237,7 @@ http://dtch.yg2022.top:8095/admin/
 ## 8. 回滚与注意事项
 
 - 回滚站点：把 `/www/wwwroot/ai.lovemoney.live-backups/ai.lovemoney.live-<timestamp>.tar.gz` 解回发布目录，重启 `ai-lovemoney`。
-- 回滚数据库：`python scripts/deploy/restore_remote_mysql.py <timestamp>`，对应文件 `ailovemoney-<timestamp>.sql`。回滚会替换数据，须确认目标与授权；不要 `a2dissite` LikeShop 配置。停本站前以 `apache2ctl -S` 确认实际承接新旧域的配置，不盲目只禁用一个旧名文件。
+- 回滚数据库：`python scripts/deploy/restore_remote_mysql.py <timestamp>`，对应文件 `ailovemoney-<timestamp>.sql.gz`（gzip，回滚前先解压）。回滚会替换数据，须确认目标与授权；不要 `a2dissite` LikeShop 配置。停本站前以 `apache2ctl -S` 确认实际承接新旧域的配置，不盲目只禁用一个旧名文件。
 - 不要 `pkill node` 或无筛选 `pkill ssh`；只操作 `ai-lovemoney.service`。
 - 不要在生产安装 Windows 计划任务、cron collector 或 Python GUI。
 - 记录实际发布命令时脱敏：去掉密码、密钥路径中的秘密、dump 全文、cookie。

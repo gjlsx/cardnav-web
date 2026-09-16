@@ -34,6 +34,7 @@
 - Real network collection runs locally only, after an exact source allowlist and approval are configured. Do not crawl from `ai.lovemoney.live`, follow downstream merchant links, bypass robots/access controls, handle login or CAPTCHA, or clear existing runtime data after a source failure.
 - Crawlee + Playwright is the approved direction for new browser collection adapters. Preserve the existing collector files as legacy until a separately approved deletion task; new CLI and GUI paths must not invoke them.
 - The merge/import worker remains default-disabled, local, singleton, and serial. It reads completed raw batches only; it does not perform browser collection.
+- Collection and merge programs and their order stay hardcoded. Which allowlisted sources to run, item caps, recrawl sleep, and merge-worker intervals live in one `scripts/crawlee_collection/catch.config`. CLI, GUI buttons, and Linux one-shot/systemd all invoke that same CLI; config cannot add arbitrary URLs.
 
 ## Implementation and verification
 
